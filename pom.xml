@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.steeplesoft.jsf</groupId>
-    <artifactId>facestester</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>faces-tester-parent</artifactId>
+    <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
-    <name>FacesConTest</name>
+    <modules>
+        <module>faces-tester</module>
+        <module>integration-test</module>
+    </modules>
+    <name>faces-tester-parent</name>
     <repositories>
         <repository>
             <id>glassfish-repository</id>
@@ -39,6 +44,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+            <version>${jsf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>${servlet.version}</version>
@@ -50,6 +61,12 @@
             <version>${jsp.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -58,6 +75,14 @@
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/When*.java</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>

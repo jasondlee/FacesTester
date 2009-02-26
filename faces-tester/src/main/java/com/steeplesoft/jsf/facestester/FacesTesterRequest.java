@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.steeplesoft.jsf.facestester;
 
 import java.io.BufferedReader;
@@ -18,7 +13,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 
 /**
- *
  * @author jasonlee
  */
 class FacesTesterRequest implements ServletRequest {
@@ -62,7 +56,7 @@ class FacesTesterRequest implements ServletRequest {
     }
 
     public String[] getParameterValues(String arg0) {
-        return (String[])parameters.values().toArray();
+        return (String[]) parameters.values().toArray();
     }
 
     public Map getParameterMap() {

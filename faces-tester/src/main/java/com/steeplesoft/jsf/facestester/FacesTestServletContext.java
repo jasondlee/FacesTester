@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.steeplesoft.jsf.facestester;
 
 import java.io.InputStream;
@@ -18,7 +13,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
- *
  * @author jasonlee
  */
 class FacesTestServletContext implements ServletContext {
@@ -88,7 +82,7 @@ class FacesTestServletContext implements ServletContext {
     }
 
     public void log(Exception e, String msg) {
-        log (msg, e);
+        log(msg, e);
     }
 
     public void log(String msg, Throwable throwable) {

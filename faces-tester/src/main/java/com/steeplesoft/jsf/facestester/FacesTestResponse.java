@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.steeplesoft.jsf.facestester;
 
 import java.io.IOException;
@@ -12,7 +7,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
 
 /**
- *
  * @author jasonlee
  */
 class FacesTestResponse implements ServletResponse {
