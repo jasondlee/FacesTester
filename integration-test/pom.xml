@@ -12,6 +12,14 @@
     <name>integration-test</name>
     <packaging>war</packaging>
 
+    <build>
+        <testResources>
+            <testResource>
+                <directory>src/main/webapp</directory>
+            </testResource>
+        </testResources>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

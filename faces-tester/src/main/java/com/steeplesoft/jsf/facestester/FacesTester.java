@@ -15,7 +15,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 /**
@@ -31,7 +30,7 @@ public class FacesTester {
     private static final String RENDERKIT_FACTORY_KEY = "javax.faces.render.RenderKitFactory";
     private static final String RENDERKIT_FACTORY_IMPL = "com.sun.faces.renderkit.RenderKitFactoryImpl";
 
-    private ServletContext servletContext;
+    private MockServletContext servletContext;
     private LifecycleFactory lifecycleFactory;
     private FacesContextFactory facesContextFactory;
 
@@ -54,7 +53,7 @@ public class FacesTester {
         lifecycle.execute(context);
         lifecycle.render(context);
 
-        return new FacesPage();
+        return new FacesPage(context.getViewRoot());
     }
 
     private FacesContext createFacesContext(String uri, Lifecycle lifecycle) {
@@ -63,12 +62,13 @@ public class FacesTester {
 
         Application application = context.getApplication();
         application.setViewHandler(new FaceletViewHandler(new ViewHandlerImpl()));
-        
+
         return context;
     }
 
     private void initializeServletContext() {
         servletContext = new MockServletContext();
+        servletContext.addInitParameter("javax.faces.DEFAULT_SUFFIX", ".xhtml");
         new ConfigureListener().contextInitialized(new ServletContextEvent(servletContext));
     }
 

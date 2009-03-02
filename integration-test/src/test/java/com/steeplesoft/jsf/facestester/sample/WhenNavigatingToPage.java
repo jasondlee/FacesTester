@@ -16,6 +16,12 @@ public class WhenNavigatingToPage {
 
     @Test
     public void shouldBeAbleToAssertValueOfComponents() throws Exception {
-        assertThat(tester.requestPage("/address.jsf").getComponentWithId("stateLabel").getValue(), is("State"));
+        assertThat(tester.requestPage("/address.xhtml").getComponentWithId("form:stateLabel").getValueAsString(),
+                is("State"));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldBeAbleToAssertValueOfNoExistentComponents() {
+        tester.requestPage("/address.xhtml").getComponentWithId("unknown");
     }
 }
