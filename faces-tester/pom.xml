@@ -4,11 +4,11 @@
 
     <parent>
         <groupId>com.steeplesoft.jsf</groupId>
-        <artifactId>faces-tester-parent</artifactId>
+        <artifactId>facestester-parent</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>faces-tester</artifactId>
+    <artifactId>facestester</artifactId>
     <name>FacesTester</name>
     <packaging>jar</packaging>
 </project>

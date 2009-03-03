@@ -30,4 +30,10 @@ public class WhenNavigatingToPage {
         assertThat(tester.requestPage("/address.xhtml").getComponentWithId("form:elTest").getValueAsString(),
                 is ("9"));
     }
+
+    @Test
+    public void shouldBeAbleToTestRendered() throws Exception {
+        assertThat(tester.requestPage("/address.xhtml").getComponentWithId("form:renderedTest").getValueAsString(),
+                is ("RenderedTest"));
+    }
 }

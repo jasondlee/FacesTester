@@ -1,7 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIOutput;
+import javax.faces.component.ValueHolder;
 
 public class FacesComponent {
     private UIComponent component;
@@ -11,9 +11,13 @@ public class FacesComponent {
     }
 
     public String getValueAsString() {
-        if (component instanceof UIOutput) {
-            return ((UIOutput) component).getValue().toString();
+        if (component instanceof ValueHolder) {
+            return ((ValueHolder) component).getValue().toString();
         }
         throw new AssertionError("UIComponent " + component.getId() + " does not hold values.");
+    }
+
+    public boolean isRendered() {
+        return component.isRendered();
     }
 }
