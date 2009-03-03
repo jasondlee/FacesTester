@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>integration-test</artifactId>
-    <name>integration-test</name>
+    <name>FacesTester Integration Test</name>
     <packaging>war</packaging>
 
     <build>

@@ -24,4 +24,10 @@ public class WhenNavigatingToPage {
     public void shouldBeAbleToAssertValueOfNoExistentComponents() {
         tester.requestPage("/address.xhtml").getComponentWithId("unknown");
     }
+
+    @Test
+    public void shouldBeAbleToEvaluateEl() throws Exception {
+        assertThat(tester.requestPage("/address.xhtml").getComponentWithId("form:elTest").getValueAsString(),
+                is ("9"));
+    }
 }

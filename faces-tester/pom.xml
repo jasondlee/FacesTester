@@ -9,6 +9,6 @@
     </parent>
 
     <artifactId>faces-tester</artifactId>
-    <name>faces-tester</name>
+    <name>FacesTester</name>
     <packaging>jar</packaging>
 </project>

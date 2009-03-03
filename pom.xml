@@ -10,7 +10,7 @@
         <module>faces-tester</module>
         <module>integration-test</module>
     </modules>
-    <name>faces-tester-parent</name>
+    <name>FacesTester Parent</name>
     <repositories>
         <repository>
             <id>glassfish-repository</id>
