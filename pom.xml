@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
     <modules>
-        <module>faces-tester</module>
+        <module>facestester</module>
         <module>integration-test</module>
     </modules>
     <name>FacesTester Parent</name>
