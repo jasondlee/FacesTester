@@ -1,25 +1,22 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.servlet.ServletContextFactory;
 import com.sun.facelets.FaceletViewHandler;
 import com.sun.faces.application.ViewHandlerImpl;
 import com.sun.faces.config.ConfigureListener;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
 import javax.faces.FactoryFinder;
+import static javax.faces.FactoryFinder.FACES_CONTEXT_FACTORY;
+import static javax.faces.FactoryFinder.LIFECYCLE_FACTORY;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletContext;
-
-import static javax.faces.FactoryFinder.FACES_CONTEXT_FACTORY;
-import static javax.faces.FactoryFinder.LIFECYCLE_FACTORY;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author jasonlee
@@ -37,7 +34,7 @@ public class FacesTester {
     private static final String RENDERKIT_FACTORY_KEY = "javax.faces.render.RenderKitFactory";
     private static final String RENDERKIT_FACTORY_IMPL = "com.sun.faces.renderkit.RenderKitFactoryImpl";
 
-    private MockServletContext servletContext;
+    private ServletContext servletContext;
     private LifecycleFactory lifecycleFactory;
     private FacesContextFactory facesContextFactory;
 
@@ -63,7 +60,7 @@ public class FacesTester {
 
         return new FacesPage(context.getViewRoot());
     }
-    
+
     private FacesContext createFacesContext(String uri, Lifecycle lifecycle) {
         FacesContext context = facesContextFactory.getFacesContext(servletContext,
                 mockServletRequest(uri), new MockHttpServletResponse(), lifecycle);
@@ -75,8 +72,9 @@ public class FacesTester {
     }
 
     private void initializeServletContext() {
-        servletContext = new MockServletContext();
-        servletContext.addInitParameter("javax.faces.DEFAULT_SUFFIX", ".xhtml");
+        ServletContextFactory servletContextFactory = new ServletContextFactory();
+        servletContext = servletContextFactory.createContextFromDescriptor(
+                getClass().getResourceAsStream("/WEB-INF/web.xml"));
         new ConfigureListener().contextInitialized(new ServletContextEvent(servletContext));
     }
 
