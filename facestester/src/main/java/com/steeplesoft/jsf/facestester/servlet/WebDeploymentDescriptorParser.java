@@ -24,9 +24,9 @@ public class WebDeploymentDescriptorParser {
 
             return descriptor;
         } catch (SAXException e) {
-            throw new FacesTesterException("Unable to parser web deployment descriptor", e);
+            throw new FacesTesterException("Unable to parse web deployment descriptor", e);
         } catch (IOException e) {
-            throw new FacesTesterException("Unable to parser web deployment descriptor", e);
+            throw new FacesTesterException("Unable to parse web deployment descriptor", e);
         }
     }
 }

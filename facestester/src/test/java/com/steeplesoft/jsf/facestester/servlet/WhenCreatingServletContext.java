@@ -4,11 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
-import javax.servlet.ServletContext;
-import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 public class WhenCreatingServletContext {
     private ServletContextFactory contextFactory;
@@ -19,34 +18,17 @@ public class WhenCreatingServletContext {
     }
 
     @Test
-    public void shouldSetDefaultSuffixContextParameterToXhtml() throws SAXException, IOException {
-        String webXml = new StringBuilder()
-                .append("<web-app>")
-                .append("   <context-param>")
-                .append("       <param-name>javax.faces.DEFAULT_SUFFIX</param-name>")
-                .append("       <param-value>.xhtml</param-value>")
-                .append("   </context-param>")
-                .append("</web-app>").toString();
+    public void shouldLocateWebAppDirectoryFromSystemProperty() throws IOException {
+        TestWebAppDirectoryCreator creator = new TestWebAppDirectoryCreator();
+        File webAppDirectory = creator.createTestWebAppWithDescriptor(getClass().getResourceAsStream("/test-web.xml"));
 
-        ServletContext context = contextFactory.createContextFromDescriptor(
-                new ByteArrayInputStream(webXml.getBytes()));
-
-        assertThat(context.getInitParameter("javax.faces.DEFAULT_SUFFIX"), is(".xhtml"));
-    }
-
-    @Test
-    public void shouldSetDefaultSuffixContextParameterToJsp() throws SAXException, IOException {
-        String webXml = new StringBuilder()
-                .append("<web-app>")
-                .append("   <context-param>")
-                .append("       <param-name>javax.faces.DEFAULT_SUFFIX</param-name>")
-                .append("       <param-value>.jsp</param-value>")
-                .append("   </context-param>")
-                .append("</web-app>").toString();
-
-        ServletContext context = contextFactory.createContextFromDescriptor(
-                new ByteArrayInputStream(webXml.getBytes()));
-
-        assertThat(context.getInitParameter("javax.faces.DEFAULT_SUFFIX"), is(".jsp"));
+        Properties properties = System.getProperties();
+        try {
+            System.setProperty("facestester.webAppPath", webAppDirectory.getAbsolutePath());
+            assertThat(contextFactory.createContext().getInitParameter("javax.faces.DEFAULT_SUFFIX"), is(".xhtml"));
+        }
+        finally {
+            System.setProperties(properties);
+        }
     }
 }

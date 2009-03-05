@@ -13,11 +13,19 @@
     <packaging>war</packaging>
 
     <build>
-        <testResources>
-            <testResource>
-                <directory>src/main/webapp</directory>
-            </testResource>
-        </testResources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>facestester.webAppPath</name>
+                            <value>${basedir}/src/main/webapp</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencies>

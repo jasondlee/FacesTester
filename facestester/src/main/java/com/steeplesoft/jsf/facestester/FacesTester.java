@@ -40,12 +40,7 @@ public class FacesTester {
 
     public FacesTester() {
         initializeServletContext();
-
-        // TODO:  This probably shouldn't be tied to Mojarra, but we can fix that later once the library actually works
-        FactoryFinder.setFactory(LIFECYCLE_FACTORY_KEY, LIFECYCLE_FACTORY_IMPL);
-        FactoryFinder.setFactory(APPLICATION_FACTORY_KEY, APPLICATION_FACTORY_IMPL);
-        FactoryFinder.setFactory(FACES_CONTEXT_FACTORY_KEY, FACES_CONTEXT_FACTORY_IMPL);
-        FactoryFinder.setFactory(RENDERKIT_FACTORY_KEY, RENDERKIT_FACTORY_IMPL);
+        initializeJsfFactories();
 
         lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
         facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FACES_CONTEXT_FACTORY);
@@ -72,10 +67,17 @@ public class FacesTester {
     }
 
     private void initializeServletContext() {
-        ServletContextFactory servletContextFactory = new ServletContextFactory();
-        servletContext = servletContextFactory.createContextFromDescriptor(
-                getClass().getResourceAsStream("/WEB-INF/web.xml"));
+        servletContext = new ServletContextFactory().createContext();
         new ConfigureListener().contextInitialized(new ServletContextEvent(servletContext));
+    }
+
+
+    private void initializeJsfFactories() {
+        // TODO:  This probably shouldn't be tied to Mojarra, but we can fix that later once the library actually works
+        FactoryFinder.setFactory(LIFECYCLE_FACTORY_KEY, LIFECYCLE_FACTORY_IMPL);
+        FactoryFinder.setFactory(APPLICATION_FACTORY_KEY, APPLICATION_FACTORY_IMPL);
+        FactoryFinder.setFactory(FACES_CONTEXT_FACTORY_KEY, FACES_CONTEXT_FACTORY_IMPL);
+        FactoryFinder.setFactory(RENDERKIT_FACTORY_KEY, RENDERKIT_FACTORY_IMPL);
     }
 
     private MockHttpServletRequest mockServletRequest(String uri) {
