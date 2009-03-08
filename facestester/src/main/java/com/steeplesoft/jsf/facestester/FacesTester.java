@@ -21,7 +21,6 @@ public class FacesTester {
     private ServletContext servletContext;
     private LifecycleFactory lifecycleFactory;
     private FacesContextFactory facesContextFactory;
-    private ConfigureListener mojarraListener;
 
     public FacesTester() {
         initializeServletContext();
@@ -40,19 +39,14 @@ public class FacesTester {
 
     private FacesContext createFacesContext(String uri, Lifecycle lifecycle) {
         HttpServletRequest servletRequest = mockServletRequest(uri);
-//        mojarraListener requestInitialized(new ServletRequestEvent(servletContext, servletRequest));
-        FacesContext context = facesContextFactory.getFacesContext(servletContext,
+
+        return facesContextFactory.getFacesContext(servletContext,
                 servletRequest, new MockHttpServletResponse(), lifecycle);
-
-//        Application application = context.getApplication();
-//        application.setViewHandler(new FaceletViewHandler(new ViewHandlerImpl()));
-
-        return context;
     }
 
     private void initializeServletContext() {
         servletContext = new ServletContextFactory().createContext();
-        mojarraListener = new ConfigureListener();
+        ConfigureListener mojarraListener = new ConfigureListener();
         mojarraListener.contextInitialized(new ServletContextEvent(servletContext));
         lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
         facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
