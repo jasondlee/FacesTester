@@ -24,7 +24,6 @@ public class FacesTester {
 
     public FacesTester() {
         initializeServletContext();
-
     }
 
     public FacesPage requestPage(String uri) {
