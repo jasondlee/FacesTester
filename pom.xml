@@ -19,6 +19,13 @@
             <layout>legacy</layout>
         </repository>
     </repositories>
+    <distributionManagement>
+        <repository>
+            <id>java.net-m2-repository</id>
+            <url>java-net:/maven2-repository/trunk/repository/</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <el.version>1.0</el.version>
