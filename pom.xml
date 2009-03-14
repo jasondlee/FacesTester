@@ -69,19 +69,19 @@
             <groupId>javax.faces</groupId>
             <artifactId>jsf-api</artifactId>
             <version>${jsf.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.faces</groupId>
             <artifactId>jsf-impl</artifactId>
             <version>${jsf.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>${servlet.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
