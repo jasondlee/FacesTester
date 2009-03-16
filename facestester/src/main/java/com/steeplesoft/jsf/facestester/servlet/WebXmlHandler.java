@@ -20,7 +20,9 @@ public class WebXmlHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String name, String qname) throws SAXException {
-        parameters.put(paramName, paramValue);
+        if ("context-param".equalsIgnoreCase(qname)) {
+            parameters.put(paramName, paramValue);
+        }
         this.qname = null;
     }
 
