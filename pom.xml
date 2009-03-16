@@ -53,11 +53,6 @@
             <groupId>com.sun.facelets</groupId>
             <artifactId>jsf-facelets</artifactId>
             <version>${facelets.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.wts.tools.mri</groupId>
-            <artifactId>maven-repository-importer</artifactId>
-            <version>1.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -70,13 +65,13 @@
             <groupId>javax.faces</groupId>
             <artifactId>jsf-api</artifactId>
             <version>${jsf.version}</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.faces</groupId>
             <artifactId>jsf-impl</artifactId>
             <version>${jsf.version}</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -112,7 +107,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

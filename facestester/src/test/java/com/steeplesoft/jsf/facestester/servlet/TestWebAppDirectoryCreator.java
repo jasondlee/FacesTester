@@ -25,9 +25,11 @@ public class TestWebAppDirectoryCreator {
     private File createTestWebXml(File webAppDirectory, InputStream descriptor) throws IOException {
         File webInfDirectory = new File(webAppDirectory, "WEB-INF");
         webInfDirectory.mkdir();
+        webInfDirectory.deleteOnExit();
 
         File webXml = new File(webInfDirectory, "web.xml");
         webXml.createNewFile();
+        webXml.deleteOnExit();
 
         FileWriter writer = new FileWriter(webXml);
         IOUtils.copy(descriptor, writer);
