@@ -40,7 +40,7 @@ public class FacesTester {
         lifecycle.execute(context);
         lifecycle.render(context);
 
-        return new FacesPage(context.getViewRoot());
+        return new FacesPage(context);
     }
 
     static FacesContext createFacesContext(String uri, String method, Lifecycle lifecycle) {

@@ -32,7 +32,8 @@ public class ServletContextFactory {
         String webAppPath = System.getProperty("facestester.webAppPath");
 
         if (webAppPath == null) {
-            throw new FacesTesterException("The facestester.webAppPath system property has not been set.");
+            webAppPath = "src/test/webapp"; // Default to a test webapp
+//            throw new FacesTesterException("The facestester.webAppPath system property has not been set.");
         }
 
         System.err.println("webAppath = " + webAppPath);

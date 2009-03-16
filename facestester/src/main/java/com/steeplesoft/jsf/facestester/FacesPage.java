@@ -1,12 +1,17 @@
 package com.steeplesoft.jsf.facestester;
 
-import javax.faces.component.UIViewRoot;
+import java.io.UnsupportedEncodingException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlForm;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FacesPage extends FacesComponent {
-    public FacesPage(UIViewRoot viewRoot) {
-        super (viewRoot);
+    MockHttpServletResponse servletResponse;
+    public FacesPage(FacesContext facesContext) {
+        super (facesContext.getViewRoot());
+        this.servletResponse = (MockHttpServletResponse)facesContext.getExternalContext().getResponse();
     }
 
     /**
@@ -24,5 +29,9 @@ public class FacesPage extends FacesComponent {
             }
         }
         throw new AssertionError("HtmlForm " + id + " does not exist.");
+    }
+
+    public String getRenderedPage() throws UnsupportedEncodingException {
+        return servletResponse.getContentAsString();
     }
 }
