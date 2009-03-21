@@ -12,7 +12,8 @@ public class FacesComponent extends AbstractFacesComponent {
     @Override
     public String getValueAsString() {
         if (component instanceof ValueHolder) {
-            return ((ValueHolder) component).getValue().toString();
+            Object value = ((ValueHolder) component).getValue();
+            return value == null ? null : value.toString();
         }
         throw new AssertionError("UIComponent " + component.getId() + " does not hold values.");
     }
@@ -43,7 +44,7 @@ public class FacesComponent extends AbstractFacesComponent {
     private void dumpChildren(UIComponent component, String prefix) {
         System.out.println("|" + prefix + "----" + component.getId());
         for (UIComponent child : component.getChildren()) {
-            dumpChildren(child, prefix+"----");
+            dumpChildren(child, prefix + "----");
         }
     }
 }

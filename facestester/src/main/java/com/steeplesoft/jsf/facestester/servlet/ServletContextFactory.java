@@ -17,7 +17,7 @@ public class ServletContextFactory {
         WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(webAppDirectory));
 
         for (Map.Entry<String, String> each : descriptor.getContextParameters().entrySet()) {
-            System.err.println("key = '" + each.getKey() +"' value ='" + each.getValue() + "'");
+            System.err.println("key = '" + each.getKey() + "' value ='" + each.getValue() + "'");
             servletContext.addInitParameter(each.getKey(), each.getValue());
         }
 
@@ -32,11 +32,8 @@ public class ServletContextFactory {
         String webAppPath = System.getProperty("facestester.webAppPath");
 
         if (webAppPath == null) {
-            webAppPath = "src/test/webapp"; // Default to a test webapp
-//            throw new FacesTesterException("The facestester.webAppPath system property has not been set.");
+            throw new FacesTesterException("The facestester.webAppPath system property has not been set.");
         }
-
-        System.err.println("webAppath = " + webAppPath);
 
         return new File(webAppPath);
     }

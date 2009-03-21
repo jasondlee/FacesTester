@@ -29,15 +29,13 @@ public class WhenNavigatingToPage {
 
     @Test
     public void shouldBeAbleToEvaluateEl() throws Exception {
-        assertThat(tester.requestPage("/address.xhtml").getComponentWithId("form:elTest").getValueAsString(),
-                is ("9"));
+        assertThat(tester.requestPage("/address.xhtml").getComponentWithId("form:elTest").getValueAsString(), is("9"));
     }
 
     @Test
     public void shouldBeAbleToTestRendered() throws Exception {
         FacesComponent component = tester.requestPage("/address.xhtml").getComponentWithId("form:renderedTest");
-        assertThat(component.getValueAsString(),is ("RenderedTest"));
+        assertThat(component.getValueAsString(), is("RenderedTest"));
         assertEquals(component.isRendered(), false);
     }
-
 }
