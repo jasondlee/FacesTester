@@ -14,7 +14,7 @@ public class WhenBuildingFacesContext {
 
     @Before
     public void setUp() {
-        facesContextBuilder = new FacesContextBuilder(createServletContext());
+        facesContextBuilder = new FacesContextBuilderImpl(createServletContext());
     }
 
     @Test
@@ -30,6 +30,6 @@ public class WhenBuildingFacesContext {
     }
 
     private FacesContext buildContext() {
-        return facesContextBuilder.createFacesContext("/test.xhtml", "GET", new MockLifecycle());
+        return facesContextBuilder.createFacesContext("/test.xhtml", "GET", new FakeFacesLifecycle());
     }
 }

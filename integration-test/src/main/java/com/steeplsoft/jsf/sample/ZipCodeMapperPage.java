@@ -2,7 +2,7 @@ package com.steeplsoft.jsf.sample;
 
 public class ZipCodeMapperPage {
     private String zipCode;
-    private String city = "Santa Clara";
+    private String city;
 
     public String lookupCityForZip() {
         if ("95054".equals(zipCode)) {

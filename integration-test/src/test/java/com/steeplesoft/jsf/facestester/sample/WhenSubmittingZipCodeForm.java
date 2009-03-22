@@ -15,7 +15,7 @@ public class WhenSubmittingZipCodeForm {
 
         FacesForm form = page.getFormById("form");
         form.setValue("zipCode", "95054");
-        form.submit();
+        form.submit("submit");
 
         assertThat(page.getComponentWithId("form:city").getValueAsString(), is("Santa Clara"));
     }

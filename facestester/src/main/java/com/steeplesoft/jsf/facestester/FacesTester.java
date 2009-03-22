@@ -5,7 +5,6 @@ import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.crea
 import javax.faces.FactoryFinder;
 import static javax.faces.FactoryFinder.LIFECYCLE_FACTORY;
 import javax.faces.context.FacesContext;
-import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
 import static javax.faces.lifecycle.LifecycleFactory.DEFAULT_LIFECYCLE;
 
@@ -13,21 +12,22 @@ import static javax.faces.lifecycle.LifecycleFactory.DEFAULT_LIFECYCLE;
  * @author jasonlee
  */
 public class FacesTester {
-    private LifecycleFactory lifecycleFactory;
+    private FacesLifecycle lifecycle;
     private FacesContextBuilder facesContextBuilder;
 
     public FacesTester() {
-        facesContextBuilder = new FacesContextBuilder(createServletContext());
-        lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
+        facesContextBuilder = new FacesContextBuilderImpl(createServletContext());
+
+        LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
+        lifecycle = new FacesLifecycleImpl(factory.getLifecycle(DEFAULT_LIFECYCLE));
     }
 
     public FacesPage requestPage(String uri) {
-        Lifecycle lifecycle = lifecycleFactory.getLifecycle(DEFAULT_LIFECYCLE);
         FacesContext context = facesContextBuilder.createFacesContext(uri, "GET", lifecycle);
 
         lifecycle.execute(context);
         lifecycle.render(context);
 
-        return new FacesPage(context, facesContextBuilder, uri);
+        return new FacesPage(context, facesContextBuilder, lifecycle, uri);
     }
 }

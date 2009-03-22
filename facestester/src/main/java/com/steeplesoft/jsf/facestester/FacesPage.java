@@ -6,12 +6,15 @@ import javax.faces.context.FacesContext;
 
 public class FacesPage extends FacesComponent {
     private FacesContextBuilder facesContextBuilder;
+    private FacesLifecycle lifecycle;
     private String uri;
 
-    public FacesPage(FacesContext facesContext, FacesContextBuilder facesContextBuilder, String uri) {
+    public FacesPage(FacesContext facesContext, FacesContextBuilder facesContextBuilder, FacesLifecycle lifecycle,
+                     String uri) {
         super(facesContext.getViewRoot());
-        
+
         this.facesContextBuilder = facesContextBuilder;
+        this.lifecycle = lifecycle;
         this.uri = uri;
     }
 
@@ -26,7 +29,7 @@ public class FacesPage extends FacesComponent {
     public FacesForm getFormById(String id) {
         for (UIComponent each : component.getChildren()) {
             if (each instanceof HtmlForm && id.equals(each.getId())) {
-                return new FacesForm((HtmlForm) each, facesContextBuilder, uri);
+                return new FacesForm((HtmlForm) each, facesContextBuilder, lifecycle, uri);
             }
         }
         throw new AssertionError("HtmlForm " + id + " does not exist.");
