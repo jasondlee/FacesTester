@@ -11,7 +11,7 @@ public class WhenLoadingResourceFromServletContext {
     @Test
     public void shouldFindFileFromWebAppDirectory() throws IOException {
         File webAppDirectory = new TestWebAppDirectoryCreator().createTestWebAppWithDescriptor(
-                getClass().getResourceAsStream("/test-web.xml"));
+                getClass().getResourceAsStream("/webapp/WEB-INF/web.xml"));
 
         ResourceLoader loader = new WebAppResourceLoader(webAppDirectory);
 

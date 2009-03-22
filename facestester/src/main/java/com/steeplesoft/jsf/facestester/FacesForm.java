@@ -1,36 +1,55 @@
 package com.steeplesoft.jsf.facestester;
 
-import javax.faces.component.UIInput;
-import javax.faces.component.UIComponent;
+import javax.faces.FactoryFinder;
+import static javax.faces.FactoryFinder.LIFECYCLE_FACTORY;
 import javax.faces.component.html.HtmlForm;
-import java.util.Map;
+import javax.faces.context.FacesContext;
+import javax.faces.lifecycle.Lifecycle;
+import javax.faces.lifecycle.LifecycleFactory;
+import static javax.faces.lifecycle.LifecycleFactory.DEFAULT_LIFECYCLE;
+import static javax.faces.render.ResponseStateManager.VIEW_STATE_PARAM;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FacesForm extends FacesComponent {
-    private HtmlForm form;
+    private Lifecycle lifecycle;
+    private FacesContextBuilder facesContextBuilder;
+    private String uri;
+    private Map<String, String> parameterMap = new HashMap<String, String>();
 
-    public FacesForm(HtmlForm htmlForm) {
+    FacesForm(HtmlForm htmlForm) {
         super(htmlForm);
-        form = htmlForm;
+
+        parameterMap.put(VIEW_STATE_PARAM, "j_id1:j_id2");
+    }
+
+    public FacesForm(HtmlForm htmlForm, FacesContextBuilder facesContextBuilder, String uri) {
+        this(htmlForm);
+
+        this.facesContextBuilder = facesContextBuilder;
+        this.uri = uri;
+
+        // TODO Extract interface
+        LifecycleFactory lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
+        lifecycle = lifecycleFactory.getLifecycle(DEFAULT_LIFECYCLE);
     }
 
 
-    public void setValue(String fieldName, String value) {
-        UIInput component = (UIInput) form.findComponent(fieldName);
-        component.setValue(value);
+    public void setValue(String key, String value) {
     }
 
     public void submit() {
+        FacesContext context = facesContextBuilder.createFacesContext(this, lifecycle);
 
+        lifecycle.execute(context);
+        lifecycle.render(context);
     }
 
-    public Map<String, String> getParameters() {
-        Map<String, String> parameters = new HashMap<String, String>();
-        for (UIComponent each : form.getChildren()) {
-            if (each instanceof UIInput) {
-                parameters.put(each.getId(), ((UIInput) each).getValue().toString());
-            }
-        }
-        return parameters;
+    public Map<String, String> getParameterMap() {
+        return parameterMap;
+    }
+
+    public String getUri() {
+        return uri;
     }
 }

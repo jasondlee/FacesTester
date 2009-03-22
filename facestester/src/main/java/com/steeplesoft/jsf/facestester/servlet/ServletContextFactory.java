@@ -11,7 +11,19 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 public class ServletContextFactory {
-    public ServletContext createContextForWebAppAt(File webAppDirectory) {
+    private File webAppDirectory;
+
+    public ServletContextFactory(File webAppDirectory) {
+        this.webAppDirectory = webAppDirectory;
+    }
+
+    public static ServletContext createServletContext() {
+        ServletContextFactory factory = new ServletContextFactory(lookupWebAppPath());
+
+        return factory.createContextForWebAppAt();
+    }
+
+    public ServletContext createContextForWebAppAt() {
         MockServletContext servletContext = new MockServletContext(new WebAppResourceLoader(webAppDirectory));
 
         WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(webAppDirectory));
@@ -24,11 +36,7 @@ public class ServletContextFactory {
         return servletContext;
     }
 
-    public ServletContext createContext() {
-        return createContextForWebAppAt(lookupWebAppPath());
-    }
-
-    private File lookupWebAppPath() {
+    private static File lookupWebAppPath() {
         String webAppPath = System.getProperty("facestester.webAppPath");
 
         if (webAppPath == null) {
