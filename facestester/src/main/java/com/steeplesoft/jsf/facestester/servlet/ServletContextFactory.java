@@ -8,9 +8,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
 public class ServletContextFactory {
+
     private File webAppDirectory;
 
     public ServletContextFactory(File webAppDirectory) {
@@ -39,8 +41,28 @@ public class ServletContextFactory {
     private static File lookupWebAppPath() {
         String webAppPath = System.getProperty("facestester.webAppPath");
 
+        // The system property has not been set, so let's look in a couple of
+        // sensible locations to see if we can figure what it should be.
         if (webAppPath == null) {
-            throw new FacesTesterException("The facestester.webAppPath system property has not been set.");
+            try {
+                File testDirCheck = new File("src/test/webapp");
+                if (testDirCheck.exists()) {
+                    webAppPath = testDirCheck.getCanonicalPath();
+                } else {
+                    File mainDirCheck = new File("src/main/webapp");
+                    if (mainDirCheck.exists()) {
+                        webAppPath = mainDirCheck.getCanonicalPath();
+                    }
+                }
+            } catch (IOException ioe) {
+                // swallow this and throw the excpetion below
+            }
+        }
+
+        // The web app path was not set, nor could it be found, so let's throw
+        // an exception and abort
+        if (webAppPath == null) {
+                throw new FacesTesterException("The facestester.webAppPath system property has not been set and could not calculated.");
         }
 
         return new File(webAppPath);

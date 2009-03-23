@@ -1,8 +1,10 @@
 package com.steeplsoft.jsf.sample;
 
 public class ZipCodeMapperPage {
-    private String zipCode;
-    private String city;
+    // Some deafult values, just to make sure we're manipulating the UIComponent
+    // tree correctly
+    private String zipCode = "12345";
+    private String city = "Schenectady";
 
     public String lookupCityForZip() {
         if ("95054".equals(zipCode)) {

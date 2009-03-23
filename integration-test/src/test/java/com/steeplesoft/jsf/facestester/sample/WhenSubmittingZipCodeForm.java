@@ -13,6 +13,9 @@ public class WhenSubmittingZipCodeForm {
         FacesTester tester = new FacesTester();
         FacesPage page = tester.requestPage("/zipCodeMapper.xhtml");
 
+        // Make sure the managed bean was loaded correctly
+        assertThat(page.getComponentWithId("form:zipCode").getValueAsString(), is("12345"));
+
         FacesForm form = page.getFormById("form");
         form.setValue("zipCode", "95054");
         form.submit("submit");

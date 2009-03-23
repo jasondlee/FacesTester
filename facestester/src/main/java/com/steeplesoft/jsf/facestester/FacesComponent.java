@@ -39,17 +39,26 @@ public class FacesComponent {
         throw new AssertionError("UIComponent " + component.getId() + " does not hold values.");
     }
 
+    /**
+     * This method dumps a component tree to standard out, a useful tool for
+     * making sure the component tree looks like you think it should.
+     */
     public void dumpComponentTree() {
-        System.out.println("/ " + component.getId());
+        System.out.println("/ " + buildComponentString(component));
         for (UIComponent child : component.getChildren()) {
-            dumpChildren(child, "----");
+            dumpChildren(child, "    ");
         }
     }
 
+    private String buildComponentString (UIComponent component) {
+        return component.getId() +
+                ((component instanceof ValueHolder) ? ":  " + ((ValueHolder)component).getValue() : "");
+    }
+
     private void dumpChildren(UIComponent component, String prefix) {
-        System.out.println("|" + prefix + "----" + component.getId());
+        System.out.println(prefix + "|----" + buildComponentString(component));
         for (UIComponent child : component.getChildren()) {
-            dumpChildren(child, prefix + "----");
+            dumpChildren(child, prefix + "     ");
         }
 
     }
