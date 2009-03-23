@@ -35,8 +35,8 @@
 
     <properties>
         <el.version>1.0</el.version>
-        <facelets.version>1.1.11</facelets.version>
-        <jsf.version>1.2_04</jsf.version>
+        <facelets.version>1.1.12</facelets.version>
+        <jsf.version>1.2_12</jsf.version>
         <jsp.version>2.1</jsp.version>
         <jstl.version>1.2</jstl.version>
         <junit.version>4.5</junit.version>

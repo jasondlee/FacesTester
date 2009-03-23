@@ -4,6 +4,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 
 public class FacesComponent {
+
     protected UIComponent component;
 
     public FacesComponent(UIComponent component) {
@@ -36,5 +37,20 @@ public class FacesComponent {
             return value == null ? null : value.toString();
         }
         throw new AssertionError("UIComponent " + component.getId() + " does not hold values.");
+    }
+
+    public void dumpComponentTree() {
+        System.out.println("/ " + component.getId());
+        for (UIComponent child : component.getChildren()) {
+            dumpChildren(child, "----");
+        }
+    }
+
+    private void dumpChildren(UIComponent component, String prefix) {
+        System.out.println("|" + prefix + "----" + component.getId());
+        for (UIComponent child : component.getChildren()) {
+            dumpChildren(child, prefix + "----");
+        }
+
     }
 }

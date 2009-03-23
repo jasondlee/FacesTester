@@ -1,18 +1,19 @@
 package com.steeplesoft.jsf.facestester.sample;
 
 import com.steeplesoft.jsf.facestester.FacesComponent;
+import com.steeplesoft.jsf.facestester.FacesPage;
 import com.steeplesoft.jsf.facestester.FacesTester;
+import org.junit.BeforeClass;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
 import org.junit.Test;
 
 public class WhenNavigatingToPage {
-    private FacesTester tester;
+    private static FacesTester tester;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         tester = new FacesTester();
     }
 
