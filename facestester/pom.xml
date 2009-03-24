@@ -20,7 +20,7 @@
                     <systemProperties>
                         <property>
                             <name>facestester.webAppPath</name>
-                            <value>${basedir}/src/test/webapp</value>
+                            <value>${basedir}/src/test/resource/webapp</value>
                         </property>
                     </systemProperties>
                 </configuration>
