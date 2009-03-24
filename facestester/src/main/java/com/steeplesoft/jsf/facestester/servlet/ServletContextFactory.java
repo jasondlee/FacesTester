@@ -31,7 +31,6 @@ public class ServletContextFactory {
         WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(webAppDirectory));
 
         for (Map.Entry<String, String> each : descriptor.getContextParameters().entrySet()) {
-            System.err.println("key = '" + each.getKey() + "' value ='" + each.getValue() + "'");
             servletContext.addInitParameter(each.getKey(), each.getValue());
         }
 
