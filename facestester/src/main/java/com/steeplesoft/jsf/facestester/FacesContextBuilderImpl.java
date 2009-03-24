@@ -18,6 +18,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
     private FacesContextFactory facesContextFactory;
     private ServletContext servletContext;
     private MockHttpSession session;
+    private static boolean initialized = false;
 
     public FacesContextBuilderImpl(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -28,8 +29,13 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
     }
 
     private void initializeFaces(ServletContext servletContext) {
-        ConfigureListener mojarraListener = new ConfigureListener();
-        mojarraListener.contextInitialized(new ServletContextEvent(servletContext));
+        synchronized (this) {
+            if (!initialized) {
+                ConfigureListener mojarraListener = new ConfigureListener();
+                mojarraListener.contextInitialized(new ServletContextEvent(servletContext));
+                initialized = true;
+            }
+        }
     }
 
     public FacesContext createFacesContext(String uri, String method, FacesLifecycle lifecycle) {
