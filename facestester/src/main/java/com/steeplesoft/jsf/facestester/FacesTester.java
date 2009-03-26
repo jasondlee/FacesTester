@@ -38,6 +38,13 @@ public class FacesTester {
     }
 
     public void validateFacesConfig (String path) throws IOException, SAXException, ParserConfigurationException {
-        (new FacesConfig (new File(path))).performStaticAnalysis();
+        validateFacesConfig(new File(path));
+    }
+
+    public void validateFacesConfig (File file) throws IOException, SAXException, ParserConfigurationException {
+        FacesConfig config = new FacesConfig(file);
+        config.validateManagedBeans();
+        config.validateComponents();
+
     }
 }

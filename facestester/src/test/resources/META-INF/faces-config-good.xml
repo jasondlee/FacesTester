@@ -12,4 +12,9 @@
         <managed-bean-class>com.steeplesoft.jsf.facestester.GoodBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    <component>
+        <display-name>TestComponent</display-name>
+        <component-type>com.steeplesoft.jsf.facestester.TestComponent</component-type>
+        <component-class>com.steeplesoft.jsf.facestester.TestComponent</component-class>
+    </component>
 </faces-config>

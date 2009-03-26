@@ -24,14 +24,62 @@ import org.xml.sax.SAXException;
  * @author jasonlee
  */
 public class FacesConfig {
-
     protected List<ManagedBeanMetaData> managedBeans = new ArrayList<ManagedBeanMetaData>();
+    protected List<ComponentMetaData> components = new ArrayList<ComponentMetaData>();
 
     public FacesConfig(File configFile) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(configFile);
         doc.getDocumentElement().normalize();
+        loadManagedBeanInfo(doc);
+        loadComponentInfo(doc);
+    }
+
+    public List<ManagedBeanMetaData> getManagedBeans() {
+        return Collections.unmodifiableList(managedBeans);
+    }
+
+    public void validateManagedBeans() throws IOException {
+        for (ManagedBeanMetaData mbmd : managedBeans) {
+            try {
+                Class clazz = Class.forName(mbmd.getBeanClass());
+                clazz.newInstance();
+                Logger.getLogger("FacesConfig").info("Managed bean " + mbmd.getBeanName() +
+                        " ("+ mbmd.getBeanClass() +") loaded correctly.");
+            } catch (Exception ex) {
+                throw new AssertionError("The managed bean '" + mbmd.getBeanName() +
+                        "' could not be loaded:  " + mbmd.getBeanClass() + " not found");
+            }
+        }
+    }
+
+    public void validateComponents() throws IOException {
+        for (ComponentMetaData cmd : components) {
+            try {
+                Class clazz = Class.forName(cmd.getComponentClass());
+                clazz.newInstance();
+                Logger.getLogger("FacesConfig").info("Managed bean " + cmd.getDisplayName() +
+                        " ("+ cmd.getComponentClass() +") loaded correctly.");
+            } catch (Exception ex) {
+                throw new AssertionError("The managed bean '" + cmd.getDisplayName() +
+                        "' could not be loaded:  " + cmd.getComponentClass() + " not found");
+            }
+        }
+    }
+
+    private String getValue(Node node, String name) {
+        String retValue = null;
+        NodeList element = ((Element) node).getElementsByTagName(name);
+        NodeList valueNodeList = ((Element) element.item(0)).getChildNodes();
+
+        if (valueNodeList.getLength() > 0) {
+            retValue = valueNodeList.item(0).getNodeValue();
+        }
+        return retValue;
+    }
+
+    private void loadManagedBeanInfo(Document doc) {
         NodeList beanNodes = doc.getElementsByTagName("managed-bean");
         for (int i = 0; i < beanNodes.getLength(); i++) {
             Node beanNode = beanNodes.item(i);
@@ -48,32 +96,18 @@ public class FacesConfig {
         }
     }
 
-    public List<ManagedBeanMetaData> getManagedBeans() {
-        return Collections.unmodifiableList(managedBeans);
-    }
+    private void loadComponentInfo(Document doc) {
+        NodeList nodes = doc.getElementsByTagName("component");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                ComponentMetaData cmd = new ComponentMetaData();
+                cmd.setComponentClass(getValue(node, "component-class"));
+                cmd.setComponentType(getValue(node, "component-type"));
+                cmd.setDisplayName(getValue(node, "display-name"));
 
-    public void performStaticAnalysis() throws IOException {
-        for (ManagedBeanMetaData mbmd : managedBeans) {
-            try {
-                Class clazz = Class.forName(mbmd.getBeanClass());
-                clazz.newInstance();
-                Logger.getLogger("FacesConfig").info("Managed bean " + mbmd.getBeanName() +
-                        " ("+ mbmd.getBeanClass() +") loaded correctly.");
-            } catch (Exception ex) {
-                throw new AssertionError("The managed bean '" + mbmd.getBeanName() +
-                        "' could not be loaded:  " + mbmd.getBeanClass() + " not found");
+                components.add(cmd);
             }
         }
-    }
-
-    private String getValue(Node node, String name) {
-        String retValue = null;
-        NodeList element = ((Element) node).getElementsByTagName(name);
-        NodeList valueNodeList = ((Element) element.item(0)).getChildNodes();
-
-        if (valueNodeList.getLength() > 0) {
-            retValue = valueNodeList.item(0).getNodeValue();
-        }
-        return retValue;
     }
 }

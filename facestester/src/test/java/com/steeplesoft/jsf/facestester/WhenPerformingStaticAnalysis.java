@@ -21,13 +21,18 @@ public class WhenPerformingStaticAnalysis {
     @Test
     public void shouldValidateGoodBeanDefinition() throws IOException, ParserConfigurationException, SAXException {
         FacesConfig fc = new FacesConfig (new File ("src/test/resources/META-INF/faces-config-good.xml"));
-        fc.performStaticAnalysis();
+        fc.validateManagedBeans();
     }
 
     @Test(expected = AssertionError.class)
     public void shouldFailOnBadBeanDefinition() throws IOException, ParserConfigurationException, SAXException {
         FacesConfig fc = new FacesConfig (new File ("src/test/resources/META-INF/faces-config-bad.xml"));
-        fc.performStaticAnalysis();
+        fc.validateManagedBeans();
     }
 
+    @Test
+    public void shouldValidateGoodComponentDefinitions() throws IOException, ParserConfigurationException, SAXException {
+        FacesConfig fc = new FacesConfig (new File ("src/test/resources/META-INF/faces-config-good.xml"));
+        fc.validateComponents();
+    }
 }
