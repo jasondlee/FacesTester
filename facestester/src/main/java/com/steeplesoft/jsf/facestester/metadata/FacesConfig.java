@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,8 +55,11 @@ public class FacesConfig {
     public void performStaticAnalysis() throws IOException {
         for (ManagedBeanMetaData mbmd : managedBeans) {
             try {
-                Class.forName(mbmd.getBeanClass());
-            } catch (ClassNotFoundException ex) {
+                Class clazz = Class.forName(mbmd.getBeanClass());
+                clazz.newInstance();
+                Logger.getLogger("FacesConfig").info("Managed bean " + mbmd.getBeanName() +
+                        " ("+ mbmd.getBeanClass() +") loaded correctly.");
+            } catch (Exception ex) {
                 throw new AssertionError("The managed bean '" + mbmd.getBeanName() +
                         "' could not be loaded:  " + mbmd.getBeanClass() + " not found");
             }
