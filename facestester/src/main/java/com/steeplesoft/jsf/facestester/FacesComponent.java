@@ -2,6 +2,8 @@ package com.steeplesoft.jsf.facestester;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
+import java.util.List;
+import java.util.ArrayList;
 
 public class FacesComponent {
 
@@ -26,7 +28,7 @@ public class FacesComponent {
     public FacesComponent getComponentWithId(String id) {
         UIComponent desiredComponent = this.component.findComponent(id);
         if (desiredComponent == null) {
-            throw new AssertionError("UIComponent " + id + " does not exist on page.");
+            throw new AssertionError("UIComponent '" + id + "' does not exist on page.");
         }
         return new FacesComponent(desiredComponent);
     }
@@ -36,7 +38,19 @@ public class FacesComponent {
             Object value = ((ValueHolder) component).getValue();
             return value == null ? null : value.toString();
         }
-        throw new AssertionError("UIComponent " + component.getId() + " does not hold values.");
+        throw new AssertionError("UIComponent '" + component.getId() + "' does not hold values.");
+    }
+
+    protected List<String> collectChildrenOfType(Class type) {
+        List<String> elements = new ArrayList<String>();
+
+        for (UIComponent each : component.getChildren()) {
+            if (type.isAssignableFrom(each.getClass())) {
+                elements.add(each.getId());
+            }
+        }
+
+        return elements;
     }
 
     /**
@@ -50,9 +64,9 @@ public class FacesComponent {
         }
     }
 
-    private String buildComponentString (UIComponent component) {
+    private String buildComponentString(UIComponent component) {
         return component.getId() +
-                ((component instanceof ValueHolder) ? ":  " + ((ValueHolder)component).getValue() : "");
+                ((component instanceof ValueHolder) ? ":  " + ((ValueHolder) component).getValue() : "");
     }
 
     private void dumpChildren(UIComponent component, String prefix) {

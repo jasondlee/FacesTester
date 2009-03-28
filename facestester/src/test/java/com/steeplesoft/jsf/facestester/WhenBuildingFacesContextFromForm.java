@@ -9,6 +9,8 @@ import static org.hamcrest.CoreMatchers.is;
 
 import javax.faces.render.ResponseStateManager;
 import javax.faces.component.html.HtmlForm;
+import javax.faces.component.html.HtmlCommandButton;
+import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import java.util.Map;
 
@@ -37,14 +39,22 @@ public class WhenBuildingFacesContextFromForm {
 
     @Test
     public void shouldContainIdOfSubmittedComponent() {
+        HtmlCommandButton button = new HtmlCommandButton();
+        button.setId("submit");
+        form.component.getChildren().add(button);
+
         form.submit("submit");
         assertThat(buildContext().getExternalContext().getRequestParameterMap(), containsKey("test-form:submit"));
     }
 
     @Test
     public void shouldContainFormDataAsRequestParameters() {
+        HtmlInputText textField = new HtmlInputText();
+        textField.setId("input");
+        form.component.getChildren().add(textField);
+
         form.setValue("input", "foo");
-        Map<String,String> requestMap = buildContext().getExternalContext().getRequestParameterMap();
+        Map<String, String> requestMap = buildContext().getExternalContext().getRequestParameterMap();
         assertThat(requestMap, containsKey("test-form:input"));
         assertThat(requestMap.get("test-form:input"), is("foo"));
     }
