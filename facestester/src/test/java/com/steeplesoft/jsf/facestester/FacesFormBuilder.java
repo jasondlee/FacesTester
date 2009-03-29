@@ -7,14 +7,14 @@ import javax.faces.component.UIComponent;
 import java.util.Collection;
 import java.util.ArrayList;
 
-public class HtmlFormBuilder {
+public class FacesFormBuilder {
     private Collection<UIComponent> components = new ArrayList<UIComponent>();
 
-    public static HtmlFormBuilder newHtmlForm() {
-        return new HtmlFormBuilder();
+    public static FacesFormBuilder newFacesForm() {
+        return new FacesFormBuilder();
     }
 
-    public HtmlFormBuilder withInputText(String id) {
+    public FacesFormBuilder withInputText(String id) {
         UIComponent textField = new HtmlInputText();
         textField.setId(id);
         components.add(textField);
@@ -22,7 +22,7 @@ public class HtmlFormBuilder {
         return this;
     }
 
-    public HtmlFormBuilder withButton(String id) {
+    public FacesFormBuilder withButton(String id) {
         UIComponent button = new HtmlCommandButton();
         button.setId(id);
         components.add(button);
@@ -30,10 +30,10 @@ public class HtmlFormBuilder {
         return this;
     }
 
-    public HtmlForm build() {
+    public FacesForm build() {
         HtmlForm form = new HtmlForm();
         form.getChildren().addAll(components);
 
-        return form;
+        return new FacesForm(form, new FakeFacesContextBuilder(), new FakeFacesLifecycle());
     }
 }
