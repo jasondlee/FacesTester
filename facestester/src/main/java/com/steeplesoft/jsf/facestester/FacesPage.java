@@ -37,7 +37,7 @@ public class FacesPage extends FacesComponent {
                 return new FacesForm((HtmlForm) each, facesContextBuilder, lifecycle, uri);
             }
         }
-        throw new AssertionError("HtmlForm " + id + " does not exist.");
+        throw new AssertionError("HtmlForm '" + id + "' does not exist on page.");
     }
 
     public String getRenderedPage() throws UnsupportedEncodingException {
