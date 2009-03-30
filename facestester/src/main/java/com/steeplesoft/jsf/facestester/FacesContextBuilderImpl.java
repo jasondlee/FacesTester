@@ -13,12 +13,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.http.HttpSessionEvent;
 
 public class FacesContextBuilderImpl implements FacesContextBuilder {
     private FacesContextFactory facesContextFactory;
     private ServletContext servletContext;
     private MockHttpSession session;
     private static boolean initialized = false;
+    private final ConfigureListener mojarraListener = new ConfigureListener();
 
     public FacesContextBuilderImpl(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -29,15 +32,15 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
     }
 
     private void initializeFaces(ServletContext servletContext) {
-        synchronized (this) {
+        synchronized (mojarraListener) {
             if (!initialized) {
-                ConfigureListener mojarraListener = new ConfigureListener();
                 mojarraListener.contextInitialized(new ServletContextEvent(servletContext));
+                mojarraListener.sessionCreated(new HttpSessionEvent(session));
                 initialized = true;
             }
         }
     }
-
+    
     public FacesContext createFacesContext(String uri, String method, FacesLifecycle lifecycle) {
         HttpServletRequest request = mockServletRequest(uri, method);
 
@@ -59,6 +62,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
         MockHttpServletRequest servletRequest = new MockHttpServletRequest(method, uri);
         servletRequest.setServletPath(uri);
         servletRequest.setSession(session);
+        mojarraListener.requestInitialized(new ServletRequestEvent(servletContext, servletRequest));
         return servletRequest;
     }
 }
