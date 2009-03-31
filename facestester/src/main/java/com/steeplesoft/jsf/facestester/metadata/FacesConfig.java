@@ -40,6 +40,11 @@ public class FacesConfig {
         return Collections.unmodifiableList(managedBeans);
     }
 
+    public void validateAll() throws IOException {
+        validateManagedBeans();
+        validateComponents();
+    }
+
     public void validateManagedBeans() throws IOException {
         for (ManagedBeanMetaData mbmd : managedBeans) {
             try {
@@ -59,10 +64,10 @@ public class FacesConfig {
             try {
                 Class clazz = Class.forName(cmd.getComponentClass());
                 clazz.newInstance();
-                Logger.getLogger("FacesConfig").info("Managed bean " + cmd.getDisplayName() +
+                Logger.getLogger("FacesConfig").info("The component " + cmd.getDisplayName() +
                         " ("+ cmd.getComponentClass() +") loaded correctly.");
             } catch (Exception ex) {
-                throw new AssertionError("The managed bean '" + cmd.getDisplayName() +
+                throw new AssertionError("The component '" + cmd.getDisplayName() +
                         "' could not be loaded:  " + cmd.getComponentClass() + " not found");
             }
         }
