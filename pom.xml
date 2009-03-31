@@ -33,6 +33,11 @@
         </repository>
     </distributionManagement>
 
+    <scm>
+        <connection>scm:hg:https://kenai.com/hg/facestester~mercurial</connection>
+        <developerConnection>scm:hg:https://kenai.com/hg/facestester~mercurial</developerConnection>
+    </scm>
+
     <properties>
         <el.version>1.0</el.version>
         <facelets.version>1.1.12</facelets.version>
