@@ -41,6 +41,10 @@ public class FacesComponent {
         throw new AssertionError("UIComponent '" + component.getId() + "' does not hold values.");
     }
 
+    public UIComponent getWrappedComponent() {
+        return component;
+    }
+
     protected List<String> collectChildrenOfType(Class type) {
         List<String> elements = new ArrayList<String>();
 
@@ -64,12 +68,12 @@ public class FacesComponent {
         }
     }
 
-    private String buildComponentString(UIComponent component) {
+    protected String buildComponentString(UIComponent component) {
         return component.getId() +
                 ((component instanceof ValueHolder) ? ":  " + ((ValueHolder) component).getValue() : "");
     }
 
-    private void dumpChildren(UIComponent component, String prefix) {
+    protected void dumpChildren(UIComponent component, String prefix) {
         System.out.println(prefix + "|----" + buildComponentString(component));
         for (UIComponent child : component.getChildren()) {
             dumpChildren(child, prefix + "     ");

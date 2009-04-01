@@ -1,6 +1,8 @@
 package com.steeplesoft.jsf.facestester;
 
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.context.FacesContext;
@@ -40,7 +42,25 @@ public class FacesPage extends FacesComponent {
         throw new AssertionError("HtmlForm '" + id + "' does not exist on page.");
     }
 
-    public String getRenderedPage() throws UnsupportedEncodingException {
-        return ((MockHttpServletResponse)facesContext.getExternalContext().getResponse()).getContentAsString();
+    public String getRenderedPage() {
+        String renderedPage = "";
+        try {
+            renderedPage = ((MockHttpServletResponse) facesContext.getExternalContext().getResponse()).getContentAsString();
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(FacesPage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return renderedPage;
     }
+
+    @Override
+    public String getValueAsString() {
+        return null;
+    }
+
+    @Override
+    public UIComponent getWrappedComponent() {
+        return null;
+    }
+
+
 }
