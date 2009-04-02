@@ -56,11 +56,4 @@ public class FacesPage extends FacesComponent {
     public String getValueAsString() {
         return null;
     }
-
-    @Override
-    public UIComponent getWrappedComponent() {
-        return null;
-    }
-
-
 }
