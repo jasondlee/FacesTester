@@ -56,4 +56,8 @@ public class FacesPage extends FacesComponent {
     public String getValueAsString() {
         return null;
     }
+
+    public String getParameterValue(String key) {
+        return facesContext.getExternalContext().getRequestParameterMap().get(key);
+    }
 }
