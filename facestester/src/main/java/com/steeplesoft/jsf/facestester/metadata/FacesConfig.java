@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 public class FacesConfig {
     protected List<ManagedBeanMetaData> managedBeans = new ArrayList<ManagedBeanMetaData>();
     protected List<ComponentMetaData> components = new ArrayList<ComponentMetaData>();
+    protected List<RendererMetaData> renderers = new ArrayList<RendererMetaData>();
 
     public FacesConfig(File configFile) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -34,6 +35,7 @@ public class FacesConfig {
         doc.getDocumentElement().normalize();
         loadManagedBeanInfo(doc);
         loadComponentInfo(doc);
+        loadRendererInfo(doc);
     }
 
     public List<ManagedBeanMetaData> getManagedBeans() {
@@ -43,6 +45,7 @@ public class FacesConfig {
     public void validateAll() throws IOException {
         validateManagedBeans();
         validateComponents();
+        validateRenderers();
     }
 
     public void validateManagedBeans() throws IOException {
@@ -69,6 +72,20 @@ public class FacesConfig {
             } catch (Exception ex) {
                 throw new AssertionError("The component '" + cmd.getDisplayName() +
                         "' could not be loaded:  " + cmd.getComponentClass() + " not found");
+            }
+        }
+    }
+
+    public void validateRenderers() {
+        for (RendererMetaData rmd : renderers) {
+            try {
+                Class clazz = Class.forName(rmd.getRendererClass());
+                clazz.newInstance();
+                Logger.getLogger("FacesConfig").info("The renderer type " + rmd.getRendererType() +
+                        " ("+ rmd.getRendererClass() +") loaded correctly.");
+            } catch (Exception ex) {
+                throw new AssertionError("The renderer type " + rmd.getRendererType() +
+                        "' could not be loaded:  " + rmd.getRendererClass() + " not found");
             }
         }
     }
@@ -112,6 +129,21 @@ public class FacesConfig {
                 cmd.setDisplayName(getValue(node, "display-name"));
 
                 components.add(cmd);
+            }
+        }
+    }
+
+    private void loadRendererInfo(Document doc) {
+        NodeList nodes = doc.getElementsByTagName("renderer");
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                RendererMetaData rmd = new RendererMetaData();
+                rmd.setRendererClass(getValue(node, "renderer-class"));
+                rmd.setRendererType(getValue(node, "renderer-type"));
+                rmd.setComponentFamily(getValue(node, "component-family"));
+
+                renderers.add(rmd);
             }
         }
     }

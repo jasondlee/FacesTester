@@ -8,4 +8,16 @@
         <managed-bean-class>com.steeplesoft.jsf.facestester.BadBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    <component>
+        <display-name>BadComponent</display-name>
+        <component-type>com.steeplesoft.jsf.facestester.BadComponent</component-type>
+        <component-class>com.steeplesoft.jsf.facestester.BadComponent</component-class>
+    </component>
+    <render-kit>
+        <renderer>
+            <component-family>com.steeplesoft.jsf.facestester.BadComponent</component-family>
+            <renderer-type>com.steeplesoft.jsf.facestester.BadComponent</renderer-type>
+            <renderer-class>com.steeplesoft.jsf.facestester.BadRenderer</renderer-class>
+        </renderer>
+    </render-kit>
 </faces-config>
