@@ -53,4 +53,16 @@ public class WhenPerformingStaticAnalysis {
         FacesConfig fc = new FacesConfig (new File ("src/test/resources/META-INF/faces-config-bad.xml"));
         fc.validateRenderers();
     }
+
+    @Test
+    public void shouldValidateGoodPhaseListenerDefinitions() throws IOException, ParserConfigurationException, SAXException {
+        FacesConfig fc = new FacesConfig (new File ("src/test/resources/META-INF/faces-config-good.xml"));
+        fc.validatePhaseListeners();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldFailOnBadPhaseListenersDefinitions() throws IOException, ParserConfigurationException, SAXException {
+        FacesConfig fc = new FacesConfig (new File ("src/test/resources/META-INF/faces-config-bad.xml"));
+        fc.validatePhaseListeners();
+    }
 }
