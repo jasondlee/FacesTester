@@ -3,9 +3,26 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
               version="1.2">
+    <lifecycle>
+        <phase-listener>com.steeplesoft.jsf.facestester.BadPhaseListener</phase-listener>
+    </lifecycle>
+
     <managed-bean>
         <managed-bean-name>badBean</managed-bean-name>
         <managed-bean-class>com.steeplesoft.jsf.facestester.BadBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+
+    <component>
+        <display-name>BadComponent</display-name>
+        <component-type>com.steeplesoft.jsf.facestester.BadComponent</component-type>
+        <component-class>com.steeplesoft.jsf.facestester.BadComponent</component-class>
+    </component>
+    <render-kit>
+        <renderer>
+            <component-family>com.steeplesoft.jsf.facestester.BadComponent</component-family>
+            <renderer-type>com.steeplesoft.jsf.facestester.BadComponent</renderer-type>
+            <renderer-class>com.steeplesoft.jsf.facestester.BadRenderer</renderer-class>
+        </renderer>
+    </render-kit>
 </faces-config>

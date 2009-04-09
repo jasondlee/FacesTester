@@ -7,6 +7,10 @@
         <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
     </application>
 
+    <lifecycle>
+        <phase-listener>com.steeplesoft.jsf.facestester.TestPhaseListener</phase-listener>
+    </lifecycle>
+
     <managed-bean>
         <managed-bean-name>goodBean</managed-bean-name>
         <managed-bean-class>com.steeplesoft.jsf.facestester.GoodBean</managed-bean-class>
@@ -17,4 +21,11 @@
         <component-type>com.steeplesoft.jsf.facestester.TestComponent</component-type>
         <component-class>com.steeplesoft.jsf.facestester.TestComponent</component-class>
     </component>
+    <render-kit>
+        <renderer>
+            <component-family>com.steeplesoft.jsf.facestester.TestComponent</component-family>
+            <renderer-type>com.steeplesoft.jsf.facestester.TestComponent</renderer-type>
+            <renderer-class>com.steeplesoft.jsf.facestester.TestRenderer</renderer-class>
+        </renderer>
+    </render-kit>
 </faces-config>
