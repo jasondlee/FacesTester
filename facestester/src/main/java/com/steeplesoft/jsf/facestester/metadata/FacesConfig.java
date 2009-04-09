@@ -9,9 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.component.UIComponent;
 import javax.faces.event.PhaseListener;
+import javax.faces.render.Renderer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,10 +52,10 @@ public class FacesConfig {
             try {
                 Class clazz = Class.forName(mbmd.getBeanClass());
                 clazz.newInstance();
-                Logger.getLogger("FacesConfig").info("Managed bean " + mbmd.getBeanName() +
+                Logger.getLogger("FacesConfig").fine("Managed bean " + mbmd.getBeanName() +
                         " ("+ mbmd.getBeanClass() +") loaded correctly.");
             } catch (Exception ex) {
-                throw new AssertionError("The managed bean '" + mbmd.getBeanName() +
+                throwAssertionError("The managed bean '" + mbmd.getBeanName() +
                         "' could not be loaded:  " + mbmd.getBeanClass() + " not found");
             }
         }
@@ -64,11 +65,15 @@ public class FacesConfig {
         for (ComponentMetaData cmd : components) {
             try {
                 Class clazz = Class.forName(cmd.getComponentClass());
-                clazz.newInstance();
-                Logger.getLogger("FacesConfig").info("The component " + cmd.getDisplayName() +
-                        " ("+ cmd.getComponentClass() +") loaded correctly.");
+                Object obj = clazz.newInstance();
+                if (!(obj instanceof UIComponent)) {
+                    throwAssertionError("The component '" + cmd.getComponentClass() +
+                            "' was found but does not extend UIComponent.");
+                }
+                Logger.getLogger("FacesConfig").fine("The component '" + cmd.getComponentClass() +
+                        "' loaded correctly.");
             } catch (Exception ex) {
-                throw new AssertionError("The component '" + cmd.getDisplayName() +
+                throwAssertionError("The component '" + cmd.getDisplayName() +
                         "' could not be loaded:  " + cmd.getComponentClass() + " not found");
             }
         }
@@ -80,13 +85,13 @@ public class FacesConfig {
                 Class clazz = Class.forName(plmd.getClassName());
                 Object obj = clazz.newInstance();
                 if (!(obj instanceof PhaseListener)) {
-                    throw new AssertionError("The PhaseListener '" + plmd.getClassName() +
+                    throwAssertionError("The PhaseListener '" + plmd.getClassName() +
                             "' was found but does not implement PhaseListener.");
                 }
-                Logger.getLogger("FacesConfig").info("The PhaseListener '" + plmd.getClassName() +
+                Logger.getLogger("FacesConfig").fine("The PhaseListener '" + plmd.getClassName() +
                         "'  loaded correctly.");
             } catch (Exception ex) {
-                throw new AssertionError("The PhaseListener '" + plmd.getClassName() +
+                throwAssertionError("The PhaseListener '" + plmd.getClassName() +
                         "' could not be loaded:  " + plmd.getClassName() + " not found");
             }
         }
@@ -96,11 +101,15 @@ public class FacesConfig {
         for (RendererMetaData rmd : renderers) {
             try {
                 Class clazz = Class.forName(rmd.getRendererClass());
-                clazz.newInstance();
-                Logger.getLogger("FacesConfig").info("The renderer type '" + rmd.getRendererType() +
+                Object obj = clazz.newInstance();
+                if (!(obj instanceof Renderer)) {
+                    throwAssertionError("The Renderer '" + rmd.getRendererType() +
+                            "' was found but does not implement Renderer.");
+                }
+                Logger.getLogger("FacesConfig").fine("The renderer type '" + rmd.getRendererType() +
                         "' (using class "+ rmd.getRendererClass() +") loaded correctly.");
             } catch (Exception ex) {
-                throw new AssertionError("The renderer type '" + rmd.getRendererType() +
+                throwAssertionError("The renderer type '" + rmd.getRendererType() +
                         "' could not be loaded:  " + rmd.getRendererClass() + " not found");
             }
         }
@@ -177,5 +186,10 @@ public class FacesConfig {
                 phaseListeners.add(plmd);
             }
         }
+    }
+
+    private void throwAssertionError(String message) {
+        Logger.getLogger("FacesConfig").severe(message);
+        throw new AssertionError(message);
     }
 }
