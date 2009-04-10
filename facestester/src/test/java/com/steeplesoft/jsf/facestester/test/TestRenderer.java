@@ -3,11 +3,14 @@
  * and open the template in the editor.
  */
 
-package com.steeplesoft.jsf.facestester;
+package com.steeplesoft.jsf.facestester.test;
+
+import javax.faces.render.Renderer;
 
 /**
  *
  * @author jasonlee
  */
-public class GoodBean {
+public class TestRenderer extends Renderer {
+
 }

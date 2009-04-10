@@ -15,6 +15,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import javax.faces.component.UIComponent;
 import static java.lang.String.format;
 
 /**
@@ -30,6 +31,11 @@ public class FacesTester {
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
         lifecycle = new FacesLifecycleImpl(factory.getLifecycle(DEFAULT_LIFECYCLE));
+    }
+
+    public UIComponent createComponent(String componentType) {
+        FacesContext context = facesContextBuilder.createFacesContext(null, "GET", lifecycle);
+        return context.getApplication().createComponent(componentType);
     }
 
     public FacesPage requestPage(String uri) {

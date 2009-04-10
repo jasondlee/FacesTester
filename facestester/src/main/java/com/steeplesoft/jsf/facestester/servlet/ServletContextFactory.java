@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class ServletContextFactory {
 
@@ -44,13 +45,13 @@ public class ServletContextFactory {
         // sensible locations to see if we can figure what it should be.
         if (webAppPath == null) {
             try {
-                File testDirCheck = new File("src/test/webapp");
-                if (testDirCheck.exists()) {
-                    webAppPath = testDirCheck.getCanonicalPath();
-                } else {
-                    File mainDirCheck = new File("src/main/webapp");
-                    if (mainDirCheck.exists()) {
-                        webAppPath = mainDirCheck.getCanonicalPath();
+                String[] locationsToCheck = new String[]{
+                    "src/test/webapp", "src/test/resources/webapp", "src/main/webapp"};
+                for (String dir : locationsToCheck) {
+                    File testDirCheck = new File(dir);
+                    if (testDirCheck.exists()) {
+                        webAppPath = testDirCheck.getCanonicalPath();
+                        break;
                     }
                 }
             } catch (IOException ioe) {
@@ -63,6 +64,8 @@ public class ServletContextFactory {
         if (webAppPath == null) {
                 throw new FacesTesterException("The facestester.webAppPath system property has not been set and could not calculated.");
         }
+
+        Logger.getLogger(ServletContextFactory.class.getName()).fine("The facestester.webAppPath system property was set to " + webAppPath);
 
         return new File(webAppPath);
     }

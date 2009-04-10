@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
+              version="1.2">
+    <lifecycle>
+        <phase-listener>com.steeplesoft.jsf.facestester.InvalidPhaseListener</phase-listener>
+    </lifecycle>
+
+    <component>
+        <display-name>InvalidComponent</display-name>
+        <component-type>com.steeplesoft.jsf.facestester.InvalidComponent</component-type>
+        <component-class>com.steeplesoft.jsf.facestester.test.InvalidComponent</component-class>
+    </component>
+    <render-kit>
+        <renderer>
+            <component-family>com.steeplesoft.jsf.facestester.InvalidComponent</component-family>
+            <renderer-type>com.steeplesoft.jsf.facestester.InvalidComponent</renderer-type>
+            <renderer-class>com.steeplesoft.jsf.facestester.test.InvalidRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+</faces-config>

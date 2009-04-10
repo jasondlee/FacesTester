@@ -8,24 +8,24 @@
     </application>
 
     <lifecycle>
-        <phase-listener>com.steeplesoft.jsf.facestester.TestPhaseListener</phase-listener>
+        <phase-listener>com.steeplesoft.jsf.facestester.test.TestPhaseListener</phase-listener>
     </lifecycle>
 
     <managed-bean>
         <managed-bean-name>goodBean</managed-bean-name>
-        <managed-bean-class>com.steeplesoft.jsf.facestester.GoodBean</managed-bean-class>
+        <managed-bean-class>com.steeplesoft.jsf.facestester.test.GoodBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
     <component>
         <display-name>TestComponent</display-name>
         <component-type>com.steeplesoft.jsf.facestester.TestComponent</component-type>
-        <component-class>com.steeplesoft.jsf.facestester.TestComponent</component-class>
+        <component-class>com.steeplesoft.jsf.facestester.test.TestComponent</component-class>
     </component>
     <render-kit>
         <renderer>
             <component-family>com.steeplesoft.jsf.facestester.TestComponent</component-family>
             <renderer-type>com.steeplesoft.jsf.facestester.TestComponent</renderer-type>
-            <renderer-class>com.steeplesoft.jsf.facestester.TestRenderer</renderer-class>
+            <renderer-class>com.steeplesoft.jsf.facestester.test.TestRenderer</renderer-class>
         </renderer>
     </render-kit>
 </faces-config>

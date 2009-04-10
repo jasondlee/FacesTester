@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package com.steeplesoft.jsf.facestester;
+package com.steeplesoft.jsf.facestester.test;
 
 import javax.faces.component.UIOutput;
 

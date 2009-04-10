@@ -3,14 +3,12 @@
  * and open the template in the editor.
  */
 
-package com.steeplesoft.jsf.facestester;
-
-import javax.faces.render.Renderer;
+package com.steeplesoft.jsf.facestester.test;
 
 /**
  *
  * @author jasonlee
  */
-public class TestRenderer extends Renderer {
+public class InvalidRenderer {
 
 }
