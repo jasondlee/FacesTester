@@ -14,15 +14,16 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import static java.lang.String.format;
 
 import javax.faces.FactoryFinder;
 import javax.faces.component.UIComponent;
 import static javax.faces.FactoryFinder.LIFECYCLE_FACTORY;
+import static javax.faces.lifecycle.LifecycleFactory.DEFAULT_LIFECYCLE;
 import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.LifecycleFactory;
-import static javax.faces.lifecycle.LifecycleFactory.DEFAULT_LIFECYCLE;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
@@ -43,6 +44,11 @@ public class FacesTester {
                     DEFAULT_LIFECYCLE));
     }
 
+    /**
+     *
+     * @param componentType
+     * @return
+     */
     public FacesComponent createComponent(String componentType) {
         FacesContext context = facesContextBuilder.createFacesContext("/dummyPage.xhtml",
                 "GET", lifecycle);
@@ -52,6 +58,11 @@ public class FacesTester {
                                          .createComponent(componentType));
     }
 
+    /**
+     *
+     * @param uri
+     * @return
+     */
     public FacesPage requestPage(String uri) {
         FacesContext context = facesContextBuilder.createFacesContext(uri,
                 "GET", lifecycle);
@@ -64,16 +75,36 @@ public class FacesTester {
         return new FacesPage(context, facesContextBuilder, lifecycle, uri);
     }
 
+    /**
+     *
+     * @param path
+     * @throws java.io.IOException
+     * @throws org.xml.sax.SAXException
+     * @throws javax.xml.parsers.ParserConfigurationException
+     */
     public void validateFacesConfig(String path)
         throws IOException, SAXException, ParserConfigurationException {
         validateFacesConfig(new File(path));
     }
 
+    /**
+     *
+     * @param file
+     * @throws java.io.IOException
+     * @throws org.xml.sax.SAXException
+     * @throws javax.xml.parsers.ParserConfigurationException
+     */
     public void validateFacesConfig(File file)
         throws IOException, SAXException, ParserConfigurationException {
         FacesConfig config = new FacesConfig(file);
         config.validateManagedBeans();
         config.validateComponents();
+    }
+
+    /**
+     */
+    public void testStateSaving(String componentType) {
+        testStateSaving(componentType, new String[]{});
     }
 
     /**
@@ -91,7 +122,16 @@ public class FacesTester {
      * to provide a blacklist parameter for this situations.
      * @return
      */
-    public void testStateSaving(String componentType) {
+    public void testStateSaving(String componentType, String... blackListedMethods) {
+        Set<String> methodsToSkip = new TreeSet<String>();
+        methodsToSkip.add("Family");
+        methodsToSkip.add("Converter");
+        methodsToSkip.add("LocalValue");
+        methodsToSkip.add("RendersChildren");
+        for (String method : blackListedMethods) {
+            methodsToSkip.add(method.substring(0,1).toUpperCase() + method.substring(1));
+        }
+        
         UIComponent origComp = createComponent(componentType).getWrappedComponent();
         Method[] methods = origComp.getClass().getDeclaredMethods();
         List<String> properties = new ArrayList<String>();
@@ -99,6 +139,9 @@ public class FacesTester {
         for (Method method : methods) {
             if (isGetter(method)) {
                 String property = method.getName().substring(3);
+                if (methodsToSkip.contains(property)) {
+                    continue;
+                }
                 Class type = method.getReturnType();
                 try {
                     Method setter = origComp.getClass().getDeclaredMethod("set" + property, type);
@@ -124,7 +167,10 @@ public class FacesTester {
                     Method getter = origComp.getClass().getDeclaredMethod("get" + property, new Class<?>[]{});
                     Object value1 = getter.invoke(origComp, new Object[]{});
                     Object value2 = getter.invoke(newComp, new Object[]{});
-                    if (value1 != value2) {
+//                    if ((value1 == null) ^ (value2 == null)) {
+//                        throw new AssertionError("The restored state for '" + property + "' does not match.");
+//                    }
+                    if (!value1.equals(value2) && (value1 != value2)) {
                         throw new AssertionError("The restored state for '" + property + "' does not match.");
                     }
                 } catch (Exception ex) {
@@ -177,13 +223,27 @@ public class FacesTester {
         }
     }
 
+    /*
+     * Finding a way to make this more intelligent would be awesome :)
+     */
     private Object generateDefaultValue(Class type) throws InstantiationException, IllegalAccessException {
         String name = type.getName();
-        if (name.equals("java.lang.String")) {
+        if (name.startsWith("java.lang")) {
+            name = name.substring(10).toLowerCase();
+        }
+        if (name.equals("string")) {
             return "FacesTester dummy value";
-        } else if (name.equals("java.lang.Boolean")) {
+        } else if (name.equals("boolean")) {
             return Boolean.FALSE;
-        } else {
+        } else if (name.equals("integer") || name.equals("int")) {
+            return Integer.MAX_VALUE;
+        } else if (name.equals("double")) {
+            return Double.MAX_VALUE;
+        } else if (name.equals("float")) {
+            return Float.MAX_VALUE;
+        } else if (name.equals("short")) {
+            return Short.MAX_VALUE;
+        }else {
             return type.newInstance();
         }
     }
