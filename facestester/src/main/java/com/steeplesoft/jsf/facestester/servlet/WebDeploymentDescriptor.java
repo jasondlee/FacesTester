@@ -1,12 +1,15 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
-import java.util.Map;
 import java.io.InputStream;
+
+import java.util.Map;
+
 
 public class WebDeploymentDescriptor {
     private Map<String, String> contextParameters;
 
-    public static WebDeploymentDescriptor createFromStream(InputStream webXmlStream) {
+    public static WebDeploymentDescriptor createFromStream(
+        InputStream webXmlStream) {
         return new WebDeploymentDescriptorParser().parse(webXmlStream);
     }
 

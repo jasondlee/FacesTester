@@ -2,17 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.steeplesoft.jsf.facestester.metadata;
+
 
 /**
  *
  * @author jasonlee
  */
 public class ManagedBeanMetaData {
+    protected String beanClass;
     protected String beanName;
     protected String beanScope;
-    protected String beanClass;
 
     public String getBeanClass() {
         return beanClass;
@@ -37,5 +37,4 @@ public class ManagedBeanMetaData {
     public void setBeanScope(String beanScope) {
         this.beanScope = beanScope;
     }
-
 }

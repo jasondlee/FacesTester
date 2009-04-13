@@ -2,8 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.steeplesoft.jsf.facestester.metadata;
+
 
 /**
  *
@@ -11,8 +11,8 @@ package com.steeplesoft.jsf.facestester.metadata;
  */
 public class RendererMetaData {
     protected String componentFamily;
-    protected String rendererType;
     protected String rendererClass;
+    protected String rendererType;
 
     public String getComponentFamily() {
         return componentFamily;

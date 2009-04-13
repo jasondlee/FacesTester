@@ -1,14 +1,15 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
-import org.xml.sax.XMLReader;
+import com.steeplesoft.jsf.facestester.FacesTesterException;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import static org.xml.sax.helpers.XMLReaderFactory.createXMLReader;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import com.steeplesoft.jsf.facestester.FacesTesterException;
 
 public class WebDeploymentDescriptorParser {
     public WebDeploymentDescriptor parse(InputStream webXmlStream) {
@@ -24,9 +25,11 @@ public class WebDeploymentDescriptorParser {
 
             return descriptor;
         } catch (SAXException e) {
-            throw new FacesTesterException("Unable to parse web deployment descriptor", e);
+            throw new FacesTesterException("Unable to parse web deployment descriptor",
+                e);
         } catch (IOException e) {
-            throw new FacesTesterException("Unable to parse web deployment descriptor", e);
+            throw new FacesTesterException("Unable to parse web deployment descriptor",
+                e);
         }
     }
 }

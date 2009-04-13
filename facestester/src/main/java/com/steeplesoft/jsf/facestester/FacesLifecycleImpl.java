@@ -3,6 +3,7 @@ package com.steeplesoft.jsf.facestester;
 import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.Lifecycle;
 
+
 public class FacesLifecycleImpl implements FacesLifecycle {
     private Lifecycle lifecycle;
 
@@ -14,11 +15,11 @@ public class FacesLifecycleImpl implements FacesLifecycle {
         lifecycle.execute(context);
     }
 
-    public void render(FacesContext context) {
-        lifecycle.render(context);
-    }
-
     public Lifecycle getUnderlyingLifecycle() {
         return lifecycle;
+    }
+
+    public void render(FacesContext context) {
+        lifecycle.render(context);
     }
 }

@@ -33,9 +33,10 @@ public class FacesTester {
         lifecycle = new FacesLifecycleImpl(factory.getLifecycle(DEFAULT_LIFECYCLE));
     }
 
-    public UIComponent createComponent(String componentType) {
-        FacesContext context = facesContextBuilder.createFacesContext(null, "GET", lifecycle);
-        return context.getApplication().createComponent(componentType);
+    public FacesComponent createComponent(String componentType) {
+        FacesContext context = facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
+        lifecycle.execute(context);
+        return new FacesComponent(context.getApplication().createComponent(componentType));
     }
 
     public FacesPage requestPage(String uri) {

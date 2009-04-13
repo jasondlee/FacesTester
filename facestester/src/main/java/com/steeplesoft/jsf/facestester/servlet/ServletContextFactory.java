@@ -1,19 +1,22 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
 import com.steeplesoft.jsf.facestester.FacesTesterException;
+
 import org.springframework.mock.web.MockServletContext;
 
-import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class ServletContextFactory {
+import javax.servlet.ServletContext;
 
+
+public class ServletContextFactory {
     private File webAppDirectory;
 
     public ServletContextFactory(File webAppDirectory) {
@@ -27,11 +30,14 @@ public class ServletContextFactory {
     }
 
     public ServletContext createContextForWebAppAt() {
-        MockServletContext servletContext = new MockServletContext(new WebAppResourceLoader(webAppDirectory));
+        MockServletContext servletContext = new MockServletContext(new WebAppResourceLoader(
+                    webAppDirectory));
 
-        WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(webAppDirectory));
+        WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(
+                    webAppDirectory));
 
-        for (Map.Entry<String, String> each : descriptor.getContextParameters().entrySet()) {
+        for (Map.Entry<String, String> each : descriptor.getContextParameters()
+                                                        .entrySet()) {
             servletContext.addInitParameter(each.getKey(), each.getValue());
         }
 
@@ -45,12 +51,17 @@ public class ServletContextFactory {
         // sensible locations to see if we can figure what it should be.
         if (webAppPath == null) {
             try {
-                String[] locationsToCheck = new String[]{
-                    "src/test/webapp", "src/test/resources/webapp", "src/main/webapp"};
+                String[] locationsToCheck = new String[] {
+                        "src/test/webapp", "src/test/resources/webapp",
+                        "src/main/webapp"
+                    };
+
                 for (String dir : locationsToCheck) {
                     File testDirCheck = new File(dir);
+
                     if (testDirCheck.exists()) {
                         webAppPath = testDirCheck.getCanonicalPath();
+
                         break;
                     }
                 }
@@ -62,10 +73,13 @@ public class ServletContextFactory {
         // The web app path was not set, nor could it be found, so let's throw
         // an exception and abort
         if (webAppPath == null) {
-                throw new FacesTesterException("The facestester.webAppPath system property has not been set and could not calculated.");
+            throw new FacesTesterException(
+                "The facestester.webAppPath system property has not been set and could not calculated.");
         }
 
-        Logger.getLogger(ServletContextFactory.class.getName()).fine("The facestester.webAppPath system property was set to " + webAppPath);
+        Logger.getLogger(ServletContextFactory.class.getName())
+              .fine("The facestester.webAppPath system property was set to " +
+            webAppPath);
 
         return new File(webAppPath);
     }
@@ -74,14 +88,15 @@ public class ServletContextFactory {
         File webXml = new File(webAppDirectory, "WEB-INF/web.xml");
 
         if (!webXml.exists()) {
-            throw new FacesTesterException(webXml.getAbsolutePath() + " does not exist");
+            throw new FacesTesterException(webXml.getAbsolutePath() +
+                " does not exist");
         }
 
         try {
             return new FileInputStream(webXml);
         } catch (FileNotFoundException e) {
-            throw new FacesTesterException("Unable to read web.xml at " + webXml.getAbsolutePath(), e);
+            throw new FacesTesterException("Unable to read web.xml at " +
+                webXml.getAbsolutePath(), e);
         }
     }
 }
-
