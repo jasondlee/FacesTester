@@ -6,8 +6,8 @@ import java.util.List;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 
-
 public class FacesComponent {
+
     protected UIComponent component;
 
     public FacesComponent(UIComponent component) {
@@ -39,7 +39,7 @@ public class FacesComponent {
 
         if (desiredComponent == null) {
             throw new AssertionError("UIComponent '" + id +
-                "' does not exist on page.");
+                    "' does not exist on page.");
         }
 
         return new FacesComponent(desiredComponent);
@@ -53,7 +53,7 @@ public class FacesComponent {
         }
 
         throw new AssertionError("UIComponent '" + component.getId() +
-            "' does not hold values.");
+                "' does not hold values.");
     }
 
     public UIComponent getWrappedComponent() {
@@ -66,8 +66,8 @@ public class FacesComponent {
 
     protected String buildComponentString(UIComponent component) {
         return component.getId() +
-        ((component instanceof ValueHolder)
-        ? (":  " + ((ValueHolder) component).getValue()) : "");
+                ((component instanceof ValueHolder)
+                ? (":  " + ((ValueHolder) component).getValue()) : "");
     }
 
     protected List<String> collectChildrenOfType(Class type) {

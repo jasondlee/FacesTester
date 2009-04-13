@@ -13,17 +13,18 @@ import javax.faces.context.FacesContext;
  *
  * @author jasonlee
  */
-public class TestComponent extends UIOutput {
-    public static final String COMPONENT_FAMILY = "com.steeplesoft.jsf.facestester.TestComponent";
+public class InvalidStateSavingComponent extends UIOutput {
+    public static final String COMPONENT_FAMILY = "com.steeplesoft.jsf.facestester.InvalidStateSavingComponent";
     public static final String COMPONENT_TYPE = COMPONENT_FAMILY;
     public static final String RENDERER_TYPE = COMPONENT_FAMILY;
-    
+
     private Object[] _state;
 
     protected String property1;
     protected Date property2;
+    protected Boolean property3;
 
-    public TestComponent() {
+    public InvalidStateSavingComponent() {
         super();
     }
 
@@ -46,6 +47,14 @@ public class TestComponent extends UIOutput {
 
     public void setProperty2(Date property2) {
         this.property2 = property2;
+    }
+
+    public Boolean getProperty3() {
+        return property3;
+    }
+
+    public void setProperty3(Boolean property3) {
+        this.property3 = property3;
     }
 
     @Override

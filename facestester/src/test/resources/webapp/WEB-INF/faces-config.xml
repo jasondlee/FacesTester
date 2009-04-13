@@ -6,4 +6,12 @@
     <application>
         <view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
     </application>
+    <component>
+        <component-type>com.steeplesoft.jsf.facestester.TestComponent</component-type>
+        <component-class>com.steeplesoft.jsf.facestester.test.TestComponent</component-class>
+    </component>
+    <component>
+        <component-type>com.steeplesoft.jsf.facestester.InvalidStateSavingComponent</component-type>
+        <component-class>com.steeplesoft.jsf.facestester.test.InvalidStateSavingComponent</component-class>
+    </component>
 </faces-config>
