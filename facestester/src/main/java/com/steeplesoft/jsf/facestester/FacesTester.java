@@ -64,8 +64,7 @@ public class FacesTester {
      * @return
      */
     public FacesPage requestPage(String uri) {
-        FacesContext context = facesContextBuilder.createFacesContext(uri,
-                "GET", lifecycle);
+        FacesContext context = facesContextBuilder.createFacesContext(uri, "GET", lifecycle);
 
         lifecycle.execute(context);
         lifecycle.render(context);
@@ -158,18 +157,16 @@ public class FacesTester {
             }
         }
 
+        Object state = origComp.saveState(FacesContext.getCurrentInstance());
+        UIComponent newComp = createComponent(componentType).getWrappedComponent();
+        newComp.restoreState(FacesContext.getCurrentInstance(), state);
+
         if (properties.size() > 0) { // We found properties, so let's test state saving
-            Object state = origComp.saveState(FacesContext.getCurrentInstance());
-            UIComponent newComp = createComponent(componentType).getWrappedComponent();
-            newComp.restoreState(FacesContext.getCurrentInstance(), state);
             for (String property : properties) {
                 try {
                     Method getter = origComp.getClass().getDeclaredMethod("get" + property, new Class<?>[]{});
                     Object value1 = getter.invoke(origComp, new Object[]{});
                     Object value2 = getter.invoke(newComp, new Object[]{});
-//                    if ((value1 == null) ^ (value2 == null)) {
-//                        throw new AssertionError("The restored state for '" + property + "' does not match.");
-//                    }
                     if (!value1.equals(value2) && (value1 != value2)) {
                         throw new AssertionError("The restored state for '" + property + "' does not match.");
                     }

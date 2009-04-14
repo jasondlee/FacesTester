@@ -38,7 +38,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
 
     public FacesContext createFacesContext(String uri, String method,
         FacesLifecycle lifecycle) {
-        HttpServletRequest request = mockServletRequest(uri, method);
+        MockHttpServletRequest request = mockServletRequest(uri, method);
 
         return facesContextFactory.getFacesContext(servletContext, request,
             new MockHttpServletResponse(), lifecycle.getUnderlyingLifecycle());
@@ -46,8 +46,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
 
     public FacesContext createFacesContext(FacesForm form,
         FacesLifecycle lifecycle) {
-        MockHttpServletRequest request = mockServletRequest(form.getUri(),
-                "POST");
+        MockHttpServletRequest request = mockServletRequest(form.getUri(), "POST");
 
         for (Map.Entry<String, String> each : form.getParameterMap().entrySet()) {
             request.addParameter(each.getKey(), each.getValue());
