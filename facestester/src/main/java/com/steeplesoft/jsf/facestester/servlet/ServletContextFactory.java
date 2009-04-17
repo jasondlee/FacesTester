@@ -52,15 +52,16 @@ public class ServletContextFactory {
         if (webAppPath == null) {
             try {
                 String[] locationsToCheck = new String[] {
-                        "src/test/webapp", "src/test/resources/webapp",
-                        "src/main/webapp"
+                        "src/test/webapp", "src/test/resources",
+                        "src/test/resources/webapp", "src/main/webapp"
                     };
 
-                for (String dir : locationsToCheck) {
-                    File testDirCheck = new File(dir);
+                for (String location : locationsToCheck) {
+                    File dir = new File(location);
+                    File webXml = new File(dir, "WEB-INF/web.xml");
 
-                    if (testDirCheck.exists()) {
-                        webAppPath = testDirCheck.getCanonicalPath();
+                    if (webXml.exists()) {
+                        webAppPath = dir.getCanonicalPath();
 
                         break;
                     }

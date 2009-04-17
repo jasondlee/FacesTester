@@ -58,6 +58,10 @@ public class FacesTester {
                                          .createComponent(componentType));
     }
 
+    public FacesContext getFacesContext() {
+        return facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
+    }
+
     /**
      *
      * @param uri
