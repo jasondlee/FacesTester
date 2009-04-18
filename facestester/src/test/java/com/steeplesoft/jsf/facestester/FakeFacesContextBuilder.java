@@ -4,10 +4,10 @@ import javax.faces.context.FacesContext;
 
 public class FakeFacesContextBuilder implements FacesContextBuilder {
     public FacesContext createFacesContext(String uri, String method, FacesLifecycle lifecycle) {
-        return null;
+        return new FakeFacesContext();
     }
 
     public FacesContext createFacesContext(FacesForm form, FacesLifecycle lifecycle) {
-        return null;
+        return new FakeFacesContext();
     }
 }

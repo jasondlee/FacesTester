@@ -13,7 +13,11 @@
         <table>
             <tr>
                 <td>Zip Code:</td>
-                <td><h:inputText id="zipCode" value="#{ZipCodeMapperPage.zipCode}"/></td>
+                <td>
+                    <h:inputText id="zipCode" value="#{ZipCodeMapperPage.zipCode}" required="true"
+                                 requiredMessage="Zip code is required"/>
+                    <h:message id="zipCodeMessage" for="zipCode"/>
+                </td>
             </tr>
             <tr>
                 <td>City:</td>

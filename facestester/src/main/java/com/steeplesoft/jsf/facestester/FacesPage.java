@@ -3,9 +3,12 @@ package com.steeplesoft.jsf.facestester;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Iterator;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlForm;
 import javax.faces.context.FacesContext;
+import javax.faces.application.FacesMessage;
+
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FacesPage extends FacesComponent {
@@ -59,5 +62,10 @@ public class FacesPage extends FacesComponent {
 
     public String getParameterValue(String key) {
         return facesContext.getExternalContext().getRequestParameterMap().get(key);
+    }
+
+    public String getMessageFor(String id) {
+        Iterator<FacesMessage> iterator = facesContext.getMessages(id);
+        return iterator.next().getSummary();
     }
 }

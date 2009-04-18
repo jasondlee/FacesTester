@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FacesForm extends FacesComponent {
+
     private static final String UNDEFINED = "undefined";
     private static final String DEFAULT_VIEW_STATE = "j_id1:j_id2";
 
@@ -42,7 +43,7 @@ public class FacesForm extends FacesComponent {
         parameterMap.put(qualifiedIdFor(key), value);
     }
 
-    public void submit(String submittedId) {
+    public FacesPage submit(String submittedId) {
         if (!collectChildrenOfType(ActionSource.class).contains(submittedId)) {
             throw new FacesTesterException(
                     format("There is no action component with id '%s' on form '%s'", submittedId, formId));
@@ -53,6 +54,8 @@ public class FacesForm extends FacesComponent {
 
         lifecycle.execute(context);
         lifecycle.render(context);
+
+        return new FacesPage(context, facesContextBuilder, lifecycle, "unknown");
     }
 
     private String qualifiedIdFor(String key) {

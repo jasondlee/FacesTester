@@ -64,6 +64,5 @@ public class FacesTester {
         FacesConfig config = new FacesConfig(file);
         config.validateManagedBeans();
         config.validateComponents();
-
     }
 }
