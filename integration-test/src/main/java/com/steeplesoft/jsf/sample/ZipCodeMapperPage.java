@@ -1,4 +1,4 @@
-package com.steeplsoft.jsf.sample;
+package com.steeplesoft.jsf.sample;
 
 public class ZipCodeMapperPage {
     // Some deafult values, just to make sure we're manipulating the UIComponent

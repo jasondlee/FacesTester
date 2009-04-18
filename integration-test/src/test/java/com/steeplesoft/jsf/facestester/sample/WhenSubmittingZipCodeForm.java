@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public class WhenSubmittingZipCodeForm {
+
     @Test
     public void shouldDisplayCityForZipCode() {
         FacesTester tester = new FacesTester();
@@ -21,5 +22,17 @@ public class WhenSubmittingZipCodeForm {
         form.submit("submit");
 
         assertThat(page.getComponentWithId("form:city").getValueAsString(), is("Santa Clara"));
+    }
+
+    @Test
+    public void shouldDisplayMessageIfZipCodeIsInvalid() {
+        FacesTester tester = new FacesTester();
+        FacesPage page = tester.requestPage("/zipCodeMapper.xhtml");
+
+        FacesForm form = page.getFormById("form");
+        form.setValue("zipCode", "");
+        page = form.submit("submit");
+
+        assertThat(page.getMessageFor("form:zipCode"), is("Zip code is required"));
     }
 }

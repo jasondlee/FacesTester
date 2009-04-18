@@ -5,6 +5,7 @@ import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.crea
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import org.xml.sax.SAXException;
@@ -33,6 +34,7 @@ import javax.xml.parsers.ParserConfigurationException;
  * @author jasonlee
  */
 public class FacesTester {
+
     private FacesContextBuilder facesContextBuilder;
     private FacesLifecycle lifecycle;
 
@@ -41,32 +43,22 @@ public class FacesTester {
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
         lifecycle = new FacesLifecycleImpl(factory.getLifecycle(
-                    DEFAULT_LIFECYCLE));
+                DEFAULT_LIFECYCLE));
     }
 
-    /**
-     *
-     * @param componentType
-     * @return
-     */
     public FacesComponent createComponent(String componentType) {
         FacesContext context = facesContextBuilder.createFacesContext("/dummyPage.xhtml",
                 "GET", lifecycle);
         lifecycle.execute(context);
 
         return new FacesComponent(context.getApplication()
-                                         .createComponent(componentType));
+                .createComponent(componentType));
     }
 
     public FacesContext getFacesContext() {
         return facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
     }
 
-    /**
-     *
-     * @param uri
-     * @return
-     */
     public FacesPage requestPage(String uri) {
         FacesContext context = facesContextBuilder.createFacesContext(uri, "GET", lifecycle);
 
@@ -78,34 +70,16 @@ public class FacesTester {
         return new FacesPage(context, facesContextBuilder, lifecycle, uri);
     }
 
-    /**
-     *
-     * @param path
-     * @throws java.io.IOException
-     * @throws org.xml.sax.SAXException
-     * @throws javax.xml.parsers.ParserConfigurationException
-     */
-    public void validateFacesConfig(String path)
-        throws IOException, SAXException, ParserConfigurationException {
+    public void validateFacesConfig(String path) throws IOException, SAXException, ParserConfigurationException {
         validateFacesConfig(new File(path));
     }
 
-    /**
-     *
-     * @param file
-     * @throws java.io.IOException
-     * @throws org.xml.sax.SAXException
-     * @throws javax.xml.parsers.ParserConfigurationException
-     */
-    public void validateFacesConfig(File file)
-        throws IOException, SAXException, ParserConfigurationException {
+    public void validateFacesConfig(File file) throws IOException, SAXException, ParserConfigurationException {
         FacesConfig config = new FacesConfig(file);
         config.validateManagedBeans();
         config.validateComponents();
     }
 
-    /**
-     */
     public void testStateSaving(String componentType) {
         testStateSaving(componentType, new String[]{});
     }
@@ -123,7 +97,9 @@ public class FacesTester {
      * such a pair of methods, but only convention would prevent a component author
      * from doing that, and conventions are rarely followed completely.  We may have
      * to provide a blacklist parameter for this situations.
-     * @return
+     *
+     * @param componentType component type to test
+     * @param blackListedMethods methods to skip
      */
     public void testStateSaving(String componentType, String... blackListedMethods) {
         Set<String> methodsToSkip = new TreeSet<String>();
@@ -132,9 +108,9 @@ public class FacesTester {
         methodsToSkip.add("LocalValue");
         methodsToSkip.add("RendersChildren");
         for (String method : blackListedMethods) {
-            methodsToSkip.add(method.substring(0,1).toUpperCase() + method.substring(1));
+            methodsToSkip.add(method.substring(0, 1).toUpperCase() + method.substring(1));
         }
-        
+
         UIComponent origComp = createComponent(componentType).getWrappedComponent();
         Method[] methods = origComp.getClass().getDeclaredMethods();
         List<String> properties = new ArrayList<String>();
@@ -169,8 +145,8 @@ public class FacesTester {
             for (String property : properties) {
                 try {
                     Method getter = origComp.getClass().getDeclaredMethod("get" + property, new Class<?>[]{});
-                    Object value1 = getter.invoke(origComp, new Object[]{});
-                    Object value2 = getter.invoke(newComp, new Object[]{});
+                    Object value1 = getter.invoke(origComp);
+                    Object value2 = getter.invoke(newComp);
                     if (!value1.equals(value2) && (value1 != value2)) {
                         throw new AssertionError("The restored state for '" + property + "' does not match.");
                     }
@@ -182,6 +158,7 @@ public class FacesTester {
         }
     }
 
+    @SuppressWarnings({"RedundantIfStatement"})
     protected static boolean isGetter(Method method) {
         if (!method.getName().startsWith("get")) {
             return false;
@@ -195,6 +172,7 @@ public class FacesTester {
         return true;
     }
 
+    @SuppressWarnings({"RedundantIfStatement"})
     protected static boolean isSetter(Method method) {
         if (!method.getName().startsWith("set")) {
             return false;
@@ -205,22 +183,21 @@ public class FacesTester {
         return true;
     }
 
-
     private void checkForErrors(FacesContext context) {
         MockHttpServletResponse response = (MockHttpServletResponse) context.getExternalContext()
-                                                                            .getResponse();
+                .getResponse();
 
         if (SC_OK == response.getStatus()) {
             return;
         }
 
         switch (response.getStatus()) {
-        case SC_NOT_FOUND:
-            throw new FacesTesterException(format("The page %s was not found.",
-                    response.getErrorMessage()));
+            case SC_NOT_FOUND:
+                throw new FacesTesterException(format("The page %s was not found.",
+                        response.getErrorMessage()));
 
-        default:
-            throw new FacesTesterException(response.getErrorMessage());
+            default:
+                throw new FacesTesterException(response.getErrorMessage());
         }
     }
 
@@ -244,7 +221,7 @@ public class FacesTester {
             return Float.MAX_VALUE;
         } else if (name.equals("short")) {
             return Short.MAX_VALUE;
-        }else {
+        } else {
             return type.newInstance();
         }
     }

@@ -2,25 +2,26 @@ package com.steeplesoft.jsf.facestester;
 
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import javax.faces.context.FacesContext;
+import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlForm;
+import javax.faces.application.FacesMessage;
 import java.io.UnsupportedEncodingException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.faces.component.UIComponent;
-import javax.faces.component.html.HtmlForm;
-import javax.faces.context.FacesContext;
-
+import java.util.Iterator;
 
 public class FacesPage extends FacesComponent {
+
     private FacesContext facesContext;
     private FacesContextBuilder facesContextBuilder;
     private FacesLifecycle lifecycle;
     private String uri;
 
     public FacesPage(FacesContext facesContext,
-        FacesContextBuilder facesContextBuilder, FacesLifecycle lifecycle,
-        String uri) {
+                     FacesContextBuilder facesContextBuilder, FacesLifecycle lifecycle,
+                     String uri) {
         super(facesContext.getViewRoot());
 
         this.facesContextBuilder = facesContextBuilder;
@@ -41,17 +42,21 @@ public class FacesPage extends FacesComponent {
         for (UIComponent each : component.getChildren()) {
             if (each instanceof HtmlForm && id.equals(each.getId())) {
                 return new FacesForm((HtmlForm) each, facesContextBuilder,
-                    lifecycle, uri);
+                        lifecycle, uri);
             }
         }
 
         throw new AssertionError("HtmlForm '" + id +
-            "' does not exist on page.");
+                "' does not exist on page.");
     }
 
     public String getParameterValue(String key) {
-        return facesContext.getExternalContext().getRequestParameterMap()
-                           .get(key);
+        return facesContext.getExternalContext().getRequestParameterMap().get(key);
+    }
+
+    public String getMessageFor(String id) {
+        Iterator<FacesMessage> iterator = facesContext.getMessages(id);
+        return iterator.next().getSummary();
     }
 
     public String getRenderedPage() {
@@ -59,10 +64,10 @@ public class FacesPage extends FacesComponent {
 
         try {
             renderedPage = ((MockHttpServletResponse) facesContext.getExternalContext()
-                                                                  .getResponse()).getContentAsString();
+                    .getResponse()).getContentAsString();
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(FacesPage.class.getName())
-                  .log(Level.SEVERE, null, ex);
+                    .log(Level.SEVERE, null, ex);
         }
 
         return renderedPage;
