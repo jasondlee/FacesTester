@@ -1,24 +1,19 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.sun.faces.config.ConfigureListener;
-
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.faces.FactoryFinder;
 import static javax.faces.FactoryFinder.FACES_CONTEXT_FACTORY;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionEvent;
+import java.util.Map;
 
 
 public class FacesContextBuilderImpl implements FacesContextBuilder {
@@ -69,8 +64,6 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
             String[] params = queryString.split("&");
 
             for (String param : params) {
-                String key = null;
-                String value = null;
                 String[] parts = param.split("=");
 
                 if (parts.length == 1) {
