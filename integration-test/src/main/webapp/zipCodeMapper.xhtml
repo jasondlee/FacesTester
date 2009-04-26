@@ -3,9 +3,13 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:m="http://code.google.com/p/gmaps4jsf/">
 <head>
     <title>Zip Code Mapper</title>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAxrVS1QxlpJHXxQ2Vxg2bJBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxS9AOPy_YJl48ifAy4mq6I8SgK8fg"
+            type="text/javascript">
+    </script>
 </head>
 <body>
 <ui:define name="body">
@@ -25,6 +29,7 @@
             </tr>
         </table>
         <h:commandButton id="submit" action="#{ZipCodeMapperPage.lookupCityForZip}" value="Map It!"/>
+        <m:map width="500px" height="500px" latitude="30.01" longitude="31.14"/>
     </h:form>
 </ui:define>
 </body>
