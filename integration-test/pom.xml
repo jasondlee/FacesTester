@@ -25,12 +25,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>always</forkMode>
-                    <systemProperties>
-                        <property>
-                            <name>facestester.webAppPath</name>
-                            <value>${basedir}/src/main/webapp</value>
-                        </property>
-                    </systemProperties>
                 </configuration>
             </plugin>
             <plugin>
