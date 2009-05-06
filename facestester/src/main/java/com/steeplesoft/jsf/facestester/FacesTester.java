@@ -27,6 +27,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.LifecycleFactory;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import javax.servlet.ServletContext;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -37,9 +38,11 @@ public class FacesTester {
 
     private FacesContextBuilder facesContextBuilder;
     private FacesLifecycle lifecycle;
+    private ServletContext servletContext;
 
     public FacesTester() {
-        facesContextBuilder = new FacesContextBuilderImpl(createServletContext());
+        servletContext = createServletContext();
+        facesContextBuilder = new FacesContextBuilderImpl(servletContext);
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
         lifecycle = new FacesLifecycleImpl(factory.getLifecycle(
@@ -57,6 +60,10 @@ public class FacesTester {
 
     public FacesContext getFacesContext() {
         return facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
+    }
+
+    public ServletContext getServletContext() {
+        return servletContext;
     }
 
     public FacesPage requestPage(String uri) {
@@ -98,7 +105,7 @@ public class FacesTester {
      * from doing that, and conventions are rarely followed completely.  We may have
      * to provide a blacklist parameter for this situations.
      *
-     * @param componentType component type to test
+     * @param componentType      component type to test
      * @param blackListedMethods methods to skip
      */
     public void testStateSaving(String componentType, String... blackListedMethods) {
