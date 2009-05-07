@@ -8,4 +8,8 @@ public class FacesTesterException extends RuntimeException {
     public FacesTesterException(String message) {
         super(message);
     }
+
+    public FacesTesterException(Exception cause) {
+        super(cause);
+    }
 }

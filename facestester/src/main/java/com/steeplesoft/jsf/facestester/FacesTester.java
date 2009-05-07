@@ -3,6 +3,7 @@ package com.steeplesoft.jsf.facestester;
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,6 +165,88 @@ public class FacesTester {
                 }
             }
         }
+    }
+
+    /**
+     * This method will allow a resource to be injected into a managed bean, irrespective of
+     * whether or not a setter is available.  For example:
+     * <code><pre>
+     * public class MyBean {
+     *     &#064;PersistenceContext(unitName="em");
+     *     protected EntityManager em;
+     *
+     *     public Foo getSomeData() {
+     *         return em.fetch(Foo.class, 1);
+     *     }
+     * }
+     * </pre></code>
+     *
+     * Given the above managed bean class, the unit test would then do something like this:
+     * <code><pre>
+     *     MyBean myBean = new MyBean();
+     *     EntityManager em = createTestEntityManager();
+     *     facesTester.inject(myBean, "em", em);
+     *     Foo foo = myBean.getSomeData();</pre></code>
+     * Note that this method is experimental and may go away.
+     * @param target The Object on which injection will be performed
+     * @param property The name of the property to be modified
+     * @param value The value to be injected
+     */
+    public void inject (Object target, String property, Object value) {
+        Method setter = getSetter(target, property, value.getClass());
+        boolean injectionCompleted = false;
+        if (setter != null) {
+            try {
+                setter.invoke(target, value);
+                injectionCompleted = true;
+            } catch (IllegalAccessException ex) {
+                throw new FacesTesterException("The setter method for '" + property + "' is not accessible.", ex);
+            } catch (IllegalArgumentException ex) {
+                throw new FacesTesterException("Injection attempted with an invalid value.  Expected '" +
+                        setter.getParameterTypes()[0].toString() + "'. Found '" + value.getClass().toString() + "'.", ex);
+            } catch (InvocationTargetException ex) {
+                throw new FacesTesterException(ex);
+            }
+        }
+        if (!injectionCompleted) { // try property injection
+            Field field = null;
+            try {
+                field = target.getClass().getDeclaredField(property);
+                field.setAccessible(true);
+                field.set(target, value);
+                injectionCompleted = true;
+            } catch (NoSuchFieldException ex) {
+                throw new FacesTesterException("The property '" + property + "' was not found.", ex);
+            } catch (IllegalArgumentException ex) {
+                String expectedType = "<unknown>";
+                try {
+                    expectedType = field.get(target).getClass().toString();
+                } catch (Exception ex1) {
+                    //
+                }
+                throw new FacesTesterException("Injection attempted with an invalid value.  Expected '" +
+                    expectedType + "'. Found '" + value.getClass().toString() + "'.", ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(FacesTester.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        if (!injectionCompleted) {
+            throw new FacesTesterException("Unable to perform injection on " + property);
+        }
+    }
+
+    protected Method getSetter(Object target, String property, Class paramType) {
+        Method setter = null;
+        try {
+            property = property.substring(0,1).toUpperCase() + property.substring(1);
+            setter = target.getClass().getDeclaredMethod("set" + property, new Class<?>[]{paramType});
+        } catch (NoSuchMethodException ex) {
+            //Logger.getLogger(FacesTester.class.getName()).log(Level.SEVERE, null, ex);
+            //
+        }
+
+        return setter;
     }
 
     @SuppressWarnings({"RedundantIfStatement"})
