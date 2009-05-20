@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.el.ELContext;
+import javax.el.ELResolver;
 import static java.lang.String.format;
 
 import javax.faces.FactoryFinder;
@@ -61,11 +63,24 @@ public class FacesTester {
     }
 
     public FacesContext getFacesContext() {
-        return facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context == null) {
+            context = facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
+        }
+        return context;
     }
 
     public ServletContext getServletContext() {
         return servletContext;
+    }
+
+    public <T> T getManagedBean(Class<T> type, String name) {
+        FacesContext context = getFacesContext();
+        ELResolver elResolver = context.getApplication().getELResolver();
+        ELContext elContext = context.getELContext();
+        T bean = (T) elResolver.getValue(elContext, null, name);
+
+        return bean;
     }
 
     public FacesPage requestPage(String uri) {
@@ -243,7 +258,6 @@ public class FacesTester {
             setter = target.getClass().getDeclaredMethod("set" + property, new Class<?>[]{paramType});
         } catch (NoSuchMethodException ex) {
             //Logger.getLogger(FacesTester.class.getName()).log(Level.SEVERE, null, ex);
-            //
         }
 
         return setter;
@@ -275,8 +289,7 @@ public class FacesTester {
     }
 
     private void checkForErrors(FacesContext context) {
-        MockHttpServletResponse response = (MockHttpServletResponse) context.getExternalContext()
-                .getResponse();
+        MockHttpServletResponse response = (MockHttpServletResponse) context.getExternalContext().getResponse();
 
         if (SC_OK == response.getStatus()) {
             return;
@@ -288,6 +301,7 @@ public class FacesTester {
                         response.getErrorMessage()));
 
             default:
+                String msg = response.getErrorMessage();
                 throw new FacesTesterException(response.getErrorMessage());
         }
     }

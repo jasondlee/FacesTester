@@ -1,6 +1,8 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider;
 import com.sun.faces.config.ConfigureListener;
+import javax.faces.FacesException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -24,6 +26,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
     private ServletContext servletContext;
 
     public FacesContextBuilderImpl(ServletContext servletContext) {
+        System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
         this.servletContext = servletContext;
         this.session = new MockHttpSession();
 
@@ -35,8 +38,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
         FacesLifecycle lifecycle) {
         MockHttpServletRequest request = mockServletRequest(uri, method);
 
-        return facesContextFactory.getFacesContext(servletContext, request,
-            new MockHttpServletResponse(), lifecycle.getUnderlyingLifecycle());
+        return buildFacesContext(request, lifecycle);
     }
 
     public FacesContext createFacesContext(FacesForm form,
@@ -47,8 +49,13 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
             request.addParameter(each.getKey(), each.getValue());
         }
 
-        return facesContextFactory.getFacesContext(servletContext, request,
-            new MockHttpServletResponse(), lifecycle.getUnderlyingLifecycle());
+        return buildFacesContext(request, lifecycle);
+    }
+
+    protected FacesContext buildFacesContext(MockHttpServletRequest request, FacesLifecycle lifecycle) throws FacesException {
+        FacesContext context = facesContextFactory.getFacesContext(servletContext, request,
+                new MockHttpServletResponse(), lifecycle.getUnderlyingLifecycle());
+        return context;
     }
 
     /*

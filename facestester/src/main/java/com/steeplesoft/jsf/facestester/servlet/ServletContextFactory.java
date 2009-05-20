@@ -2,6 +2,7 @@ package com.steeplesoft.jsf.facestester.servlet;
 
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 
+import com.sun.faces.config.WebConfiguration.WebContextInitParameter;
 import org.springframework.mock.web.MockServletContext;
 
 import java.io.File;
@@ -30,16 +31,18 @@ public class ServletContextFactory {
     }
 
     public ServletContext createContextForWebAppAt() {
-        MockServletContext servletContext = new MockServletContext(new WebAppResourceLoader(
-                    webAppDirectory));
+        MockServletContext servletContext = new MockServletContext(new WebAppResourceLoader(webAppDirectory));
 
-        WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(
-                    webAppDirectory));
+        WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(webAppDirectory));
 
         for (Map.Entry<String, String> each : descriptor.getContextParameters()
                                                         .entrySet()) {
             servletContext.addInitParameter(each.getKey(), each.getValue());
         }
+
+        servletContext.addInitParameter(WebContextInitParameter.ExpressionFactory.getQualifiedName(), WebContextInitParameter.ExpressionFactory.getDefaultValue());
+
+//        servletContext.addInitParameter("com.sun.faces.injectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
 
         return servletContext;
     }

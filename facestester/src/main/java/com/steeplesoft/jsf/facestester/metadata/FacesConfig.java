@@ -87,8 +87,9 @@ public class FacesConfig {
                     mbmd.getBeanClass() + ") loaded correctly.");
             } catch (Exception ex) {
                 throwAssertionError("The managed bean '" + mbmd.getBeanName() +
-                    "' could not be loaded:  " + mbmd.getBeanClass() +
-                    " not found");
+                        "' could not be loadedClass: " + mbmd.getBeanClass() +
+                        ". Caused by: " + ex.getClass().getSimpleName() + " - " +
+                        ex.getMessage());
             }
         }
     }
