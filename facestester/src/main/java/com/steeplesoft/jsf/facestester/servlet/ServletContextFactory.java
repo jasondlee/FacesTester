@@ -3,7 +3,6 @@ package com.steeplesoft.jsf.facestester.servlet;
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 
 import com.sun.faces.config.WebConfiguration.WebContextInitParameter;
-import org.springframework.mock.web.MockServletContext;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +30,7 @@ public class ServletContextFactory {
     }
 
     public ServletContext createContextForWebAppAt() {
-        MockServletContext servletContext = new MockServletContext(new WebAppResourceLoader(webAppDirectory));
+        FacesTesterServletContext servletContext = new FacesTesterServletContext(new WebAppResourceLoader(webAppDirectory));
 
         WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromStream(streamWebXmlFrom(webAppDirectory));
 

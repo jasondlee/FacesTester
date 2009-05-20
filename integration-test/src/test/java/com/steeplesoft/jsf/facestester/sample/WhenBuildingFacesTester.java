@@ -62,11 +62,6 @@ public class WhenBuildingFacesTester {
 
         ManagedBeanWithJpa mb = tester.getManagedBean(ManagedBeanWithJpa.class, "jpaBean");
 
-        System.out.println(mb.getEntityManager1());
-        System.out.println(mb.getEntityManager2());
-        System.out.println(mb.getEntityManagerFactory1());
-        System.out.println(mb.getEntityManagerFactory2());
-
         assertNotNull(mb.getEntityManager1());
         assertNotNull(mb.getEntityManager2());
 

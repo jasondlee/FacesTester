@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
+import com.steeplesoft.jsf.facestester.FacesTester;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -23,5 +24,11 @@ public class WhenCreatingServletContext {
         finally {
             System.setProperties(properties);
         }
+    }
+
+    @Test
+    public void shoudBeAbleToGetContextPath() {
+        FacesTester ft = new FacesTester();
+        assertThat(ft.getServletContext().getContextPath(), is("/"));
     }
 }
