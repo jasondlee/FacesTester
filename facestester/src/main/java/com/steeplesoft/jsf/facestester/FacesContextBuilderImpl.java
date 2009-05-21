@@ -1,6 +1,5 @@
 package com.steeplesoft.jsf.facestester;
 
-import com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider;
 import com.sun.faces.config.ConfigureListener;
 import javax.faces.FacesException;
 import org.springframework.mock.web.MockHttpServletRequest;

@@ -17,19 +17,20 @@ public class WebXmlHandler extends DefaultHandler {
     @Override
     public void characters(char[] chars, int start, int length)
         throws SAXException {
-        if ("param-name".equals(qname)) {
-            paramName = new String(chars, start, length);
+        if (qname != null) {
+            qname = qname.trim();
         }
-
-        if ("param-value".equals(qname)) {
-            paramValue = new String(chars, start, length);
+        if ("param-name".equals(qname)) {
+            paramName = new String(chars, start, length).trim();
+        } else if ("param-value".equals(qname)) {
+            paramValue = new String(chars, start, length).trim();
         }
     }
 
     @Override
     public void endElement(String uri, String name, String qname)
         throws SAXException {
-        if ("context-param".equalsIgnoreCase(qname)) {
+        if ("context-param".equalsIgnoreCase(qname.trim())) {
             parameters.put(paramName, paramValue);
         }
 

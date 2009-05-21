@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 public class WhenParsingDeploymentDescriptor {
@@ -39,5 +40,21 @@ public class WhenParsingDeploymentDescriptor {
         WebDeploymentDescriptor descriptor = parser.parse(new ByteArrayInputStream(webXml.getBytes()));
 
         assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is(".jsp"));
+    }
+
+    @Test
+    public void shouldNotFailWhenThereSpacesAndNewLinesInContextParamNames() {
+        String webXml = new StringBuilder()
+                .append("<web-app>")
+                .append("   <context-param>")
+                .append("       <param-name>javax.faces.DEFAULT_SUFFIX")
+                .append("       </param-name>")
+                .append("       <param-value>.spaces")
+                .append("       </param-value>")
+                .append("   </context-param>")
+                .append("</web-app>").toString();
+
+        WebDeploymentDescriptor descriptor = parser.parse(new ByteArrayInputStream(webXml.getBytes()));
+        assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is(".spaces"));
     }
 }
