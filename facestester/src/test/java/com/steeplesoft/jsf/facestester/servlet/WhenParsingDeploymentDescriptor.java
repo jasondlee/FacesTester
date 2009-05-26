@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 public class WhenParsingDeploymentDescriptor {
@@ -47,7 +46,7 @@ public class WhenParsingDeploymentDescriptor {
         String webXml = new StringBuilder()
                 .append("<web-app>")
                 .append("   <context-param>")
-                .append("       <param-name>javax.faces.DEFAULT_SUFFIX")
+                .append("       <param-name>javax.faces.DEFAULT_SUFFIX\n")
                 .append("       </param-name>")
                 .append("       <param-value>.spaces")
                 .append("       </param-value>")
@@ -57,4 +56,16 @@ public class WhenParsingDeploymentDescriptor {
         WebDeploymentDescriptor descriptor = parser.parse(new ByteArrayInputStream(webXml.getBytes()));
         assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is(".spaces"));
     }
+
+    @Test
+    public void shouldLoadListenerInformation() {
+        String webXml = new StringBuilder()
+                .append("<web-app>")
+                .append("   <listener>")
+                .append("       <listener-class>com.steeplesoft.jsf.facestester.test.TestListener</listener-class>")
+                .append("   </listener>")
+                .append("</web-app>").toString();
+        WebDeploymentDescriptor descriptor = parser.parse(new ByteArrayInputStream(webXml.getBytes()));
+        assertThat(descriptor.getListeners().size(), is(1));
+   }
 }
