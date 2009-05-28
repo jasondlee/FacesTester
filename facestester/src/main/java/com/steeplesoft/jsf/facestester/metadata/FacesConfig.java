@@ -4,6 +4,7 @@
  */
 package com.steeplesoft.jsf.facestester.metadata;
 
+import com.steeplesoft.jsf.facestester.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -141,18 +142,6 @@ public class FacesConfig {
         }
     }
 
-    private String getValue(Node node, String name) {
-        String retValue = null;
-        NodeList element = ((Element) node).getElementsByTagName(name);
-        NodeList valueNodeList = ((Element) element.item(0)).getChildNodes();
-
-        if (valueNodeList.getLength() > 0) {
-            retValue = valueNodeList.item(0).getNodeValue();
-        }
-
-        return retValue;
-    }
-
     private void loadComponentInfo(Document doc) {
         NodeList nodes = doc.getElementsByTagName("component");
 
@@ -161,9 +150,9 @@ public class FacesConfig {
 
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 ComponentMetaData cmd = new ComponentMetaData();
-                cmd.setComponentClass(getValue(node, "component-class"));
-                cmd.setComponentType(getValue(node, "component-type"));
-                cmd.setDisplayName(getValue(node, "display-name"));
+                cmd.setComponentClass(Util.getNodeValue(node, "component-class"));
+                cmd.setComponentType(Util.getNodeValue(node, "component-type"));
+                cmd.setDisplayName(Util.getNodeValue(node, "display-name"));
 
                 components.add(cmd);
             }
@@ -178,9 +167,9 @@ public class FacesConfig {
 
             if (beanNode.getNodeType() == Node.ELEMENT_NODE) {
                 ManagedBeanMetaData mbmd = new ManagedBeanMetaData();
-                String beanName = getValue(beanNode, "managed-bean-name");
-                String beanScope = getValue(beanNode, "managed-bean-scope");
-                String beanClass = getValue(beanNode, "managed-bean-class");
+                String beanName = Util.getNodeValue(beanNode, "managed-bean-name");
+                String beanScope = Util.getNodeValue(beanNode, "managed-bean-scope");
+                String beanClass = Util.getNodeValue(beanNode, "managed-bean-class");
                 mbmd.setBeanClass(beanClass);
                 mbmd.setBeanName(beanName);
                 mbmd.setBeanScope(beanScope);
@@ -214,9 +203,9 @@ public class FacesConfig {
 
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 RendererMetaData rmd = new RendererMetaData();
-                rmd.setRendererClass(getValue(node, "renderer-class"));
-                rmd.setRendererType(getValue(node, "renderer-type"));
-                rmd.setComponentFamily(getValue(node, "component-family"));
+                rmd.setRendererClass(Util.getNodeValue(node, "renderer-class"));
+                rmd.setRendererType(Util.getNodeValue(node, "renderer-type"));
+                rmd.setComponentFamily(Util.getNodeValue(node, "component-family"));
 
                 renderers.add(rmd);
             }

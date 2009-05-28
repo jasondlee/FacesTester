@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public class WhenProcessingRequests {
-    @Test()
+//    @Test
     public void shouldThrowExceptionForNonExistentView() {
         FacesTester tester = new FacesTester();
 

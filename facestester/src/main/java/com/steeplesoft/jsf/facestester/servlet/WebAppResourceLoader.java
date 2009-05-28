@@ -1,13 +1,10 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 import java.io.File;
 
 
-public class WebAppResourceLoader implements ResourceLoader {
+public class WebAppResourceLoader { //implements ResourceLoader {
     private File searchPath;
 
     public WebAppResourceLoader(File searchPath) {
@@ -18,7 +15,7 @@ public class WebAppResourceLoader implements ResourceLoader {
         return getClass().getClassLoader();
     }
 
-    public Resource getResource(String location) {
-        return new FileSystemResource(new File(searchPath, location));
-    }
+//    public Resource getResource(String location) {
+//        return new FileSystemResource(new File(searchPath, location));
+//    }
 }

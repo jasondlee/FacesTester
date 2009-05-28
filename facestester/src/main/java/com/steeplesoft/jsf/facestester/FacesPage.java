@@ -1,7 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
-import org.springframework.mock.web.MockHttpServletResponse;
-
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpServletResponse;
 import javax.faces.context.FacesContext;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlForm;
@@ -63,7 +62,7 @@ public class FacesPage extends FacesComponent {
         String renderedPage = "";
 
         try {
-            renderedPage = ((MockHttpServletResponse) facesContext.getExternalContext()
+            renderedPage = ((FacesTesterHttpServletResponse) facesContext.getExternalContext()
                     .getResponse()).getContentAsString();
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(FacesPage.class.getName())

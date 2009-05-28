@@ -1,13 +1,13 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
-import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
+import com.steeplesoft.jsf.facestester.servlet.ServletContextFactory;
+import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import org.xml.sax.SAXException;
 
@@ -43,19 +43,20 @@ public class FacesTester {
     private FacesContextBuilder facesContextBuilder;
     private FacesLifecycle lifecycle;
     private ServletContext servletContext;
+    protected WebDeploymentDescriptor descriptor;
 
     public FacesTester() {
-        servletContext = createServletContext();
-        facesContextBuilder = new FacesContextBuilderImpl(servletContext);
+        descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
+
+        servletContext = ServletContextFactory.createServletContext(descriptor);
+        facesContextBuilder = new FacesContextBuilderImpl(servletContext, descriptor);
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
-        lifecycle = new FacesLifecycleImpl(factory.getLifecycle(
-                DEFAULT_LIFECYCLE));
+        lifecycle = new FacesLifecycleImpl(factory.getLifecycle(DEFAULT_LIFECYCLE));
     }
 
     public FacesComponent createComponent(String componentType) {
-        FacesContext context = facesContextBuilder.createFacesContext("/dummyPage.xhtml",
-                "GET", lifecycle);
+        FacesContext context = facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
         lifecycle.execute(context);
 
         return new FacesComponent(context.getApplication()
@@ -289,7 +290,7 @@ public class FacesTester {
     }
 
     private void checkForErrors(FacesContext context) {
-        MockHttpServletResponse response = (MockHttpServletResponse) context.getExternalContext().getResponse();
+        FacesTesterHttpServletResponse response = (FacesTesterHttpServletResponse) context.getExternalContext().getResponse();
 
         if (SC_OK == response.getStatus()) {
             return;

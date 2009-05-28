@@ -11,11 +11,110 @@
     <name>FacesTester</name>
     <packaging>jar</packaging>
 
+    <repositories>
+             <repository>
+                 <id>jboss</id>
+                 <url>http://repository.jboss.org/maven2</url>
+                 <snapshots>
+                     <updatePolicy>never</updatePolicy>
+                 </snapshots>
+             </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>1.4</version>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>1.5.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jetty</groupId>
+            <artifactId>jetty-annotations</artifactId>
+            <version>6.1.4rc0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jetty</groupId>
+            <artifactId>jetty-plus</artifactId>
+            <version>6.1.4rc0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>glassfish</groupId>
+            <artifactId>appserv-rt</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>glassfish</groupId>
+            <artifactId>appserv-launch</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>glassfish</groupId>
+            <artifactId>appserv-deployment-client</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>tomcat</groupId>
+            <artifactId>catalina</artifactId>
+            <version>6.0.13</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>com-sun-commons-logging-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.security</groupId>
+            <artifactId>jacc</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+<dependency>
+    <groupId>portlet-api</groupId>
+    <artifactId>portlet-api</artifactId>
+    <version>1.0</version>
+</dependency> 
+-->
     </dependencies>
+<!--
+        <build>
+        <plugins>
+             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>add-source</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                      <goal>add-source</goal>
+                    </goals>
+                    <configuration>
+                      <sources>
+        <source>/Users/jasonlee/src/mojarra/1.2/jsf-api/src</source>
+        <source>/Users/jasonlee/src/mojarra/1.2/jsf-api/build/generate</source>
+
+        <source>/Users/jasonlee/src/mojarra/1.2/jsf-ri/src</source>
+        <source>/Users/jasonlee/src/mojarra/1.2/jsf-ri/build/generate</source>
+                      </sources>
+                    </configuration>
+                  </execution>
+                </executions>
+            </plugin>     
+    </plugins>
+    </build>
+    -->
 </project>
