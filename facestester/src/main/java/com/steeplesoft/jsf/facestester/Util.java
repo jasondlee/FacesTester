@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
  * @author jasonlee
  */
 public class Util {
+    private static final String[] locationsToCheck = new String[]{"src/test/webapp", "src/test/resources", "src/test/resources/webapp", "src/main/webapp"};
 
     public static String getNodeValue(Node node, String name) {
         String retValue = null;
@@ -50,19 +51,17 @@ public class Util {
         // sensible locations to see if we can figure what it should be.
         if (webAppPath == null) {
             try {
-                String[] locationsToCheck = new String[]{
-                    "src/test/webapp", "src/test/resources",
-                    "src/test/resources/webapp", "src/main/webapp"
-                };
 
                 for (String location : locationsToCheck) {
                     File dir = new File(location);
-                    File webXml = new File(dir, "WEB-INF/web.xml");
+                    if (dir.isDirectory()) {
+                        File webXml = new File(dir, "WEB-INF/web.xml");
 
-                    if (webXml.exists()) {
-                        webAppPath = dir.getCanonicalPath();
+                        if (webXml.exists()) {
+                            webAppPath = dir.getCanonicalPath();
 
-                        break;
+                            break;
+                        }
                     }
                 }
             } catch (IOException ioe) {

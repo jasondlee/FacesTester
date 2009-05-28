@@ -1,5 +1,8 @@
 .*.ipr
 .*.iws
 .*.iml
+.*.orig
+.*.hide
 target
 TEST*
+impl

@@ -3,6 +3,7 @@ package com.steeplesoft.jsf.facestester.servlet;
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 
 import com.steeplesoft.jsf.facestester.Util;
+import java.io.File;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import static org.xml.sax.helpers.XMLReaderFactory.createXMLReader;
@@ -34,14 +35,15 @@ public class WebDeploymentDescriptorParser {
         }
     }
 
-    public WebDeploymentDescriptor parse(InputStream stream) {
+    public WebDeploymentDescriptor parse(File webXmlPath) { //InputStream stream) {
         try {
+            InputStream stream = Util.streamWebXmlFrom(webXmlPath);
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(stream);
             doc.getDocumentElement().normalize();
 
-            WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor();
+            WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(webXmlPath);
             loadContextParams(doc, descriptor);
             loadListeners(doc, descriptor);
 

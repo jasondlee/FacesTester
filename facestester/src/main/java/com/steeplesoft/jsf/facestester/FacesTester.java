@@ -1,6 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
+import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -33,6 +35,9 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import javax.servlet.ServletContext;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
@@ -43,10 +48,12 @@ public class FacesTester {
     private FacesContextBuilder facesContextBuilder;
     private FacesLifecycle lifecycle;
     private ServletContext servletContext;
+    protected WebDeploymentDescriptor descriptor;
 
     public FacesTester() {
-        servletContext = createServletContext();
-        facesContextBuilder = new FacesContextBuilderImpl(servletContext);
+        descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
+        servletContext = createServletContext(descriptor);
+        facesContextBuilder = new FacesContextBuilderImpl(servletContext, descriptor);
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
         lifecycle = new FacesLifecycleImpl(factory.getLifecycle(
@@ -86,10 +93,23 @@ public class FacesTester {
     public FacesPage requestPage(String uri) {
         FacesContext context = facesContextBuilder.createFacesContext(uri, "GET", lifecycle);
 
+        ServletRequestEvent sre = new ServletRequestEvent(servletContext, (ServletRequest) context.getExternalContext().getRequest());
+        for (EventListener listener : descriptor.getListeners()) {
+            if (listener instanceof ServletRequestListener) {
+                ((ServletRequestListener)listener).requestInitialized(sre);
+            }
+        }
+
         lifecycle.execute(context);
         lifecycle.render(context);
 
         checkForErrors(context);
+
+        for (EventListener listener : descriptor.getListeners()) {
+            if (listener instanceof ServletRequestListener) {
+                ((ServletRequestListener)listener).requestDestroyed(sre);
+            }
+        }
 
         return new FacesPage(context, facesContextBuilder, lifecycle, uri);
     }

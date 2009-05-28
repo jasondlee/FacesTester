@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.MapOfStringsMatcher.containsKey;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -24,7 +25,8 @@ public class WhenBuildingFacesContextFromForm {
         htmlForm.setId("test-form");
 
         form = new FacesForm(htmlForm, new FakeFacesContextBuilder(), new FakeFacesLifecycle());
-        builder = new FacesContextBuilderImpl(new MockServletContext());
+        builder = new FacesContextBuilderImpl(new MockServletContext(),
+                WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath()));
     }
 
     @Test

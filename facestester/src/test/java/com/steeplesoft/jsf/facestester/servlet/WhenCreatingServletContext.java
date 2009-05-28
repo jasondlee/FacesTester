@@ -1,7 +1,6 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
 import com.steeplesoft.jsf.facestester.FacesTester;
-import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -19,7 +18,7 @@ public class WhenCreatingServletContext {
         Properties properties = System.getProperties();
         try {
             System.setProperty("facestester.webAppPath", webAppDirectory.getAbsolutePath());
-            assertThat(createServletContext().getInitParameter("javax.faces.DEFAULT_SUFFIX"), is(".xhtml"));
+            assertThat(ServletContextFactory.createServletContext(WebDeploymentDescriptor.createFromFile(webAppDirectory)).getInitParameter("javax.faces.DEFAULT_SUFFIX"), is(".xhtml"));
         }
         finally {
             System.setProperties(properties);

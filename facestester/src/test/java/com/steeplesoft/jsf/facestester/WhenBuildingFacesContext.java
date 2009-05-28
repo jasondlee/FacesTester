@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -14,7 +15,8 @@ public class WhenBuildingFacesContext {
 
     @Before
     public void setUp() {
-        facesContextBuilder = new FacesContextBuilderImpl(createServletContext());
+        final WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
+        facesContextBuilder = new FacesContextBuilderImpl(createServletContext(descriptor),descriptor);
     }
 
     @Test

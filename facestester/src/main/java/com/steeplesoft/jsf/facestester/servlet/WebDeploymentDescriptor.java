@@ -1,8 +1,7 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
+import com.steeplesoft.jsf.facestester.Util;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import java.util.ArrayList;
@@ -21,15 +20,16 @@ public class WebDeploymentDescriptor {
     }
 
     public WebDeploymentDescriptor(File webAppPath) {
+        this();
         this.webAppPath = webAppPath;
     }
 
-    public static WebDeploymentDescriptor createFromStream(InputStream webXml) {
-        return new WebDeploymentDescriptorParser().parse(webXml);
-    }
+//    protected static WebDeploymentDescriptor createFromStream(InputStream webXml) {
+//        return new WebDeploymentDescriptorParser().parse(webXml);
+//    }
 
-    public static WebDeploymentDescriptor createFromFile(File webAppPath) throws FileNotFoundException {
-        return new WebDeploymentDescriptorParser().parse(new FileInputStream(webAppPath));
+    public static WebDeploymentDescriptor createFromFile(File webXml) {
+        return new WebDeploymentDescriptorParser().parse(webXml);
     }
 
     public File getWebAppPath() {
