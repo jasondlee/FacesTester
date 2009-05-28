@@ -1,6 +1,5 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
-import com.steeplesoft.jsf.facestester.Util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;

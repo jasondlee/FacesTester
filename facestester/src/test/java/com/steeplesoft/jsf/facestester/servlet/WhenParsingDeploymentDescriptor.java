@@ -57,6 +57,20 @@ public class WhenParsingDeploymentDescriptor {
         assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is(".spaces"));
     }
 
+    @Test
+    public void shouldNotFailOnBlankParameterValues() {
+        String webXml = new StringBuilder()
+                .append("<web-app>")
+                .append("   <context-param>")
+                .append("       <param-name>javax.faces.DEFAULT_SUFFIX</param-name>")
+                .append("       <param-value></param-value>")
+                .append("   </context-param>")
+                .append("</web-app>").toString();
+
+        WebDeploymentDescriptor descriptor = parser.parse(new ByteArrayInputStream(webXml.getBytes()));
+        assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is((String)null));
+    }
+
     //@Test
     public void shouldLoadListenerInformation() {
         String webXml = new StringBuilder()
