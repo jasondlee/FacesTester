@@ -169,7 +169,6 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <forkMode>once</forkMode>
                     <includes>
                         <include>**/When*.java</include>
                     </includes>
