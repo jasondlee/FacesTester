@@ -4,10 +4,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.Lifecycle;
 
 
-/**
- * TODO:  This class needs its raison d'etre documented. :)
- * @author jasonlee
- */
 public class FacesLifecycleImpl implements FacesLifecycle {
     private Lifecycle lifecycle;
 
