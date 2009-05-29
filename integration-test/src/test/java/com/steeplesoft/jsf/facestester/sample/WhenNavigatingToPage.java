@@ -1,7 +1,6 @@
 package com.steeplesoft.jsf.facestester.sample;
 
 import com.steeplesoft.jsf.facestester.FacesComponent;
-import com.steeplesoft.jsf.facestester.FacesPage;
 import com.steeplesoft.jsf.facestester.FacesTester;
 import org.junit.BeforeClass;
 import static org.hamcrest.CoreMatchers.is;
