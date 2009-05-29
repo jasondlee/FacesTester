@@ -1,20 +1,21 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
-import com.steeplesoft.jsf.facestester.Util;
 import java.io.File;
-import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.Filter;
 
 
 public class WebDeploymentDescriptor {
     protected File webAppPath;
     private Map<String, String> contextParameters = new HashMap<String, String>();
     private List<EventListener> listeners = new ArrayList<EventListener>();
+    private Map<String, Filter> filters = new HashMap<String, Filter>();
+    private Map<String, String> filterMappings = new HashMap<String, String>();
 
     public WebDeploymentDescriptor() {
     }
@@ -23,10 +24,6 @@ public class WebDeploymentDescriptor {
         this();
         this.webAppPath = webAppPath;
     }
-
-//    protected static WebDeploymentDescriptor createFromStream(InputStream webXml) {
-//        return new WebDeploymentDescriptorParser().parse(webXml);
-//    }
 
     public static WebDeploymentDescriptor createFromFile(File webXml) {
         return new WebDeploymentDescriptorParser().parse(webXml);
@@ -54,5 +51,21 @@ public class WebDeploymentDescriptor {
 
     public void setListeners(List<EventListener> listeners) {
         this.listeners = listeners;
+    }
+
+    public Map<String, Filter> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(Map<String, Filter> filters) {
+        this.filters = filters;
+    }
+
+    public Map<String, String> getFilterMappings() {
+        return filterMappings;
+    }
+
+    public void setFilterMappings(Map<String, String> filterMappings) {
+        this.filterMappings = filterMappings;
     }
 }

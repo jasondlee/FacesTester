@@ -10,6 +10,7 @@ import static org.xml.sax.helpers.XMLReaderFactory.createXMLReader;
 
 import java.io.InputStream;
 import java.util.EventListener;
+import javax.servlet.Filter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -17,23 +18,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class WebDeploymentDescriptorParser {
-
-    public WebDeploymentDescriptor parse1(InputStream webXmlStream) {
-        try {
-            WebXmlHandler handler = new WebXmlHandler();
-
-            XMLReader reader = createXMLReader();
-            reader.setContentHandler(handler);
-            reader.parse(new InputSource(webXmlStream));
-
-            WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor();
-            descriptor.setContextParameters(handler.listContextParameters());
-
-            return descriptor;
-        } catch (Exception e) {
-            throw new FacesTesterException("Unable to parse web deployment descriptor", e);
-        }
-    }
 
     public WebDeploymentDescriptor parse(File webXmlPath) { //InputStream stream) {
         try {
@@ -46,6 +30,8 @@ public class WebDeploymentDescriptorParser {
             WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(webXmlPath);
             loadContextParams(doc, descriptor);
             loadListeners(doc, descriptor);
+            loadFilters(doc, descriptor);
+            loadFilterMappings(doc, descriptor);
 
             return descriptor;
         } catch (Exception ex) {
@@ -81,6 +67,42 @@ public class WebDeploymentDescriptorParser {
                 String listenerClass = Util.getNodeValue(node, "listener-class").trim();
                 EventListener listener = Util.createInstance(EventListener.class, listenerClass);
                 descriptor.getListeners().add(listener);
+            }
+        }
+    }
+
+    private void loadFilters(Document doc, WebDeploymentDescriptor descriptor) {
+        NodeList nodes = doc.getElementsByTagName("filter");
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                String filterName = Util.getNodeValue(node, "filter-name").trim();
+                String filterClass = Util.getNodeValue(node, "filter-class").trim();
+                Filter filter = Util.createInstance(Filter.class, filterClass);
+                descriptor.getFilters().put(filterName, filter);
+            }
+        }
+    }
+
+    private void loadFilterMappings(Document doc, WebDeploymentDescriptor descriptor) {
+        NodeList nodes = doc.getElementsByTagName("filter-mapping");
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                String filterName = Util.getNodeValue(node, "filter-name").trim();
+                String urlPattern = Util.getNodeValue(node, "url-pattern").trim();
+
+                if (descriptor.getFilters().get(filterName) == null) {
+                    throw new FacesTesterException ("The filter-mapping '" +
+                            urlPattern + "' for filter '" + filterName +
+                            "' is invalid because the filter could not be found.");
+                }
+
+                descriptor.getFilterMappings().put(urlPattern, filterName);
             }
         }
     }

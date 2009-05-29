@@ -1,6 +1,7 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
 import com.steeplesoft.jsf.facestester.FacesTesterException;
+import com.steeplesoft.jsf.facestester.test.TestFilter;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 
 public class WhenParsingDeploymentDescriptor {
@@ -104,6 +106,26 @@ public class WhenParsingDeploymentDescriptor {
         createTempFile(webXml);
         WebDeploymentDescriptor descriptor = parser.parse(new File("."));
         assertThat(descriptor.getListeners().size(), is(1));
+   }
+
+    @Test
+    public void shouldLoadFilterInformation() {
+        String webXml = new StringBuilder()
+                .append("<web-app>")
+                .append("   <filter>")
+                .append("       <filter-name>Test Filter</filter-name>")
+                .append("       <filter-class>com.steeplesoft.jsf.facestester.test.TestFilter</filter-class>")
+                .append("   </filter>")
+                .append("   <filter-mapping>")
+                .append("       <filter-name>Test Filter</filter-name>")
+                .append("       <url-pattern>*.jsf</url-pattern>")
+                .append("   </filter-mapping>")
+                .append("</web-app>").toString();
+
+        createTempFile(webXml);
+        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        Assert.assertTrue(descriptor.getFilters().get("Test Filter") instanceof TestFilter);
+        Assert.assertEquals(descriptor.getFilterMappings().get("*.jsf"), "Test Filter");
    }
 
    protected void createTempFile(String contents) {
