@@ -6,6 +6,20 @@
         <param-value>.xhtml</param-value>
     </context-param>
 
+    <filter>
+        <filter-name>Test Filter</filter-name>
+        <filter-class>com.steeplesoft.jsf.facestester.test.TestFilter</filter-class>
+        <init-param>
+            <param-name>parm1</param-name>
+            <param-value>value1</param-value>
+        </init-param>
+        </filter>
+    <filter-mapping>
+        <filter-name>Test Filter</filter-name>
+        <url-pattern>*.jsf</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
     <listener>
         <listener-class>com.steeplesoft.jsf.facestester.test.TestServletContextListener</listener-class>
     </listener>

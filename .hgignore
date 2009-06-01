@@ -3,6 +3,7 @@
 .*.iml
 .*.orig
 .*.hide
+.*.NavData
 target
 TEST*
 impl

@@ -115,6 +115,10 @@ public class WhenParsingDeploymentDescriptor {
                 .append("   <filter>")
                 .append("       <filter-name>Test Filter</filter-name>")
                 .append("       <filter-class>com.steeplesoft.jsf.facestester.test.TestFilter</filter-class>")
+                .append("       <init-param>")
+                .append("           <param-name>a.test.param</param-name>")
+                .append("           <param-value>a.test.value</param-value>")
+                .append("       </init-param>")
                 .append("   </filter>")
                 .append("   <filter-mapping>")
                 .append("       <filter-name>Test Filter</filter-name>")
@@ -124,7 +128,7 @@ public class WhenParsingDeploymentDescriptor {
 
         createTempFile(webXml);
         WebDeploymentDescriptor descriptor = parser.parse(new File("."));
-        Assert.assertTrue(descriptor.getFilters().get("Test Filter") instanceof TestFilter);
+        Assert.assertTrue(descriptor.getFilters().get("Test Filter").getFilter() instanceof TestFilter);
         Assert.assertEquals(descriptor.getFilterMappings().get("*.jsf"), "Test Filter");
    }
 

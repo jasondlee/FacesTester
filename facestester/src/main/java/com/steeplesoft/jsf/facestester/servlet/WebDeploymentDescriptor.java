@@ -14,7 +14,7 @@ public class WebDeploymentDescriptor {
     protected File webAppPath;
     private Map<String, String> contextParameters = new HashMap<String, String>();
     private List<EventListener> listeners = new ArrayList<EventListener>();
-    private Map<String, Filter> filters = new HashMap<String, Filter>();
+    private Map<String, FilterWrapper> filters = new HashMap<String, FilterWrapper>();
     private Map<String, String> filterMappings = new HashMap<String, String>();
 
     public WebDeploymentDescriptor() {
@@ -53,11 +53,11 @@ public class WebDeploymentDescriptor {
         this.listeners = listeners;
     }
 
-    public Map<String, Filter> getFilters() {
+    public Map<String, FilterWrapper> getFilters() {
         return filters;
     }
 
-    public void setFilters(Map<String, Filter> filters) {
+    public void setFilters(Map<String, FilterWrapper> filters) {
         this.filters = filters;
     }
 

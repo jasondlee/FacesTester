@@ -1,6 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
+import com.steeplesoft.jsf.facestester.servlet.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 
@@ -8,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import org.xml.sax.SAXException;
@@ -19,8 +21,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 import javax.el.ELContext;
 import javax.el.ELResolver;
 import static java.lang.String.format;
@@ -31,6 +35,8 @@ import static javax.faces.FactoryFinder.LIFECYCLE_FACTORY;
 import static javax.faces.lifecycle.LifecycleFactory.DEFAULT_LIFECYCLE;
 import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.LifecycleFactory;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import javax.servlet.ServletContext;
@@ -38,6 +44,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
+import javax.servlet.ServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
@@ -92,6 +99,13 @@ public class FacesTester {
 
     public FacesPage requestPage(String uri) {
         FacesContext context = facesContextBuilder.createFacesContext(uri, "GET", lifecycle);
+
+        FilterChain filterChain = createAppropriateFilterChain(uri);
+        try {
+            filterChain.doFilter((ServletRequest) context.getExternalContext().getRequest(), (ServletResponse) context.getExternalContext().getResponse());
+        } catch (Exception ex) {
+            throw new FacesTesterException("An error occurred while executing the filters", ex);
+        }
 
         ServletRequestEvent sre = new ServletRequestEvent(servletContext, (ServletRequest) context.getExternalContext().getRequest());
         for (EventListener listener : descriptor.getListeners()) {
@@ -349,5 +363,23 @@ public class FacesTester {
         } else {
             return type.newInstance();
         }
+    }
+
+    private FilterChain createAppropriateFilterChain(String uri) {
+        List<Filter> filters = new ArrayList<Filter>();
+        System.out.println("***** uri = " + uri);
+
+        for (Map.Entry<String, String> entry : descriptor.getFilterMappings().entrySet()) {
+            final String mapping = entry.getKey();
+//            System.out.println("***** Mapping uri = " + mapping);
+            String regEx = mapping.replaceAll("\\.", "\\\\.").replaceAll("\\*", "\\.\\*");
+//            System.out.println("***** regEx = " + regEx);
+            if (Pattern.matches(regEx, uri)) {
+                filters.add(descriptor.getFilters().get(entry.getValue()).getFilter());
+            }
+//            System.out.println("***** match = " + match);
+        }
+
+        return new FilterChainImpl(filters);
     }
 }

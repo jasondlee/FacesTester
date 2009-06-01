@@ -47,6 +47,10 @@ public class ServletContextFactory {
 
         servletContext.addInitParameter(WebContextInitParameter.ExpressionFactory.getQualifiedName(), WebContextInitParameter.ExpressionFactory.getDefaultValue());
 
+        for (FilterWrapper wrapper : webDescriptor.getFilters().values()) {
+            wrapper.init(servletContext);
+        }
+
 //        servletContext.addInitParameter("com.sun.faces.injectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
 
         return servletContext;
