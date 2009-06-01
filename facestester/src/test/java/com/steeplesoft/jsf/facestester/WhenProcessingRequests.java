@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.test.TestFilter;
 import com.steeplesoft.jsf.facestester.test.TestServletContextListener;
 import com.steeplesoft.jsf.facestester.test.TestServletRequestListener;
 import org.junit.Assert;
@@ -52,7 +53,7 @@ public class WhenProcessingRequests {
 
     @Test
     public void shouldHaveFiltersCalled() {
-        facestTester.requestPage("/queryTest.jsf");
+        tester.requestPage("/queryTest.jsf");
         Assert.assertTrue(TestFilter.FILTER_RUN);
     }
 }
