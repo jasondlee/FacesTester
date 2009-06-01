@@ -49,4 +49,10 @@ public class WhenProcessingRequests {
         assertThat(TestServletRequestListener.initializedCalled, is (true));
         assertThat(TestServletRequestListener.destroyedCalled, is (true));
     }
+
+    @Test
+    public void shouldHaveFiltersCalled() {
+        facestTester.requestPage("/queryTest.jsf");
+        Assert.assertTrue(TestFilter.FILTER_RUN);
+    }
 }

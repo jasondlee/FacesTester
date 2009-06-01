@@ -365,19 +365,22 @@ public class FacesTester {
         }
     }
 
+    /**
+     * This method will attempt to create a regex out of the filter mapping to determine
+     * if this filter is appropriate for this request.  There's a really good chance that
+     * it needs some more work to be as robust as it needs to be.
+     * @param uri
+     * @return
+     */
     private FilterChain createAppropriateFilterChain(String uri) {
         List<Filter> filters = new ArrayList<Filter>();
-        System.out.println("***** uri = " + uri);
 
         for (Map.Entry<String, String> entry : descriptor.getFilterMappings().entrySet()) {
             final String mapping = entry.getKey();
-//            System.out.println("***** Mapping uri = " + mapping);
             String regEx = mapping.replaceAll("\\.", "\\\\.").replaceAll("\\*", "\\.\\*");
-//            System.out.println("***** regEx = " + regEx);
             if (Pattern.matches(regEx, uri)) {
                 filters.add(descriptor.getFilters().get(entry.getValue()).getFilter());
             }
-//            System.out.println("***** match = " + match);
         }
 
         return new FilterChainImpl(filters);
