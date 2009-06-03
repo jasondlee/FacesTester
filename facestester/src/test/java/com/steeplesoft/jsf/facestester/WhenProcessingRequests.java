@@ -54,6 +54,6 @@ public class WhenProcessingRequests {
     @Test
     public void shouldHaveFiltersCalled() {
         tester.requestPage("/queryTest.jsf");
-        Assert.assertTrue(TestFilter.FILTER_RUN);
+        Assert.assertEquals(TestFilter.RUN_COUNT % 2, 0);
     }
 }

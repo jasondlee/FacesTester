@@ -1,6 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
 import javax.faces.context.FacesContext;
+import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
@@ -15,6 +16,16 @@ public class WhenBuildingFacesTester {
         FacesContext context2 = tester.getFacesContext();
         assertThat(context1, is(context2));
 
+    }
+
+    @Test
+    public void shouldReleaseFacesContext() {
+        FacesTester tester = new FacesTester();
+        FacesContext context1 = tester.getFacesContext();
+        tester = new FacesTester();
+        FacesContext context2 = tester.getFacesContext();
+        System.out.println("***** context1 = " + context1 + "\n***** context2 = " + context2);
+        Assert.assertNotSame(context1, context2);
     }
 
     @Test

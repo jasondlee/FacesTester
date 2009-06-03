@@ -21,7 +21,7 @@ import javax.servlet.ServletResponse;
  * @author jasonlee
  */
 public class TestFilter implements Filter {
-    public static Boolean FILTER_RUN = Boolean.FALSE;
+    public static int RUN_COUNT = 0;
     private Map<String, String> params = new HashMap<String, String>();
 
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -33,7 +33,7 @@ public class TestFilter implements Filter {
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        FILTER_RUN = true;
+        RUN_COUNT++;
         chain.doFilter(request, response);
     }
 

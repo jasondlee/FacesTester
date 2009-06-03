@@ -3,13 +3,13 @@ package com.steeplesoft.jsf.facestester;
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
 import com.steeplesoft.jsf.facestester.servlet.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
+import com.sun.faces.context.FacesContextImpl;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import org.xml.sax.SAXException;
@@ -58,22 +58,23 @@ public class FacesTester {
     protected WebDeploymentDescriptor descriptor;
 
     public FacesTester() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context != null) {
+            context.release();
+        }
         descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
         servletContext = createServletContext(descriptor);
         facesContextBuilder = new FacesContextBuilderImpl(servletContext, descriptor);
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
-        lifecycle = new FacesLifecycleImpl(factory.getLifecycle(
-                DEFAULT_LIFECYCLE));
+        lifecycle = new FacesLifecycleImpl(factory.getLifecycle(DEFAULT_LIFECYCLE));
     }
 
     public FacesComponent createComponent(String componentType) {
-        FacesContext context = facesContextBuilder.createFacesContext("/dummyPage.xhtml",
-                "GET", lifecycle);
+        FacesContext context = getFacesContext(); //facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
         lifecycle.execute(context);
 
-        return new FacesComponent(context.getApplication()
-                .createComponent(componentType));
+        return new FacesComponent(context.getApplication().createComponent(componentType));
     }
 
     public FacesContext getFacesContext() {
@@ -118,6 +119,13 @@ public class FacesTester {
         lifecycle.render(context);
 
         checkForErrors(context);
+
+        try {
+            filterChain = createAppropriateFilterChain(uri);
+            filterChain.doFilter((ServletRequest) context.getExternalContext().getRequest(), (ServletResponse) context.getExternalContext().getResponse());
+        } catch (Exception ex) {
+            throw new FacesTesterException("An error occurred while executing the filters", ex);
+        }
 
         for (EventListener listener : descriptor.getListeners()) {
             if (listener instanceof ServletRequestListener) {
@@ -331,11 +339,8 @@ public class FacesTester {
 
         switch (response.getStatus()) {
             case SC_NOT_FOUND:
-                throw new FacesTesterException(format("The page %s was not found.",
-                        response.getErrorMessage()));
-
+                throw new FacesTesterException(format("The page %s was not found.", response.getErrorMessage()));
             default:
-                String msg = response.getErrorMessage();
                 throw new FacesTesterException(response.getErrorMessage());
         }
     }
