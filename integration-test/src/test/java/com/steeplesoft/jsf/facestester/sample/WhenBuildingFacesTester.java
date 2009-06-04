@@ -41,7 +41,7 @@ public class WhenBuildingFacesTester {
 
     @Test
     public void shouldBeAbleToAddFacesMessage() {
-        FacesContext context = FacesContext.getCurrentInstance();
+        FacesContext context = tester.getFacesContext();
         context.addMessage(null, new FacesMessage("add entry failed - see log for details"));
     }
 

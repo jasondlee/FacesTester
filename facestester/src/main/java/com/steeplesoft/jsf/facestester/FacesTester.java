@@ -51,7 +51,6 @@ import javax.xml.parsers.ParserConfigurationException;
  * @author jasonlee
  */
 public class FacesTester {
-
     private FacesContextBuilder facesContextBuilder;
     private FacesLifecycle lifecycle;
     private ServletContext servletContext;
