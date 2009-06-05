@@ -3,13 +3,13 @@ package com.steeplesoft.jsf.facestester;
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
 import com.steeplesoft.jsf.facestester.servlet.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
-import com.sun.faces.context.FacesContextImpl;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletContextEvent;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import org.xml.sax.SAXException;
@@ -41,6 +41,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import javax.servlet.ServletContext;
 
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
@@ -55,15 +56,25 @@ public class FacesTester {
     private FacesLifecycle lifecycle;
     private ServletContext servletContext;
     protected WebDeploymentDescriptor descriptor;
+    private static ServletContext previousServletContext;
+    protected static WebDeploymentDescriptor previousDescriptor;
 
     public FacesTester() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context != null) {
             context.release();
         }
+        if (previousServletContext != null) {
+            executeContextDestroyedListeners();
+            previousServletContext = null;
+            previousDescriptor = null;
+        }
         descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
         servletContext = createServletContext(descriptor);
         facesContextBuilder = new FacesContextBuilderImpl(servletContext, descriptor);
+
+        previousServletContext = servletContext;
+        previousDescriptor = descriptor;
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
         lifecycle = new FacesLifecycleImpl(factory.getLifecycle(DEFAULT_LIFECYCLE));
@@ -342,6 +353,16 @@ public class FacesTester {
             default:
                 throw new FacesTesterException(response.getErrorMessage());
         }
+    }
+
+    private static  void executeContextDestroyedListeners() {
+        ServletContextEvent sce = new ServletContextEvent(previousServletContext);
+        for (EventListener listener : previousDescriptor.getListeners()) {
+            if (listener instanceof ServletContextListener) {
+                ((ServletContextListener)listener).contextDestroyed(sce);
+            }
+        }
+
     }
 
     /*

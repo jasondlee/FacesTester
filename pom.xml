@@ -8,6 +8,9 @@
     <modules>
         <module>facestester</module>
         <module>integration-test</module>
+        <!--
+        <module>jsf2-integration-test</module>
+        -->
     </modules>
     <name>FacesTester Parent</name>
     <repositories>

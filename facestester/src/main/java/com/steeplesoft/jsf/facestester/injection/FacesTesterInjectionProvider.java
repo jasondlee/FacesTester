@@ -4,16 +4,21 @@
  */
 package com.steeplesoft.jsf.facestester.injection;
 
+import com.steeplesoft.jsf.facestester.FacesTesterException;
 import com.sun.faces.spi.DiscoverableInjectionProvider;
 import com.sun.faces.spi.InjectionProviderException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import javax.annotation.PreDestroy;
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -27,11 +32,61 @@ public class FacesTesterInjectionProvider extends DiscoverableInjectionProvider 
     }
 
     public void invokePreDestroy(Object managedBean) throws InjectionProviderException {
-//        throw new UnsupportedOperationException("Not supported yet.");
+        Method method = getAnnotatedMethod(managedBean, PreDestroy.class);
+        if (method != null) {
+            boolean accessible = method.isAccessible();
+            method.setAccessible(true);
+            try {
+                method.invoke(managedBean);
+            } catch (Exception ex) {
+                throw new FacesTesterException("An error occured while executing the @PreConstruct method " +
+                        method.getName() + ": " + ex.getLocalizedMessage(), ex);
+            } finally {
+                method.setAccessible(accessible);
+            }
+        }
     }
 
     public void invokePostConstruct(Object managedBean) throws InjectionProviderException {
-//        throw new UnsupportedOperationException("Not supported yet.");
+        Method method = getAnnotatedMethod(managedBean, PostConstruct.class);
+        if (method != null) {
+            boolean accessible = method.isAccessible();
+            method.setAccessible(true);
+            try {
+                method.invoke(managedBean);
+            } catch (Exception ex) {
+                throw new FacesTesterException("An error occured while executing the @PostConstruct method " +
+                        method.getName() + ": " + ex.getLocalizedMessage(), ex);
+            } finally {
+                method.setAccessible(accessible);
+            }
+        }
+    }
+
+    private Method getAnnotatedMethod(Object obj, Class<? extends Annotation> annotation) {
+        Class clazz = obj.getClass();
+        while (!clazz.equals(Object.class)) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(annotation)) {
+                    if (method.getParameterTypes().length > 0) {
+                        throw new FacesTesterException("@" + annotation.getName() + " methods can not take parameters:  " + clazz.getName() + "." +method.getName());
+                    }
+                    if (!method.getReturnType().equals(Void.TYPE)) {
+                        throw new FacesTesterException("@" + annotation.getName() + " methods must return void:  " + clazz.getName() + "." +method.getName());
+                    }
+                    if (Modifier.isStatic(method.getModifiers())) {
+                        throw new FacesTesterException("@" + annotation.getName() + " methods must not be static:  " + clazz.getName() + "." +method.getName());
+                    }
+
+                    return method;
+                }
+
+            }
+            clazz = clazz.getSuperclass();
+        }
+
+
+        return null;
     }
 
     private void processMethods(Object managedBean) throws InjectionProviderException {

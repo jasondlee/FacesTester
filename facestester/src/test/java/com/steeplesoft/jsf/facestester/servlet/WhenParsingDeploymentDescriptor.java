@@ -2,6 +2,7 @@ package com.steeplesoft.jsf.facestester.servlet;
 
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 import com.steeplesoft.jsf.facestester.test.TestFilter;
+import com.steeplesoft.jsf.facestester.test.TestServletContextListener;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.EventListener;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -105,7 +107,17 @@ public class WhenParsingDeploymentDescriptor {
 
         createTempFile(webXml);
         WebDeploymentDescriptor descriptor = parser.parse(new File("."));
-        assertThat(descriptor.getListeners().size(), is(1));
+        // In a Mojarra environment, this will always have at least one listener, so we
+        // need to test the TestServletContextListener was found, created, and added to
+        // the list.
+        boolean found = false;
+        for (EventListener listener : descriptor.getListeners()) {
+            if (listener instanceof TestServletContextListener) {
+                found = true;
+            }
+        }
+
+        Assert.assertTrue(found);
    }
 
     @Test

@@ -6,6 +6,7 @@ package com.steeplesoft.jsf.facestester.sample;
 
 import com.steeplesoft.jsf.facestester.FacesTester;
 import com.steeplesoft.jsf.facestester.injection.InjectionManager;
+import com.steeplesoft.jsf.sample.PrePostBean;
 import com.steeplesoft.jsf.sample.ManagedBeanWithJpa;
 import com.steeplesoft.jsf.sample.ZipCodeMapperPage;
 
@@ -20,6 +21,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import org.junit.Assert;
 
 /**
  * @author jasonlee
@@ -67,5 +69,19 @@ public class WhenBuildingFacesTester {
 
         assertNotNull(mb.getEntityManagerFactory1());
         assertNotNull(mb.getEntityManagerFactory2());
+    }
+
+    @Test
+    public void shouldExecutePostConstruct() {
+        PrePostBean pcb = tester.getManagedBean(PrePostBean.class, "prePost");
+        Assert.assertTrue(pcb.postConstructCalled);
+    }
+
+    // I need to pick Ryan's brain on this first
+//    @Test
+    public void shouldExecutePreDestroy() {
+        PrePostBean pcb = tester.getManagedBean(PrePostBean.class, "prePost");
+        tester = new FacesTester();
+        Assert.assertTrue(pcb.preDestroyedCalled);
     }
 }

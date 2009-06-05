@@ -96,9 +96,8 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
 
         synchronized (mojarraListener) {
             if (!initialized) {
-                mojarraListener.contextInitialized(new ServletContextEvent(
-                        servletContext));
-                mojarraListener.sessionCreated(new HttpSessionEvent(session));
+                mojarraListener.contextInitialized(sce);
+                mojarraListener.sessionCreated(hse);
                 initialized = true;
             }
         }
@@ -117,12 +116,10 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
     }
 
     private MockHttpServletRequest mockServletRequest(String uri, String method) {
-        MockHttpServletRequest servletRequest = new MockHttpServletRequest(method,
-                uri);
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest(method,uri);
         servletRequest.setServletPath(uri);
         servletRequest.setSession(session);
-        mojarraListener.requestInitialized(new ServletRequestEvent(
-                servletContext, servletRequest));
+        mojarraListener.requestInitialized(new ServletRequestEvent(servletContext, servletRequest));
 
         if (uri != null) {
             addQueryParameters(servletRequest, uri);

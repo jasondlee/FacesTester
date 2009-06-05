@@ -24,7 +24,6 @@ public class WhenBuildingFacesTester {
         FacesContext context1 = tester.getFacesContext();
         tester = new FacesTester();
         FacesContext context2 = tester.getFacesContext();
-        System.out.println("***** context1 = " + context1 + "\n***** context2 = " + context2);
         Assert.assertNotSame(context1, context2);
     }
 
