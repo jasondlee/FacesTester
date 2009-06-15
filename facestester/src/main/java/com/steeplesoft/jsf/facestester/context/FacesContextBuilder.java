@@ -1,5 +1,6 @@
-package com.steeplesoft.jsf.facestester;
+package com.steeplesoft.jsf.facestester.context;
 
+import com.steeplesoft.jsf.facestester.*;
 import javax.faces.context.FacesContext;
 
 

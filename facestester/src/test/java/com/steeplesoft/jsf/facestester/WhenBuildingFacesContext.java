@@ -1,5 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.context.MojarraFacesContextBuilder;
+import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,7 +19,7 @@ public class WhenBuildingFacesContext {
     @Before
     public void setUp() {
         final WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
-        facesContextBuilder = new FacesContextBuilderImpl(createServletContext(descriptor),new MockHttpSession(),descriptor);
+        facesContextBuilder = new MojarraFacesContextBuilder(createServletContext(descriptor),new MockHttpSession(),descriptor);
     }
 
     @Test

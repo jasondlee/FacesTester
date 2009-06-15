@@ -1,5 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.context.MojarraFacesContextBuilder;
+import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.MapOfStringsMatcher.containsKey;
@@ -26,7 +28,7 @@ public class WhenBuildingFacesContextFromForm {
         htmlForm.setId("test-form");
 
         form = new FacesForm(htmlForm, new FakeFacesContextBuilder(), new FakeFacesLifecycle());
-        builder = new FacesContextBuilderImpl(new FacesTesterServletContext(), new MockHttpSession(),
+        builder = new MojarraFacesContextBuilder(new FacesTesterServletContext(), new MockHttpSession(),
                 WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath()));
     }
 

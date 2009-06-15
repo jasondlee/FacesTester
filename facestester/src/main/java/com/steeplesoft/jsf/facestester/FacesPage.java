@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.faces.context.FacesContext;

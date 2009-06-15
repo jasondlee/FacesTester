@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import javax.faces.context.FacesContext;
 
 public class FakeFacesContextBuilder implements FacesContextBuilder {

@@ -1,5 +1,6 @@
-package com.steeplesoft.jsf.facestester;
+package com.steeplesoft.jsf.facestester.context;
 
+import com.steeplesoft.jsf.facestester.*;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import com.sun.faces.config.WebConfiguration.WebContextInitParameter;
@@ -22,7 +23,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionListener;
 
-public class FacesContextBuilderImpl implements FacesContextBuilder {
+public class MojarraFacesContextBuilder implements FacesContextBuilder {
 
 //    private static boolean initialized = false;
 //    private final ConfigureListener mojarraListener = new ConfigureListener();
@@ -31,7 +32,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
     private FacesTesterServletContext servletContext;
     private WebDeploymentDescriptor webDescriptor;
 
-    public FacesContextBuilderImpl(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor) {
+    public MojarraFacesContextBuilder(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor) {
         System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
         this.servletContext = servletContext;
         this.session = session;

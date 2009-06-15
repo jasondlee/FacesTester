@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import static java.lang.String.format;
 
 import java.util.HashMap;

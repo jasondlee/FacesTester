@@ -1,5 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
+import com.steeplesoft.jsf.facestester.context.MojarraFacesContextBuilder;
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
@@ -90,7 +92,7 @@ public class FacesTester {
 
         servletContext = createServletContext(descriptor);
         session = new MockHttpSession();
-        facesContextBuilder = new FacesContextBuilderImpl(servletContext, session, descriptor);
+        facesContextBuilder = new MojarraFacesContextBuilder(servletContext, session, descriptor);
 
         startupServletContext(servletContext, session, descriptor);
 
