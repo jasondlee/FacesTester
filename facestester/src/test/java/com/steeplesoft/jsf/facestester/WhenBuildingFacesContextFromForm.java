@@ -1,11 +1,11 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.servlet.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.MapOfStringsMatcher.containsKey;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.Before;
-import org.springframework.mock.web.MockServletContext;
 import static org.hamcrest.CoreMatchers.is;
 
 import javax.faces.render.ResponseStateManager;
@@ -14,6 +14,7 @@ import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import java.util.Map;
+import org.springframework.mock.web.MockHttpSession;
 
 public class WhenBuildingFacesContextFromForm {
     private FacesForm form;
@@ -25,7 +26,7 @@ public class WhenBuildingFacesContextFromForm {
         htmlForm.setId("test-form");
 
         form = new FacesForm(htmlForm, new FakeFacesContextBuilder(), new FakeFacesLifecycle());
-        builder = new FacesContextBuilderImpl(new MockServletContext(),
+        builder = new FacesContextBuilderImpl(new FacesTesterServletContext(), new MockHttpSession(),
                 WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath()));
     }
 

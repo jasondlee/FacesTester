@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.Before;
 
 import javax.faces.context.FacesContext;
+import org.springframework.mock.web.MockHttpSession;
 
 public class WhenBuildingFacesContext {
     private FacesContextBuilder facesContextBuilder;
@@ -16,7 +17,7 @@ public class WhenBuildingFacesContext {
     @Before
     public void setUp() {
         final WebDeploymentDescriptor descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
-        facesContextBuilder = new FacesContextBuilderImpl(createServletContext(descriptor),descriptor);
+        facesContextBuilder = new FacesContextBuilderImpl(createServletContext(descriptor),new MockHttpSession(),descriptor);
     }
 
     @Test

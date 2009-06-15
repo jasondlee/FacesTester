@@ -78,7 +78,7 @@ public class WhenBuildingFacesTester {
     }
 
     // I need to pick Ryan's brain on this first
-//    @Test
+    @Test
     public void shouldExecutePreDestroy() {
         PrePostBean pcb = tester.getManagedBean(PrePostBean.class, "prePost");
         tester = new FacesTester();

@@ -11,6 +11,10 @@ import org.springframework.mock.web.MockServletContext;
  * @author jasonlee
  */
 public class FacesTesterServletContext extends MockServletContext {
+    public FacesTesterServletContext() {
+        super();
+    }
+    
     public FacesTesterServletContext(WebAppResourceLoader webAppResourceLoader) {
         super(webAppResourceLoader);
     }

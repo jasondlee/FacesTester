@@ -1,8 +1,10 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
+import com.steeplesoft.jsf.facestester.servlet.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
+import java.io.ByteArrayInputStream;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,11 +21,13 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.LogManager;
 import java.util.regex.Pattern;
 import javax.el.ELContext;
 import javax.el.ELResolver;
@@ -46,35 +50,49 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 import javax.xml.parsers.ParserConfigurationException;
+import org.springframework.mock.web.MockHttpSession;
 
 /**
  * @author jasonlee
  */
 public class FacesTester {
-    private FacesContextBuilder facesContextBuilder;
+    protected static WebDeploymentDescriptor descriptor;
+    private static FacesContextBuilder facesContextBuilder;
+    private HttpSession session;
+
     private FacesLifecycle lifecycle;
-    private ServletContext servletContext;
-    protected WebDeploymentDescriptor descriptor;
-    private static ServletContext previousServletContext;
-    protected static WebDeploymentDescriptor previousDescriptor;
+    private FacesTesterServletContext servletContext;
+
+//    private static ServletContext previousServletContext;
+//    protected static WebDeploymentDescriptor previousDescriptor;
 
     public FacesTester() {
+        try {
+            // This doesn't work like I think it does, but it does work. For now, I just want the
+            // noise gone.
+//            LogManager.getLogManager().readConfiguration(new ByteArrayInputStream("javax.enterprise.resource.webcontainer.jsf=FINEST".getBytes()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         FacesContext context = FacesContext.getCurrentInstance();
         if (context != null) {
+            shutdownServletContext((ServletContext)context.getExternalContext().getContext(), descriptor);
             context.release();
         }
-        if (previousServletContext != null) {
-            executeContextDestroyedListeners();
-            previousServletContext = null;
-            previousDescriptor = null;
-        }
-        descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
-        servletContext = createServletContext(descriptor);
-        facesContextBuilder = new FacesContextBuilderImpl(servletContext, descriptor);
 
-        previousServletContext = servletContext;
-        previousDescriptor = descriptor;
+        if (descriptor == null) {
+            descriptor = WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath());
+        }
+
+        servletContext = createServletContext(descriptor);
+        session = new MockHttpSession();
+        facesContextBuilder = new FacesContextBuilderImpl(servletContext, session, descriptor);
+
+        startupServletContext(servletContext, session, descriptor);
 
         LifecycleFactory factory = (LifecycleFactory) FactoryFinder.getFactory(LIFECYCLE_FACTORY);
         lifecycle = new FacesLifecycleImpl(factory.getLifecycle(DEFAULT_LIFECYCLE));
@@ -355,14 +373,62 @@ public class FacesTester {
         }
     }
 
-    private static  void executeContextDestroyedListeners() {
-        ServletContextEvent sce = new ServletContextEvent(previousServletContext);
-        for (EventListener listener : previousDescriptor.getListeners()) {
-            if (listener instanceof ServletContextListener) {
-                ((ServletContextListener)listener).contextDestroyed(sce);
+    private void startupServletContext(ServletContext servletContext, HttpSession session, WebDeploymentDescriptor descriptor) {
+        ServletContextEvent sce = new ServletContextEvent(servletContext);
+        HttpSessionEvent hse = new HttpSessionEvent(session);
+
+        List<EventListener> listeners = descriptor.getListeners();
+
+        callInitializedOnListeners(ServletContextListener.class, listeners, sce);
+        callInitializedOnListeners(HttpSessionListener.class, listeners, hse);
+    }
+
+    private void shutdownServletContext(ServletContext servletContext, WebDeploymentDescriptor descriptor) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ServletContextEvent sce = new ServletContextEvent(servletContext);
+        HttpSessionEvent hse = new HttpSessionEvent((HttpSession)facesContext.getExternalContext().getSession(false));
+        ServletRequestEvent sre = new ServletRequestEvent(servletContext, (ServletRequest) facesContext.getExternalContext().getRequest());
+
+        List<EventListener> listeners = new ArrayList<EventListener>();
+        Collections.addAll(listeners, descriptor.getListeners().toArray(new EventListener[0]));
+        Collections.reverse(listeners);
+
+        callDestroyedOnListeners(ServletRequestListener.class, listeners, sre);
+        callDestroyedOnListeners(HttpSessionListener.class, listeners, hse);
+        callDestroyedOnListeners(ServletContextListener.class, listeners, sce);
+
+    }
+
+    private <T> void callInitializedOnListeners(Class<T> type, List<EventListener> list, Object param) {
+        for (EventListener listener : list) {
+            // First determine if the listener is one we care about right now
+            if (type.isInstance(listener)) {
+                // It is, so we test to see what kind it is, then call the desired method, using
+                // the appropriate cast
+                if (type.isAssignableFrom(ServletRequestListener.class)) {
+                    ((ServletRequestListener)listener).requestInitialized((ServletRequestEvent)param);
+                } else if (type.isAssignableFrom(HttpSessionListener.class)) {
+                    ((HttpSessionListener)listener).sessionCreated((HttpSessionEvent)param);
+                } else if (type.isAssignableFrom(ServletContextListener.class)) {
+                    ((ServletContextListener)listener).contextInitialized((ServletContextEvent)param);
+                }
             }
         }
+    }
 
+    private <T> void callDestroyedOnListeners(Class<T> type, List<EventListener> list, Object param) {
+        for (EventListener listener : list) {
+            // See callInitializedOnListeners for an explanation of this logic
+            if (type.isInstance(listener)) {
+                if (type.isAssignableFrom(ServletRequestListener.class)) {
+                    ((ServletRequestListener)listener).requestDestroyed((ServletRequestEvent)param);
+                } else if (type.isAssignableFrom(HttpSessionListener.class)) {
+                    ((HttpSessionListener)listener).sessionDestroyed((HttpSessionEvent)param);
+                } else if (type.isAssignableFrom(ServletContextListener.class)) {
+                    ((ServletContextListener)listener).contextDestroyed((ServletContextEvent)param);
+                }
+            }
+        }
     }
 
     /*

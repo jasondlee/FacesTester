@@ -1,5 +1,6 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
+import com.steeplesoft.jsf.facestester.FacesTesterException;
 import java.io.File;
 
 import java.util.ArrayList;
@@ -7,6 +8,8 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class WebDeploymentDescriptor {
@@ -17,16 +20,16 @@ public class WebDeploymentDescriptor {
     private Map<String, String> filterMappings = new HashMap<String, String>();
 
     public WebDeploymentDescriptor() {
-//        try {
-//            Class mojarraListener = Class.forName("com.sun.faces.config.ConfigureListener");
-//            try {
-//                listeners.add((EventListener)mojarraListener.newInstance());
-//            } catch (Exception ex) {
-//                throw new FacesTesterException("Mojarra's ConfigureListener was found, but could not be instantiated: " + ex.getLocalizedMessage(), ex);
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            Logger.getLogger(WebDeploymentDescriptor.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            Class mojarraListener = Class.forName("com.sun.faces.config.ConfigureListener");
+            try {
+                listeners.add((EventListener)mojarraListener.newInstance());
+            } catch (Exception ex) {
+                throw new FacesTesterException("Mojarra's ConfigureListener was found, but could not be instantiated: " + ex.getLocalizedMessage(), ex);
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(WebDeploymentDescriptor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public WebDeploymentDescriptor(File webAppPath) {

@@ -1,7 +1,8 @@
 package com.steeplesoft.jsf.facestester;
 
+import com.steeplesoft.jsf.facestester.servlet.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
-import com.sun.faces.config.ConfigureListener;
+import com.sun.faces.config.WebConfiguration.WebContextInitParameter;
 import java.util.EventListener;
 import java.util.List;
 import javax.faces.FacesException;
@@ -15,40 +16,42 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpSessionEvent;
 import java.util.Map;
 import javax.servlet.ServletContextListener;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionListener;
 
 public class FacesContextBuilderImpl implements FacesContextBuilder {
 
-    private static boolean initialized = false;
-    private final ConfigureListener mojarraListener = new ConfigureListener();
+//    private static boolean initialized = false;
+//    private final ConfigureListener mojarraListener = new ConfigureListener();
     private FacesContextFactory facesContextFactory;
-    private MockHttpSession session;
-    private ServletContext servletContext;
+    private HttpSession session;
+    private FacesTesterServletContext servletContext;
     private WebDeploymentDescriptor webDescriptor;
 
-    public FacesContextBuilderImpl(ServletContext servletContext, WebDeploymentDescriptor webDescriptor) {
+    public FacesContextBuilderImpl(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor) {
         System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
         this.servletContext = servletContext;
-        this.session = new MockHttpSession();
+        this.session = session;
         this.webDescriptor = webDescriptor;
+
+        // TODO: Mojarra-specific code here
+        servletContext.addInitParameter(WebContextInitParameter.ExpressionFactory.getQualifiedName(),
+                WebContextInitParameter.ExpressionFactory.getDefaultValue());
 
         initializeFaces(servletContext);
         facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FACES_CONTEXT_FACTORY);
     }
 
-    public FacesContext createFacesContext(String uri, String method,
-            FacesLifecycle lifecycle) {
+    public FacesContext createFacesContext(String uri, String method, FacesLifecycle lifecycle) {
         MockHttpServletRequest request = mockServletRequest(uri, method);
 
         return buildFacesContext(request, lifecycle);
     }
 
-    public FacesContext createFacesContext(FacesForm form,
-            FacesLifecycle lifecycle) {
+    public FacesContext createFacesContext(FacesForm form, FacesLifecycle lifecycle) {
         MockHttpServletRequest request = mockServletRequest(form.getUri(), "POST");
 
         for (Map.Entry<String, String> each : form.getParameterMap().entrySet()) {
@@ -94,13 +97,13 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
         HttpSessionEvent hse = new HttpSessionEvent(session);
         List<EventListener> listeners = webDescriptor.getListeners();
 
-        synchronized (mojarraListener) {
-            if (!initialized) {
-                mojarraListener.contextInitialized(sce);
-                mojarraListener.sessionCreated(hse);
-                initialized = true;
-            }
-        }
+//        synchronized (mojarraListener) {
+//            if (!initialized) {
+//                mojarraListener.contextInitialized(sce);
+//                mojarraListener.sessionCreated(hse);
+//                initialized = true;
+//            }
+//        }
 
         for (EventListener listener : listeners) {
             if (listener instanceof ServletContextListener) {
@@ -119,7 +122,7 @@ public class FacesContextBuilderImpl implements FacesContextBuilder {
         MockHttpServletRequest servletRequest = new MockHttpServletRequest(method,uri);
         servletRequest.setServletPath(uri);
         servletRequest.setSession(session);
-        mojarraListener.requestInitialized(new ServletRequestEvent(servletContext, servletRequest));
+//        mojarraListener.requestInitialized(new ServletRequestEvent(servletContext, servletRequest));
 
         if (uri != null) {
             addQueryParameters(servletRequest, uri);
