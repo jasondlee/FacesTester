@@ -47,11 +47,8 @@ public class WebDeploymentDescriptorParser {
             Node node = nodes.item(i);
 
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                String paramName = Util.getNodeValue(node, "param-name").trim();
+                String paramName = Util.getNodeValue(node, "param-name");
                 String paramValue = Util.getNodeValue(node, "param-value");
-                if (paramValue != null) {
-                    paramValue = paramValue.trim();
-                }
                 descriptor.getContextParameters().put(paramName, paramValue);
             }
         }
@@ -64,7 +61,7 @@ public class WebDeploymentDescriptorParser {
             Node node = nodes.item(i);
 
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                String listenerClass = Util.getNodeValue(node, "listener-class").trim();
+                String listenerClass = Util.getNodeValue(node, "listener-class");
                 EventListener listener = Util.createInstance(EventListener.class, listenerClass);
                 descriptor.getListeners().add(listener);
             }
@@ -78,8 +75,8 @@ public class WebDeploymentDescriptorParser {
             Node node = nodes.item(i);
 
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                String filterName = Util.getNodeValue(node, "filter-name").trim();
-                String filterClass = Util.getNodeValue(node, "filter-class").trim();
+                String filterName = Util.getNodeValue(node, "filter-name");
+                String filterClass = Util.getNodeValue(node, "filter-class");
                 FilterWrapper wrapper = new FilterWrapper(filterName);
                 wrapper.setFilter(Util.createInstance(Filter.class, filterClass));
                 NodeList children = ((Element) node).getElementsByTagName("init-param");
@@ -93,7 +90,7 @@ public class WebDeploymentDescriptorParser {
                         if (paramName == null) {
                             throw new FacesTesterException("An init-param name for the filter '" + filterName + "' is null.");
                         }
-                        initParameters.put(paramName.trim(), (paramValue != null) ? paramValue.trim() : paramValue);
+                        initParameters.put(paramName, paramValue);
                     }
                 }
 
@@ -109,8 +106,8 @@ public class WebDeploymentDescriptorParser {
             Node node = nodes.item(i);
 
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                String filterName = Util.getNodeValue(node, "filter-name").trim();
-                String urlPattern = Util.getNodeValue(node, "url-pattern").trim();
+                String filterName = Util.getNodeValue(node, "filter-name");
+                String urlPattern = Util.getNodeValue(node, "url-pattern");
 
                 if (descriptor.getFilters().get(filterName) == null) {
                     throw new FacesTesterException ("The filter-mapping '" +

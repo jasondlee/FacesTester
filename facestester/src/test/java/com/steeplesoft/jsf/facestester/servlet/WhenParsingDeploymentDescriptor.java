@@ -136,6 +136,10 @@ public class WhenParsingDeploymentDescriptor {
                 .append("       <filter-name>Test Filter</filter-name>")
                 .append("       <url-pattern>*.jsf</url-pattern>")
                 .append("   </filter-mapping>")
+                .append("   <filter-mapping>")
+                .append("       <filter-name>Test Filter</filter-name>")
+                // Test with no url-pattern
+                .append("   </filter-mapping>")
                 .append("</web-app>").toString();
 
         createTempFile(webXml);

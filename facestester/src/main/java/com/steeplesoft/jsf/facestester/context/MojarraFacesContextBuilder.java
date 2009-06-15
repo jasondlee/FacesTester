@@ -3,13 +3,13 @@ package com.steeplesoft.jsf.facestester.context;
 import com.steeplesoft.jsf.facestester.*;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
+import com.sun.faces.config.ConfigureListener;
 import com.sun.faces.config.WebConfiguration.WebContextInitParameter;
 import java.util.EventListener;
 import java.util.List;
 import javax.faces.FacesException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
 
 import javax.faces.FactoryFinder;
 import static javax.faces.FactoryFinder.FACES_CONTEXT_FACTORY;
@@ -38,7 +38,14 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
         this.session = session;
         this.webDescriptor = webDescriptor;
 
-        // TODO: Mojarra-specific code here
+        try {
+            if (Util.isMojarra()) {
+                webDescriptor.getListeners().add(0, new ConfigureListener());
+            }
+        } catch (Exception ex) {
+            throw new FacesTesterException("Mojarra's ConfigureListener was found, but could not be instantiated: " + ex.getLocalizedMessage(), ex);
+        }
+
         servletContext.addInitParameter(WebContextInitParameter.ExpressionFactory.getQualifiedName(),
                 WebContextInitParameter.ExpressionFactory.getDefaultValue());
 

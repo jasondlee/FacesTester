@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import util.EnumerationImpl;
+import com.steeplesoft.jsf.facestester.util.EnumerationImpl;
 
 /**
  *

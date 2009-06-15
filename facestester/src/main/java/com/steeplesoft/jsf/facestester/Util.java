@@ -20,18 +20,39 @@ import org.w3c.dom.NodeList;
  * @author jasonlee
  */
 public class Util {
+
     private static final String[] locationsToCheck = new String[]{"src/test/webapp", "src/test/resources", "src/test/resources/webapp", "src/main/webapp"};
+    private static Boolean isMojarra = null;
+    private static Boolean isMyFaces = null;
+
+    public static boolean isMojarra() {
+        if (isMojarra == null) {
+            try {
+                Class.forName("com.sun.faces.config.ConfigureListener");
+                isMojarra = true;
+            } catch (ClassNotFoundException ex) {
+                //
+            }
+        }
+        return isMojarra;
+    }
 
     public static String getNodeValue(Node node, String name) {
+        return getNodeValue(node, name, true);
+    }
+
+    public static String getNodeValue(Node node, String name, boolean trim) {
         String retValue = null;
         NodeList element = ((Element) node).getElementsByTagName(name);
-        NodeList valueNodeList = ((Element) element.item(0)).getChildNodes();
+        if (element.getLength() > 0) {
+            NodeList valueNodeList = ((Element) element.item(0)).getChildNodes();
 
-        if (valueNodeList.getLength() > 0) {
-            retValue = valueNodeList.item(0).getNodeValue();
+            if (valueNodeList.getLength() > 0) {
+                retValue = valueNodeList.item(0).getNodeValue();
+            }
         }
 
-        return retValue;
+        return (trim && (retValue != null)) ? retValue.trim() : retValue;
     }
 
     public static <T> T createInstance(Class<T> type, String className) {

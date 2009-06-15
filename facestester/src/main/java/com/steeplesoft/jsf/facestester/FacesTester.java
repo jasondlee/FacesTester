@@ -92,7 +92,12 @@ public class FacesTester {
 
         servletContext = createServletContext(descriptor);
         session = new MockHttpSession();
-        facesContextBuilder = new MojarraFacesContextBuilder(servletContext, session, descriptor);
+        
+        if (Util.isMojarra()) {
+            facesContextBuilder = new MojarraFacesContextBuilder(servletContext, session, descriptor);
+        } else {
+            throw new FacesTesterException("Non-Mojarra implementations are not yet supported. Contributions are welcome.");
+        }
 
         startupServletContext(servletContext, session, descriptor);
 
