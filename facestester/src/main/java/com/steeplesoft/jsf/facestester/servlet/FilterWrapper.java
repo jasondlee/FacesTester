@@ -4,6 +4,7 @@
  */
 package com.steeplesoft.jsf.facestester.servlet;
 
+import com.steeplesoft.jsf.facestester.servlet.impl.FilterConfigImpl;
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
-import com.steeplesoft.jsf.facestester.servlet.FacesTesterServletContext;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import com.sun.faces.config.WebConfiguration.WebContextInitParameter;
 import java.util.EventListener;

@@ -1,8 +1,8 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
-import com.steeplesoft.jsf.facestester.servlet.FacesTesterServletContext;
-import com.steeplesoft.jsf.facestester.servlet.FilterChainImpl;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
+import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import java.io.ByteArrayInputStream;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;

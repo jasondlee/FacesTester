@@ -1,6 +1,7 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
 
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import java.io.File;
 import java.util.Map;
 import javax.servlet.ServletContext;

@@ -1,6 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
-import com.steeplesoft.jsf.facestester.servlet.FacesTesterServletContext;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.MapOfStringsMatcher.containsKey;
 import static org.junit.Assert.assertThat;
