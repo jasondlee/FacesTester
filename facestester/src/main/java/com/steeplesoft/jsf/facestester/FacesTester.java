@@ -1,7 +1,7 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
-import com.steeplesoft.jsf.facestester.context.MojarraFacesContextBuilder;
+import com.steeplesoft.jsf.facestester.context.mojarra.MojarraFacesContextBuilder;
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
@@ -106,16 +106,14 @@ public class FacesTester {
     }
 
     public FacesComponent createComponent(String componentType) {
-        FacesContext context = getFacesContext(); //facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
-        lifecycle.execute(context);
-
-        return new FacesComponent(context.getApplication().createComponent(componentType));
+        return new FacesComponent(getFacesContext().getApplication().createComponent(componentType));
     }
 
     public FacesContext getFacesContext() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context == null) {
-            context = facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
+//            context = facesContextBuilder.createFacesContext("/dummyPage.xhtml", "GET", lifecycle);
+            context = facesContextBuilder.createFacesContext("GET", lifecycle);
         }
         return context;
     }

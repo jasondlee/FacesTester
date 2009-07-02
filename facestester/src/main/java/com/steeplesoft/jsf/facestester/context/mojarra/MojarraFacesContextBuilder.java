@@ -1,5 +1,6 @@
-package com.steeplesoft.jsf.facestester.context;
+package com.steeplesoft.jsf.facestester.context.mojarra;
 
+import com.steeplesoft.jsf.facestester.context.*;
 import com.steeplesoft.jsf.facestester.*;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
@@ -33,7 +34,16 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
     private WebDeploymentDescriptor webDescriptor;
 
     public MojarraFacesContextBuilder(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor) {
-        System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
+//        System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
+        try {
+            Class.forName("com.sun.faces.spi.AnnotationProvider");
+            Util.getLogger().info("This appears to be a Mojarra 2 environment.  Enabling AnnotationProvider.");
+//            System.setProperty("com.sun.faces.spi.annotationprovider", "com.steeplesoft.jsf.facestester.context.mojarra.FacesTesterAnnotationScanner");
+        } catch (ClassNotFoundException ex) {
+            //
+            Util.getLogger().info("*NOT* a Mojarra 2 env.");
+        }
+
         this.servletContext = servletContext;
         this.session = session;
         this.webDescriptor = webDescriptor;
@@ -53,10 +63,13 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
         facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FACES_CONTEXT_FACTORY);
     }
 
-    public FacesContext createFacesContext(String uri, String method, FacesLifecycle lifecycle) {
-        MockHttpServletRequest request = mockServletRequest(uri, method);
+    public FacesContext createFacesContext(String method, FacesLifecycle lifecycle) {
 
-        return buildFacesContext(request, lifecycle);
+        return createFacesContext(null, method, lifecycle);
+    }
+
+    public FacesContext createFacesContext(String uri, String method, FacesLifecycle lifecycle) {
+        return buildFacesContext(mockServletRequest(uri, method), lifecycle);
     }
 
     public FacesContext createFacesContext(FacesForm form, FacesLifecycle lifecycle) {
@@ -127,8 +140,13 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
     }
 
     private MockHttpServletRequest mockServletRequest(String uri, String method) {
-        MockHttpServletRequest servletRequest = new MockHttpServletRequest(method,uri);
-        servletRequest.setServletPath(uri);
+        MockHttpServletRequest servletRequest;
+        if (uri != null) {
+            servletRequest = new MockHttpServletRequest(servletContext, method,uri);
+            servletRequest.setServletPath(uri);
+        } else {
+            servletRequest = new MockHttpServletRequest(servletContext);
+        }
         servletRequest.setSession(session);
 //        mojarraListener.requestInitialized(new ServletRequestEvent(servletContext, servletRequest));
 

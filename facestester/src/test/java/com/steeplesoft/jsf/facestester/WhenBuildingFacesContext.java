@@ -1,6 +1,6 @@
 package com.steeplesoft.jsf.facestester;
 
-import com.steeplesoft.jsf.facestester.context.MojarraFacesContextBuilder;
+import com.steeplesoft.jsf.facestester.context.mojarra.MojarraFacesContextBuilder;
 import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;

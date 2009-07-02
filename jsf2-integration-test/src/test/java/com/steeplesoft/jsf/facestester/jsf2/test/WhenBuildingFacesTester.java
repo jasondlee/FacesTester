@@ -7,10 +7,11 @@ package com.steeplesoft.jsf.facestester.jsf2.test;
 import com.steeplesoft.facestester.jsf2.MyManagedBean;
 import com.steeplesoft.jsf.facestester.FacesTester;
 
+
+import javax.faces.application.FacesMessage;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
-import javax.faces.application.FacesMessage;
-
+import javax.servlet.ServletContext;
 import org.junit.Test;
 import org.junit.Before;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,6 +29,14 @@ public class WhenBuildingFacesTester {
     @Before
     public void setUp() {
         tester = new FacesTester();
+    }
+
+    @Test
+    public void shouldBeAbleToProcessWebInfClasses() {
+        ServletContext context = (ServletContext)tester.getFacesContext().getExternalContext().getContext();
+        System.err.println("Hi!");
+        System.err.println(context.getResourcePaths("/"));
+        System.err.println(context.getResourcePaths("/WEB-INF"));
     }
 
     @Test

@@ -25,6 +25,10 @@ public class Util {
     private static Boolean isMojarra = null;
     private static Boolean isMyFaces = null;
 
+    public static Logger getLogger() {
+        return Logger.getLogger(FacesTester.class.getName());
+    }
+
     public static boolean isMojarra() {
         if (isMojarra == null) {
             try {
