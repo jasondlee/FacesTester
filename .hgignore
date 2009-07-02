@@ -1,9 +1,10 @@
 .*.ipr
 .*.iws
+.*.swp
 .*.iml
 .*.orig
 .*.hide
 .*.NavData
 target
 TEST*
-impl
+.DS_Store
