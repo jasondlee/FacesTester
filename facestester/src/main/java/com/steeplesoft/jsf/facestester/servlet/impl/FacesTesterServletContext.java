@@ -5,6 +5,7 @@
 package com.steeplesoft.jsf.facestester.servlet.impl;
 
 import com.steeplesoft.jsf.facestester.Util;
+import com.steeplesoft.jsf.facestester.servlet.WebAppResourceLoader;
 import java.io.InputStream;
 
 import java.net.MalformedURLException;
@@ -20,19 +21,30 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import org.springframework.mock.web.MockServletContext;
 
 
 /**
  *
  * @author jasonlee
  */
-public class FacesTesterServletContext implements ServletContext {
+public class FacesTesterServletContext extends MockServletContext {
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private Map<String, String> initParameters = new HashMap<String, String>();
 
     public FacesTesterServletContext() {
     }
 
+    public FacesTesterServletContext(WebAppResourceLoader webAppResourceLoader) {
+        super(webAppResourceLoader);
+    }
+
+    public String getContextPath() {
+        return "/";
+    }
+
+
+    /*
     public void addInitParameter(String key, String value) {
         initParameters.put(key, value);
     }
@@ -47,10 +59,6 @@ public class FacesTesterServletContext implements ServletContext {
 
     public ServletContext getContext(String arg0) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getContextPath() {
-        return "/";
     }
 
     public String getInitParameter(String key) {
@@ -111,7 +119,7 @@ public class FacesTesterServletContext implements ServletContext {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Servlet getServlet(String arg0) throws ServletException {
+    public Servlet getServlet(String arg0) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -146,4 +154,5 @@ public class FacesTesterServletContext implements ServletContext {
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
     }
+    */
 }
