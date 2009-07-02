@@ -67,6 +67,7 @@ public class Util {
 
     public static File lookupWebAppPath() {
         String webAppPath = System.getProperty("facestester.webAppPath");
+        System.out.println("***** webAppPath from sysProperty = " + webAppPath);
 
         // The system property has not been set, so let's look in a couple of
         // sensible locations to see if we can figure what it should be.
@@ -94,7 +95,7 @@ public class Util {
         // an exception and abort
         if (webAppPath == null) {
             throw new FacesTesterException(
-                    "The facestester.webAppPath system property has not been set and could not calculated.");
+                    "The facestester.webAppPath system property has not been set and could not be calculated.");
         }
 
         Logger.getLogger(ServletContextFactory.class.getName()).fine("The facestester.webAppPath system property was set to " +
