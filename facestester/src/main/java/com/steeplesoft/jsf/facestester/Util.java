@@ -71,7 +71,6 @@ public class Util {
 
     public static File lookupWebAppPath() {
         String webAppPath = System.getProperty("facestester.webAppPath");
-        System.out.println("***** webAppPath from sysProperty = " + webAppPath);
 
         // The system property has not been set, so let's look in a couple of
         // sensible locations to see if we can figure what it should be.

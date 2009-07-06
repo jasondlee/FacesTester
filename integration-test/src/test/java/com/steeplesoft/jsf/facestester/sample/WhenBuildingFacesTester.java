@@ -49,7 +49,7 @@ public class WhenBuildingFacesTester {
 
     @Test
     public void shouldBeAbleToAccessManagedBeans() {
-        ZipCodeMapperPage backingBean = tester.getManagedBean(ZipCodeMapperPage.class, "ZipCodeMapperPage");
+        ZipCodeMapperPage backingBean = (ZipCodeMapperPage)tester.getManagedBean("ZipCodeMapperPage");
 
         assertThat(backingBean, is(not(nullValue())));
     }
@@ -62,7 +62,7 @@ public class WhenBuildingFacesTester {
         InjectionManager.registerObject("em", new MockEntityManager());
         InjectionManager.registerObject("emf", new MockEntityManagerFactory());
 
-        ManagedBeanWithJpa mb = tester.getManagedBean(ManagedBeanWithJpa.class, "jpaBean");
+        ManagedBeanWithJpa mb = (ManagedBeanWithJpa)tester.getManagedBean("jpaBean");
 
         assertNotNull(mb.getEntityManager1());
         assertNotNull(mb.getEntityManager2());
@@ -73,14 +73,14 @@ public class WhenBuildingFacesTester {
 
     @Test
     public void shouldExecutePostConstruct() {
-        PrePostBean pcb = tester.getManagedBean(PrePostBean.class, "prePost");
+        PrePostBean pcb = (PrePostBean)tester.getManagedBean("prePost");
         Assert.assertTrue(pcb.postConstructCalled);
     }
 
     // I need to pick Ryan's brain on this first
     @Test
     public void shouldExecutePreDestroy() {
-        PrePostBean pcb = tester.getManagedBean(PrePostBean.class, "prePost");
+        PrePostBean pcb = (PrePostBean)tester.getManagedBean("prePost");
         tester = new FacesTester();
         Assert.assertTrue(pcb.preDestroyedCalled);
     }

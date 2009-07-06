@@ -122,13 +122,12 @@ public class FacesTester {
         return servletContext;
     }
 
-    public <T> T getManagedBean(Class<T> type, String name) {
+    public Object getManagedBean(String name) {
         FacesContext context = getFacesContext();
         ELResolver elResolver = context.getApplication().getELResolver();
         ELContext elContext = context.getELContext();
-        T bean = (T) elResolver.getValue(elContext, null, name);
 
-        return bean;
+        return elResolver.getValue(elContext, null, name);
     }
 
     public FacesPage requestPage(String uri) {

@@ -5,6 +5,7 @@
 package com.steeplesoft.jsf.facestester.injection;
 
 import com.steeplesoft.jsf.facestester.FacesTesterException;
+import com.steeplesoft.jsf.facestester.Util;
 import com.sun.faces.spi.DiscoverableInjectionProvider;
 import com.sun.faces.spi.InjectionProviderException;
 import java.lang.annotation.Annotation;
@@ -27,6 +28,7 @@ import javax.annotation.PostConstruct;
 public class FacesTesterInjectionProvider extends DiscoverableInjectionProvider {
 
     public void inject(Object managedBean) throws InjectionProviderException {
+        Util.getLogger().info("FacesTesterInjectionProvider.inject()");
         processMethods(managedBean);
         processFields(managedBean);
     }

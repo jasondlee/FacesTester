@@ -31,7 +31,7 @@ public class WhenBuildingFacesTester {
         tester = new FacesTester();
     }
 
-    @Test
+    //@Test
     public void shouldBeAbleToProcessWebInfClasses() {
         ServletContext context = (ServletContext)tester.getFacesContext().getExternalContext().getContext();
         System.err.println("Hi!");
@@ -52,7 +52,7 @@ public class WhenBuildingFacesTester {
 
     @Test
     public void shouldBeAbleToAccessJsf2AnnotatedManagedBeans() {
-        MyManagedBean bean = tester.getManagedBean(MyManagedBean.class, "myBean");
+        MyManagedBean bean = (MyManagedBean)tester.getManagedBean("myBean");
 
         assertThat(bean, is(not(nullValue())));
     }
