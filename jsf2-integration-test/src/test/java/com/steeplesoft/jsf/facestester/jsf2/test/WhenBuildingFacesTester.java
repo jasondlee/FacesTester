@@ -66,7 +66,7 @@ public class WhenBuildingFacesTester {
         InjectionManager.registerObject("em", new MockEntityManager());
         InjectionManager.registerObject("emf", new MockEntityManagerFactory());
 
-        ManagedBeanWithJpa mb = tester.getManagedBean(ManagedBeanWithJpa.class, "jpaBean");
+        ManagedBeanWithJpa mb = (ManagedBeanWithJpa)tester.getManagedBean("jpaBean");
 
         assertNotNull(mb.getEntityManager1());
         assertNotNull(mb.getEntityManager2());
