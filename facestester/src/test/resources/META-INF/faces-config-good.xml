@@ -38,20 +38,38 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </lifecycle>
 
     <managed-bean>
-        <managed-bean-name>goodBean</managed-bean-name>
-        <managed-bean-class>com.steeplesoft.jsf.facestester.test.GoodBean</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
+        <managed-bean-name>
+            goodBean
+        </managed-bean-name>
+        <managed-bean-class>
+            com.steeplesoft.jsf.facestester.test.GoodBean
+        </managed-bean-class>
+        <managed-bean-scope>
+            request
+        </managed-bean-scope>
     </managed-bean>
     <component>
-        <display-name>TestComponent</display-name>
-        <component-type>com.steeplesoft.jsf.facestester.TestComponent</component-type>
-        <component-class>com.steeplesoft.jsf.facestester.test.TestComponent</component-class>
+        <display-name>
+            TestComponent
+        </display-name>
+        <component-type>
+            com.steeplesoft.jsf.facestester.TestComponent
+        </component-type>
+        <component-class>
+            com.steeplesoft.jsf.facestester.test.TestComponent
+        </component-class>
     </component>
     <render-kit>
         <renderer>
-            <component-family>com.steeplesoft.jsf.facestester.TestComponent</component-family>
-            <renderer-type>com.steeplesoft.jsf.facestester.TestComponent</renderer-type>
-            <renderer-class>com.steeplesoft.jsf.facestester.test.TestRenderer</renderer-class>
+            <component-family>
+                com.steeplesoft.jsf.facestester.TestComponent
+            </component-family>
+            <renderer-type>
+                com.steeplesoft.jsf.facestester.TestComponent
+            </renderer-type>
+            <renderer-class>
+                com.steeplesoft.jsf.facestester.test.TestRenderer
+            </renderer-class>
         </renderer>
     </render-kit>
 </faces-config>

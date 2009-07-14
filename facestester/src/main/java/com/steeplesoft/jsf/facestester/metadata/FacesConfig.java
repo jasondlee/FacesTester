@@ -171,6 +171,9 @@ public class FacesConfig {
 
         if (valueNodeList.getLength() > 0) {
             retValue = valueNodeList.item(0).getNodeValue();
+            if (retValue != null) {
+                retValue = retValue.trim();
+            }
         }
 
         return retValue;
