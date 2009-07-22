@@ -1,0 +1,13 @@
+0.3
+* Removal of Spring dependency (Thanks, Imre)
+* Moved to the BSD license
+* Injection bug fixes
+* Added support for Mojarra 2
+* Better encapsulation of Mojarra-specific code to make supporting other impls easier
+* Added support for Servlet filters
+* Added suport for Servlet listeners
+* Various XML parsing bug fixes
+
+0.2
+
+0.1

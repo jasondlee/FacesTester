@@ -100,7 +100,6 @@ public class WhenBuildingFacesTester {
         Assert.assertTrue(pcb.postConstructCalled);
     }
 
-    // I need to pick Ryan's brain on this first
     @Test
     public void shouldExecutePreDestroy() {
         PrePostBean pcb = (PrePostBean)tester.getManagedBean("prePost");

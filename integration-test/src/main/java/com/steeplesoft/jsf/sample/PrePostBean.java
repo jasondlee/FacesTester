@@ -39,7 +39,7 @@ public class PrePostBean {
     public boolean preDestroyedCalled = false;
 
     @PostConstruct
-    public void postConsruct() {
+    public void postConstruct() {
         this.postConstructCalled = true;
     }
 
