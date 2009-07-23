@@ -31,6 +31,7 @@ import com.steeplesoft.jsf.facestester.FacesTester;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import java.io.File;
@@ -64,8 +65,11 @@ public class WhenCreatingServletContext {
         try {
             System.setProperty("facestester.webAppPath", webAppDirectory.getAbsolutePath());
             FacesTesterServletContext context = ServletContextFactory.createServletContext(WebDeploymentDescriptor.createFromFile(webAppDirectory));
-            assertThat(context.getMimeType("png"), is("image/png"));
-            assertThat(context.getMimeType("foo"), is("application/x-foo"));
+            assertThat(context.getMimeType("/images/image.png"), is("image/png"));
+            assertThat(context.getMimeType("/resources/misc/some.foo"), is("application/x-foo"));
+            assertNull(context.getMimeType(null));
+            assertNull(context.getMimeType(""));
+            assertNull(context.getMimeType("some."), null);
         }
         finally {
             System.setProperties(properties);

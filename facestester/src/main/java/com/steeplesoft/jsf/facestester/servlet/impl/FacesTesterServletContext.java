@@ -95,8 +95,21 @@ public class FacesTesterServletContext extends MockServletContext {
         mimeTypes.put(extension, mimetype);
     }
 
-    public String getMimeType(String extension) {
+    public String getMimeType(String file) {
+
+        if (file == null || file.length() == 0) {
+            return null;
+        }
+        int idx = file.lastIndexOf('.');
+        if (idx == -1) {
+            return null;
+        }
+        String extension = file.substring(idx + 1);
+        if (extension.length() == 0) {
+            return null;
+        }
         return mimeTypes.get(extension);
+        
     }
 
 
