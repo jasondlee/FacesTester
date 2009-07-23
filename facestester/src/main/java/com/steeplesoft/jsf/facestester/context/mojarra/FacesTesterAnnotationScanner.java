@@ -59,7 +59,6 @@ public class FacesTesterAnnotationScanner extends AnnotationProvider {
     public FacesTesterAnnotationScanner(ServletContext sc, AnnotationProvider parent) {
         super(sc);
         this.parentProvider = parent;
-        Util.getLogger().info("FacesTesterAnnotationScanner installed.");
 
         Collections.addAll(annotations,
                            FacesComponent.class,

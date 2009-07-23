@@ -51,7 +51,6 @@ import javax.annotation.PostConstruct;
 public class FacesTesterInjectionProvider extends DiscoverableInjectionProvider {
 
     public void inject(Object managedBean) throws InjectionProviderException {
-        Util.getLogger().info("FacesTesterInjectionProvider.inject()");
         processMethods(managedBean);
         processFields(managedBean);
     }
