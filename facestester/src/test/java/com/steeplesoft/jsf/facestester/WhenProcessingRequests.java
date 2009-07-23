@@ -30,6 +30,9 @@ package com.steeplesoft.jsf.facestester;
 import com.steeplesoft.jsf.facestester.test.TestFilter;
 import com.steeplesoft.jsf.facestester.test.TestServletContextListener;
 import com.steeplesoft.jsf.facestester.test.TestServletRequestListener;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,6 +84,6 @@ public class WhenProcessingRequests {
     @Test
     public void shouldHaveFiltersCalled() {
         tester.requestPage("/queryTest.jsf");
-        Assert.assertEquals(TestFilter.RUN_COUNT % 2, 0);
+        assertThat(TestFilter.RUN_COUNT, is(1));
     }
 }

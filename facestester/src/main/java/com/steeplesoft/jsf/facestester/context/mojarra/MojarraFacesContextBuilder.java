@@ -31,13 +31,13 @@ import com.steeplesoft.jsf.facestester.context.*;
 import com.steeplesoft.jsf.facestester.*;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpServletRequest;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpServletResponse;
 import com.sun.faces.config.ConfigureListener;
 import com.sun.faces.config.WebConfiguration.WebContextInitParameter;
 import java.util.EventListener;
 import java.util.List;
 import javax.faces.FacesException;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.faces.FactoryFinder;
 import static javax.faces.FactoryFinder.FACES_CONTEXT_FACTORY;
@@ -100,7 +100,7 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
     }
 
     public FacesContext createFacesContext(FacesForm form, FacesLifecycle lifecycle) {
-        MockHttpServletRequest request = mockServletRequest(form.getUri(), "POST");
+        FacesTesterHttpServletRequest request = mockServletRequest(form.getUri(), "POST");
 
         for (Map.Entry<String, String> each : form.getParameterMap().entrySet()) {
             request.addParameter(each.getKey(), each.getValue());
@@ -109,9 +109,9 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
         return buildFacesContext(request, lifecycle);
     }
 
-    protected FacesContext buildFacesContext(MockHttpServletRequest request, FacesLifecycle lifecycle) throws FacesException {
+    protected FacesContext buildFacesContext(FacesTesterHttpServletRequest request, FacesLifecycle lifecycle) throws FacesException {
         FacesContext context = facesContextFactory.getFacesContext(servletContext, request,
-                new MockHttpServletResponse(), lifecycle.getUnderlyingLifecycle());
+                new FacesTesterHttpServletResponse(), lifecycle.getUnderlyingLifecycle());
         return context;
     }
 
@@ -119,7 +119,7 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
      * This is a pretty simple solution that will likely need to be replaced,
      * but should get us going for now.
      */
-    private void addQueryParameters(MockHttpServletRequest servletRequest, String uri) {
+    private void addQueryParameters(FacesTesterHttpServletRequest servletRequest, String uri) {
         int qmark = uri.indexOf("?");
 
         if (qmark > -1) {
@@ -166,13 +166,13 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
         }
     }
 
-    private MockHttpServletRequest mockServletRequest(String uri, String method) {
-        MockHttpServletRequest servletRequest;
+    private FacesTesterHttpServletRequest mockServletRequest(String uri, String method) {
+        FacesTesterHttpServletRequest servletRequest;
         if (uri != null) {
-            servletRequest = new MockHttpServletRequest(servletContext, method,uri);
+            servletRequest = new FacesTesterHttpServletRequest(servletContext, method,uri);
             servletRequest.setServletPath(uri);
         } else {
-            servletRequest = new MockHttpServletRequest(servletContext);
+            servletRequest = new FacesTesterHttpServletRequest(servletContext);
         }
         servletRequest.setSession(session);
 //        mojarraListener.requestInitialized(new ServletRequestEvent(servletContext, servletRequest));

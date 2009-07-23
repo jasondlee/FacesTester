@@ -33,14 +33,17 @@ import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpServletResponse;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpSession;
 import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletContextEvent;
-import org.springframework.mock.web.MockHttpServletResponse;
+import javax.servlet.ServletException;
 
 import org.xml.sax.SAXException;
 
@@ -81,7 +84,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import javax.xml.parsers.ParserConfigurationException;
-import org.springframework.mock.web.MockHttpSession;
 
 /**
  * @author jasonlee
@@ -116,7 +118,7 @@ public class FacesTester {
         }
 
         servletContext = createServletContext(descriptor);
-        session = new MockHttpSession();
+        session = new FacesTesterHttpSession(servletContext);
         
         if (Util.isMojarra()) {
             facesContextBuilder = new MojarraFacesContextBuilder(servletContext, session, descriptor);
@@ -156,15 +158,22 @@ public class FacesTester {
     }
 
     public FacesPage requestPage(String uri) {
-        FacesContext context = facesContextBuilder.createFacesContext(uri, "GET", lifecycle);
+        
+        final FacesContext context = facesContextBuilder.createFacesContext(uri, "GET", lifecycle);
 
-        FilterChain filterChain = createAppropriateFilterChain(uri);
-        try {
-            filterChain.doFilter((ServletRequest) context.getExternalContext().getRequest(), (ServletResponse) context.getExternalContext().getResponse());
-        } catch (Exception ex) {
-            throw new FacesTesterException("An error occurred while executing the filters", ex);
-        }
+        Filter callFacesFilter = new Filter() {
 
+            public void init(FilterConfig filterConfig) throws ServletException {}
+
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+                lifecycle.execute(context);
+                lifecycle.render(context);
+                checkForErrors(context);
+            }
+
+            public void destroy() {}
+        };
+        FilterChain filterChain = createAppropriateFilterChain(uri, callFacesFilter);
         ServletRequestEvent sre = new ServletRequestEvent(servletContext, (ServletRequest) context.getExternalContext().getRequest());
         for (EventListener listener : descriptor.getListeners()) {
             if (listener instanceof ServletRequestListener) {
@@ -172,14 +181,10 @@ public class FacesTester {
             }
         }
 
-        lifecycle.execute(context);
-        lifecycle.render(context);
-
-        checkForErrors(context);
-
         try {
-            filterChain = createAppropriateFilterChain(uri);
             filterChain.doFilter((ServletRequest) context.getExternalContext().getRequest(), (ServletResponse) context.getExternalContext().getResponse());
+        } catch (FacesTesterException fte) {
+            throw fte; // don't rewrap
         } catch (Exception ex) {
             throw new FacesTesterException("An error occurred while executing the filters", ex);
         }
@@ -388,7 +393,7 @@ public class FacesTester {
     }
 
     private void checkForErrors(FacesContext context) {
-        MockHttpServletResponse response = (MockHttpServletResponse) context.getExternalContext().getResponse();
+        FacesTesterHttpServletResponse response = (FacesTesterHttpServletResponse) context.getExternalContext().getResponse();
 
         if (SC_OK == response.getStatus()) {
             return;
@@ -492,17 +497,17 @@ public class FacesTester {
      * @param uri
      * @return
      */
-    private FilterChain createAppropriateFilterChain(String uri) {
-        List<Filter> filters = new ArrayList<Filter>();
-
+    private FilterChain createAppropriateFilterChain(String uri, Filter finalFilter) {
+        FilterChain rval = new FilterChainImpl(finalFilter, null);
         for (Map.Entry<String, String> entry : descriptor.getFilterMappings().entrySet()) {
             final String mapping = entry.getKey();
             String regEx = mapping.replaceAll("\\.", "\\\\.").replaceAll("\\*", "\\.\\*");
             if (Pattern.matches(regEx, uri)) {
-                filters.add(descriptor.getFilters().get(entry.getValue()).getFilter());
+                rval = new FilterChainImpl(
+                        descriptor.getFilters().get(entry.getValue()).getFilter(),
+                        rval);
             }
         }
-
-        return new FilterChainImpl(filters);
+        return rval;
     }
 }

@@ -31,7 +31,9 @@ import com.steeplesoft.jsf.facestester.context.mojarra.MojarraFacesContextBuilde
 import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpSession;
 import static com.steeplesoft.jsf.facestester.MapOfStringsMatcher.containsKey;
+import java.io.File;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.Before;
@@ -43,7 +45,6 @@ import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import java.util.Map;
-import org.springframework.mock.web.MockHttpSession;
 
 public class WhenBuildingFacesContextFromForm {
     private FacesForm form;
@@ -55,8 +56,10 @@ public class WhenBuildingFacesContextFromForm {
         htmlForm.setId("test-form");
 
         form = new FacesForm(htmlForm, new FakeFacesContextBuilder(), new FakeFacesLifecycle());
-        builder = new MojarraFacesContextBuilder(new FacesTesterServletContext(), new MockHttpSession(),
-                WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath()));
+        File webAppPath = Util.lookupWebAppPath();
+        FacesTesterServletContext context = new FacesTesterServletContext("src/test/resources/webapp");
+        builder = new MojarraFacesContextBuilder(context, new FacesTesterHttpSession(context),
+                WebDeploymentDescriptor.createFromFile(webAppPath));
     }
 
     @Test

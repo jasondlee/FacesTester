@@ -27,18 +27,18 @@
  */
 package com.steeplesoft.jsf.facestester.servlet;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import com.steeplesoft.jsf.facestester.servlet.impl.FileResource;
+import com.steeplesoft.jsf.facestester.Resource;
+import com.steeplesoft.jsf.facestester.ResourceLoader;
 
 import java.io.File;
 
 
 public class WebAppResourceLoader implements ResourceLoader {
     private File searchPath;
-
-    public WebAppResourceLoader(File searchPath) {
-        this.searchPath = searchPath;
+    
+    public WebAppResourceLoader(File webappDirectory) {
+        this.searchPath = webappDirectory;
     }
 
     public ClassLoader getClassLoader() {
@@ -46,6 +46,10 @@ public class WebAppResourceLoader implements ResourceLoader {
     }
 
     public Resource getResource(String location) {
-        return new FileSystemResource(new File(searchPath, location));
+        if(location.startsWith("/")) {
+            location = location.substring(1);
+        }
+        Resource res = new FileResource(new File(searchPath, location));
+        return res;
     }
 }

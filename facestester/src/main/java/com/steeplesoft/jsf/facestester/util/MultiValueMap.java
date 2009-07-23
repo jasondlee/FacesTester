@@ -25,27 +25,66 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.steeplesoft.jsf.facestester.servlet;
 
-import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
-import java.io.InputStream;
-import java.net.URL;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+package com.steeplesoft.jsf.facestester.util;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-public class WhenLoadingResourceFromServletContext {
-    @Test
-    public void shouldFindFileFromWebAppDirectory() throws IOException {
-        File webAppDirectory = new TestWebAppDirectoryCreator().createTestWebAppWithDescriptor(
-                getClass().getResourceAsStream("/webapp/WEB-INF/web.xml"));
-        FacesTesterServletContext ctx = new FacesTesterServletContext(webAppDirectory);
-        URL resource = ctx.getResource("/WEB-INF/web.xml");
-        InputStream stream = resource.openStream();
-        assertTrue(stream.available()>0);
-        // ResourceLoader loader = new WebAppResourceLoader(webAppDirectory);
-        // assertTrue(loader.getResource("/WEB-INF/web.xml").exists());
+/**
+ *
+ * @author io
+ */
+public class MultiValueMap<T> {
+    private Map<String,T[]> data = new HashMap<String, T[]>();
+
+    public void remove(String key) {
+        this.data.remove(key);
     }
+
+    public void set(String key, T value) {
+        Object[] v = new Object[1];
+        v[0] = value;
+        this.data.put(key,(T[]) v);
+    }
+    
+    public void set(String key, T[] values) {
+        this.data.put(key, values);
+    }
+
+    public void add(String key, T value) {
+        T[] values = this.data.get(key);
+        if(values == null) {
+            this.set(key, value);
+        } else {
+            Object[] newValues = new Object[values.length+1];
+            System.arraycopy(values, 0, newValues, 0, values.length);
+            newValues[values.length] = value;
+            this.data.put(key,(T[]) newValues);
+        }
+    }
+
+    public T getSingle(String key) {
+        T[] values = this.data.get(key);
+        return values == null || values.length==0 ? null : values[0];
+    }
+
+    public T[] getAll(String key) {
+        return this.data.get(key);
+    }
+
+    public Set<String> keySet() {
+        return this.data.keySet();
+    }
+
+    public Map<String, T[]> getData() {
+        return this.data;
+    }
+
+    public void setData(Map<String, T[]> data) {
+        this.data = data;
+    }
+
+
 }

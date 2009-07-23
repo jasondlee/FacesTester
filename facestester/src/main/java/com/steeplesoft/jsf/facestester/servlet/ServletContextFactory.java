@@ -59,7 +59,9 @@ public class ServletContextFactory {
     }
 
     public FacesTesterServletContext createContextForWebAppAt() {
-        FacesTesterServletContext servletContext = new FacesTesterServletContext(new WebAppResourceLoader(webAppDirectory));
+        FacesTesterServletContext servletContext = new FacesTesterServletContext(webAppDirectory);
+
+        //FacesTesterServletContext servletContext = new FacesTesterServletContext(new WebAppResourceLoader(webAppDirectory));
 
         for (Map.Entry<String, String> each : webDescriptor.getContextParameters().entrySet()) {
             servletContext.addInitParameter(each.getKey(), each.getValue());

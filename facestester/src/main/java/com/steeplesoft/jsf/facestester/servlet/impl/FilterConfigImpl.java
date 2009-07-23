@@ -27,11 +27,11 @@
  */
 package com.steeplesoft.jsf.facestester.servlet.impl;
 
+import com.steeplesoft.jsf.facestester.Util;
 import java.util.Enumeration;
 import java.util.Map;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-import com.steeplesoft.jsf.facestester.util.EnumerationImpl;
 
 /**
  *
@@ -61,7 +61,7 @@ public class FilterConfigImpl implements FilterConfig {
     }
 
     public Enumeration getInitParameterNames() {
-        return new EnumerationImpl(initParameters.keySet());
+        return Util.enumeration(initParameters.keySet());
     }
 
 }

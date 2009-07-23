@@ -27,30 +27,41 @@
  */
 package com.steeplesoft.jsf.facestester.servlet.impl;
 
-import com.steeplesoft.jsf.facestester.servlet.WebAppResourceLoader;
+import com.steeplesoft.jsf.facestester.FacesTesterException;
+import com.steeplesoft.jsf.facestester.Resource;
+import com.steeplesoft.jsf.facestester.ResourceLoader;
+import com.steeplesoft.jsf.facestester.Util;
 
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Collections;
-import java.io.InputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
-import org.springframework.mock.web.MockServletContext;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
 
 
 /**
  *
  * @author jasonlee
  */
-public class FacesTesterServletContext extends MockServletContext {
+public class FacesTesterServletContext implements ServletContext {
 
     private static final String MIME_PROPERTIES = "META-INF/facestester-mimetypes.properties";
-
     private static final Map<String,String> staticMimeTypes;
     static {
-
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream in = cl.getResourceAsStream(MIME_PROPERTIES);
         Properties props = new Properties();
@@ -70,33 +81,52 @@ public class FacesTesterServletContext extends MockServletContext {
         //noinspection unchecked
         staticMimeTypes = Collections.unmodifiableMap(
                               new HashMap<String,String>((Map)props));
-        
-    }
 
+    }
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private Map<String, String> initParameters = new HashMap<String, String>();
     private Map<String,String> mimeTypes;
+    private int majorVarsion = 2;
+    private int minorVersion = 5;
+    private String contextPath = "";
 
+    /**
+     * Creates a ServletContext suitable for a default maven setup
+     */
     public FacesTesterServletContext() {
-        mimeTypes = new HashMap<String,String>(staticMimeTypes);
-
+        this("src/main/webapp");
     }
 
-    public FacesTesterServletContext(WebAppResourceLoader webAppResourceLoader) {
-        super(webAppResourceLoader);
+    public FacesTesterServletContext(String webappDir) {
+        this(new File(webappDir));
+    }
+
+    public FacesTesterServletContext(File webAppDirectory) {
+        this(new DefaultResourceLoader(webAppDirectory));
+    }
+
+    public FacesTesterServletContext(ResourceLoader resourceLoader) {
+        this.setResourceLoader(resourceLoader);
         mimeTypes = new HashMap<String,String>(staticMimeTypes);
     }
 
     public String getContextPath() {
-        return "/";
+        return this.contextPath;
     }
 
-    public void addMimeType(String extension, String mimetype) {
-        mimeTypes.put(extension, mimetype);
+    public ServletContext getContext(String uripath) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public int getMajorVersion() {
+        return this.majorVarsion;
+    }
+
+    public int getMinorVersion() {
+        return this.minorVersion;
     }
 
     public String getMimeType(String file) {
-
         if (file == null || file.length() == 0) {
             return null;
         }
@@ -109,117 +139,188 @@ public class FacesTesterServletContext extends MockServletContext {
             return null;
         }
         return mimeTypes.get(extension);
-        
     }
 
+    public Set getResourcePaths(String path) {
+        StringBuilder sb = new StringBuilder(path.length()+2);
+        if(!path.startsWith("/")) {
+            sb.append("/");
+        }
+        sb.append(path);
+        if(!path.endsWith("/")) {
+            sb.append("/");
+        }
+        String normalizedPath = sb.toString();
+        Resource resource = this.getResourceLoader().getResource(normalizedPath);
 
-    /*
-    public void addInitParameter(String key, String value) {
-        initParameters.put(key, value);
+        if(resource == null || !resource.exists()) {
+            return null;
+        }
+        File[] children = resource.getFile().listFiles();
+        if(children.length==0) {
+            return null;
+        }
+        Set<String> rval = new LinkedHashSet<String>(children.length);
+        for(File child : children) {
+            String childPath = normalizedPath + child.getName();
+            if(child.isDirectory()) {
+                childPath += "/";
+            }
+            rval.add(childPath);
+        }
+        return rval;
     }
 
-    public Object getAttribute(String key) {
-        return attributes.get(key);
-    }
-
-    public Enumeration getAttributeNames() {
-        return Collections.enumeration(attributes.keySet());
-    }
-
-    public ServletContext getContext(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getInitParameter(String key) {
-        return initParameters.get(key);
-    }
-
-    public Enumeration getInitParameterNames() {
-        return Collections.enumeration(initParameters.keySet());
-    }
-
-    public int getMajorVersion() {
-        return 2;
-    }
-
-
-
-    public int getMinorVersion() {
-        return 5;
-    }
-
-    public RequestDispatcher getNamedDispatcher(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getRealPath(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public RequestDispatcher getRequestDispatcher(String path) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public URL getResource(String name) throws MalformedURLException {
-        return this.getClass().getClassLoader().getResource(name);
+    public URL getResource(String path) throws MalformedURLException {
+        try {
+            Resource res = this.getResourceLoader().getResource(path);
+            URL rval = (res == null ? null : res.getURL());
+            return rval;
+        } catch (MalformedURLException ex){
+            throw ex;
+        } catch (IOException ex) {
+            throw new FacesTesterException(ex);
+        }
     }
 
     public InputStream getResourceAsStream(String path) {
-        if ("/WEB-INF/web.xml".equals(path)) {
-            return Util.streamWebXmlFrom(Util.lookupWebAppPath()); // Ugly hack?
+        if(!path.startsWith("/")) {
+            path = "/" + path;
         }
-        InputStream is = getClass().getClassLoader().getResourceAsStream(path);
-        if (is == null) {
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        Resource res = this.getResourceLoader().getResource(path);
+        if(res==null || !res.exists()) {
+            return null;
         }
-        if (is == null) {
-            is = ClassLoader.getSystemResourceAsStream(path);
+        try {
+            return res.getInputStream();
+        } catch (IOException ex) {
+            Logger.getLogger(FacesTesterServletContext.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return is;
     }
 
-    public Set getResourcePaths(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public RequestDispatcher getRequestDispatcher(String path) {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
-    public String getServerInfo() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public RequestDispatcher getNamedDispatcher(String name) {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
-    public Servlet getServlet(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getServletContextName() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Enumeration getServletNames() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Servlet getServlet(String name) /* throws ServletException */ {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
     public Enumeration getServlets() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
-    public void log(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Enumeration getServletNames() {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
-    public void log(Exception arg0, String arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void log(String msg) {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
-    public void log(String arg0, Throwable arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void log(Exception exception, String msg) {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
-    public void removeAttribute(String key) {
-        attributes.put(key, null);
+    public void log(String message, Throwable throwable) {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
 
-    public void setAttribute(String key, Object value) {
-        attributes.put(key, value);
+    public String getRealPath(String path) {
+        throw newUnsupportedOperationException("Not supported yet.");
     }
-    */
+
+    public String getServerInfo() {
+        return "FacesTester";
+    }
+
+    public String getInitParameter(String name) {
+        return this.initParameters.get(name);
+    }
+
+    public Enumeration getInitParameterNames() {
+        return Util.enumeration(this.initParameters.keySet());
+    }
+
+    public Object getAttribute(String name) {
+        return this.attributes.get(name);
+    }
+
+    public Enumeration getAttributeNames() {
+        return Util.enumeration(this.attributes.keySet());
+    }
+
+    public void setAttribute(String name, Object object) {
+        this.attributes.put(name, object);
+    }
+
+    public void removeAttribute(String name) {
+        this.attributes.remove(name);
+    }
+
+    public String getServletContextName() {
+        return "FacesTesterContext";
+    }
+
+    // ---------- Mock accessors ---------- //
+    public void setInitParameter(String name, String value) {
+        this.initParameters.put(name, value);
+    }
+
+    @Deprecated
+    public void addInitParameter(String name, String value) {
+        this.setInitParameter(name, value);
+    }
+
+    private ResourceLoader resourceLoader;
+
+    public ResourceLoader getResourceLoader() {
+        return this.resourceLoader;
+    }
+
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    public void addMimeType(String extension, String mimetype) {
+        mimeTypes.put(extension, mimetype);
+    }
+/*
+        private static final String VOID = "<VOID>";
+    public static void login(Object input) {
+        _log(input, VOID);
+    }
+
+    public static <T> T log(Object input, T output) {
+        _log(input, output);
+        return output;
+    }
+
+    private static void _log(Object input, Object output) {
+        StackTraceElement ste = Thread.currentThread().getStackTrace()[3];
+        String cn = ste.getClassName();
+        int ldot = cn.lastIndexOf('.');
+        cn = cn.substring(ldot+1);
+        String msg = cn+"."+ste.getMethodName();
+        System.out.println(" +++++++++ " + msg + "(" + input + ") > " + output);
+
+    }
+
+    public static <T> T logout(T output) {
+        _log(VOID, output);
+        return output;
+    }
+*/
+    public static RuntimeException newUnsupportedOperationException(String msg) {
+        String caller = Thread.currentThread().getStackTrace()[2].getMethodName();
+        RuntimeException ex = new RuntimeException(msg + ": " + caller);
+        ex.fillInStackTrace();
+        ex.printStackTrace(System.out);
+        return ex;
+    }
 }

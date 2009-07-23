@@ -25,27 +25,25 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.steeplesoft.jsf.facestester.servlet;
 
-import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
-import java.io.InputStream;
-import java.net.URL;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+package com.steeplesoft.jsf.facestester.servlet.impl;
 
+import com.steeplesoft.jsf.facestester.servlet.*;
 import java.io.File;
-import java.io.IOException;
 
-public class WhenLoadingResourceFromServletContext {
-    @Test
-    public void shouldFindFileFromWebAppDirectory() throws IOException {
-        File webAppDirectory = new TestWebAppDirectoryCreator().createTestWebAppWithDescriptor(
-                getClass().getResourceAsStream("/webapp/WEB-INF/web.xml"));
-        FacesTesterServletContext ctx = new FacesTesterServletContext(webAppDirectory);
-        URL resource = ctx.getResource("/WEB-INF/web.xml");
-        InputStream stream = resource.openStream();
-        assertTrue(stream.available()>0);
-        // ResourceLoader loader = new WebAppResourceLoader(webAppDirectory);
-        // assertTrue(loader.getResource("/WEB-INF/web.xml").exists());
+/**
+ * Implementation of the default ResourceLoader. Loading Resources from a
+ *  webapplication-directory.
+ *
+ * @author io
+ */
+public class DefaultResourceLoader extends CompositeResourceLoader {
+
+    public DefaultResourceLoader(File webappDir) {
+        this.addResourceLoader(new WebAppResourceLoader(webappDir));
+    }
+    
+    public DefaultResourceLoader(String webappDir) {
+        this(new File(webappDir));
     }
 }

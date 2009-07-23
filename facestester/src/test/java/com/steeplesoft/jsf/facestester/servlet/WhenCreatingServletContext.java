@@ -80,6 +80,6 @@ public class WhenCreatingServletContext {
     @Test
     public void shoudBeAbleToGetContextPath() {
         FacesTester ft = new FacesTester();
-        assertThat(ft.getServletContext().getContextPath(), is("/"));
+        assertThat(ft.getServletContext().getContextPath(), is(""));
     }
 }

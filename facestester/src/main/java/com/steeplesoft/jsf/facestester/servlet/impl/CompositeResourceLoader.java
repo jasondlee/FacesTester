@@ -25,41 +25,36 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.steeplesoft.jsf.facestester.servlet.impl;
 
+import com.steeplesoft.jsf.facestester.Resource;
+import com.steeplesoft.jsf.facestester.ResourceLoader;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
- *
- * @author jasonlee
+ * A ResourceLoader that can load Resources from different ResourceLoaders.
+ * TODO: Rework the whole Resources/Loaders.
+ * @author io
  */
-public class EnumerationImpl implements Enumeration {
+public class CompositeResourceLoader implements ResourceLoader {
 
-    private List values = new ArrayList();
-    private int index;
-    
-    public EnumerationImpl(Object value) {
-        values.add(value);
-        index = 0;
-    }
+    private List<ResourceLoader> loaders = new ArrayList<ResourceLoader>();
 
-    public EnumerationImpl(Set values) {
-        Iterator i = values.iterator();
-        while (i.hasNext()) {
-            values.add(i.next());
+    public Resource getResource(String path) {
+        for(ResourceLoader loader : loaders) {
+            Resource resource = loader.getResource(path);
+            if(resource != null && resource.exists()) {
+                return resource;
+            }
         }
-        index = 0;
+        return null;
     }
 
-    public boolean hasMoreElements() {
-        return index <= (values.size()-1);
+    public CompositeResourceLoader addResourceLoader(ResourceLoader resourceLoader) {
+        this.loaders.add(resourceLoader);
+        return this;
     }
 
-    public Object nextElement() {
-        return values.get(index++);
-    }
 }

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,60 +49,65 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
     protected Map<String, Object> headers = new HashMap<String, Object>();
     private ByteArrayOutputStream baos;
     private PrintWriter writer;
-    private int status;
+    private int status = HttpServletResponse.SC_OK;
     private String message;
+    private String contentType = "text/html";
+    private Locale locale = Locale.ENGLISH;
+    private String characterEncoding = "iso-8859-1";
+    private int contentLength = -1;
+
 
     public String getContentAsString() throws UnsupportedEncodingException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.baos.toString();
     }
 
     public void addCookie(Cookie arg0) {
+        // TODO where to "persist" cookies
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean containsHeader(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public boolean containsHeader(String name) {
+        return this.headers.containsKey(name);
     }
 
-    public String encodeURL(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public String encodeURL(String url) {
+        return url;
     }
 
-    public String encodeRedirectURL(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public String encodeRedirectURL(String url) {
+        return encodeURL(url);
     }
 
-    public String encodeUrl(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public String encodeUrl(String url) {
+        return encodeURL(url);
     }
 
-    public String encodeRedirectUrl(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public String encodeRedirectUrl(String url) {
+        return encodeRedirectURL(url);
     }
 
     public void sendError(int status, String message) throws IOException {
-        this.status = status;
-        this.message = message;
+        this.setStatus(status, message);
     }
 
     public void sendError(int status) throws IOException {
-        this.status = status;
+        this.setStatus(status);
     }
 
     public void sendRedirect(String arg0) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setDateHeader(String arg0, long arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setDateHeader(String name, long value) {
+        this.setHeader(name, new Date(value).toGMTString());
     }
 
-    public void addDateHeader(String arg0, long arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void addDateHeader(String name, long value) {
+        this.addHeader(name, new Date(value).toGMTString());
     }
 
-    public void setHeader(String arg0, String arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setHeader(String name, String value) {
+        this.headers.put(name, value);
     }
 
     public void addHeader(String key, String value) {
@@ -110,8 +116,8 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
             if (oldValue instanceof List) {
                 ((List)oldValue).add(value);
             } else {
-                List<Object> list = new ArrayList<Object>();
-                list.add(oldValue);
+                List<String> list = new ArrayList<String>();
+                list.add((String) oldValue);
                 list.add(value);
                 headers.put(key, list);
             }
@@ -120,12 +126,12 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
         }
     }
 
-    public void setIntHeader(String arg0, int arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setIntHeader(String name, int value) {
+        this.setHeader(name, String.valueOf(value));
     }
 
-    public void addIntHeader(String arg0, int arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void addIntHeader(String name, int value) {
+        this.addHeader(name, String.valueOf(value));
     }
 
     public void setStatus(int status) {
@@ -138,11 +144,11 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
     }
 
     public String getCharacterEncoding() {
-        return "UTF-8";
+        return this.characterEncoding;
     }
 
     public String getContentType() {
-        return "text/html";
+        return contentType;
     }
 
     public ServletOutputStream getOutputStream() throws IOException {
@@ -157,24 +163,24 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
         return writer;
     }
 
-    public void setCharacterEncoding(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setCharacterEncoding(String enc) {
+        this.characterEncoding = enc;
     }
 
-    public void setContentLength(int arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setContentLength(int contentLength) {
+        this.contentLength = contentLength;
     }
 
-    public void setContentType(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public void setBufferSize(int arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //
     }
 
     public int getBufferSize() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return 1;
     }
 
     public void flushBuffer() throws IOException {
@@ -193,12 +199,12 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setLocale(Locale arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     public Locale getLocale() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.locale;
     }
 
     public int getStatus() {
@@ -208,5 +214,17 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
     public String getErrorMessage() {
         return message;
     }
+
+
+    // ---------- Mock accessors ---------- //
+    public Map<String, Object> getHeaderMap() {
+        return headers;
+    }
+
+    public int getContentLength() {
+        return contentLength!=-1 ? contentLength : this.baos.size();
+    }
+
+
 
 }

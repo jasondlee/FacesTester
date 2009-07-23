@@ -33,6 +33,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -144,5 +149,41 @@ public class Util {
             throw new FacesTesterException("Unable to read web.xml at " +
                     webXml.getAbsolutePath(), e);
         }
+    }
+
+    public static <T> Enumeration<T> singletonEnumeration(T single) {
+        return Collections.enumeration(Collections.singleton(single));
+    }
+
+    public static <T> Enumeration<T> enumeration(Collection<T> input) {
+        if(input == null) {
+            return emptyEnumeration();
+        } else {
+            return Collections.enumeration(input);
+        }
+    }
+
+    public static <T> Enumeration<T> emptyEnumeration() {
+        return Collections.enumeration((List<T>)Collections.emptyList());
+    }
+
+    public static <T> T getFirst(List<T> list) {
+        return list == null || list.size()==0 ? null : list.get(0);
+    }
+
+    public static <T> Enumeration<T> enumeration(final T[] values) {
+        return new Enumeration<T>() {
+            private int i = 0;
+            public boolean hasMoreElements() {
+                return values!=null && i<values.length;
+            }
+
+            public T nextElement() {
+                if(!this.hasMoreElements()) {
+                    throw new NoSuchElementException();
+                }
+                return values[i++];
+            }
+        };
     }
 }

@@ -28,9 +28,10 @@
 package com.steeplesoft.jsf.facestester.servlet.impl;
 
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -40,18 +41,35 @@ import javax.servlet.ServletResponse;
  * @author jasonlee
  */
 public class FilterChainImpl implements FilterChain {
-    private List<Filter> filters;
-    private int index = 0;
+    private final Filter filter;
+    private final FilterChain nextFilterChain;
 
-    public FilterChainImpl(List<Filter> filters) {
-        this.filters = filters;
+    /**
+     * This constructor creates the Tail of the FilterChain.
+     * @param servlet the servlet on which to call the service method.
+     */
+    public FilterChainImpl(final Servlet servlet) {
+        this.nextFilterChain = null;
+        this.filter = new Filter() {
+
+            public void init(FilterConfig filterConfig) throws ServletException {}
+
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+                servlet.service(request, response);
+            }
+
+            public void destroy() {}
+        };
+    }
+
+    public FilterChainImpl(Filter filter, FilterChain nextFilterChain) {
+        this.filter = filter;
+        this.nextFilterChain = nextFilterChain;
     }
 
     public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
-        if (index < filters.size()) {
-            Filter filter = filters.get(index);
-            index++;
-            filter.doFilter(request, response, this);
+        if(this.filter != null) {
+            this.filter.doFilter(request, response, nextFilterChain);
         }
     }
 

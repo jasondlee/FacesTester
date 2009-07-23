@@ -25,41 +25,43 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.steeplesoft.jsf.facestester.util;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+package com.steeplesoft.jsf.facestester.servlet.impl;
+
+import com.steeplesoft.jsf.facestester.Resource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  *
- * @author jasonlee
+ * @author io
  */
-public class EnumerationImpl implements Enumeration {
+public class FileResource implements Resource {
 
-    private List values = new ArrayList();
-    private int index;
-    
-    public EnumerationImpl(Object value) {
-        values.add(value);
-        index = 0;
+    private final File file;
+
+    public FileResource(File file) {
+        this.file = file;
     }
 
-    public EnumerationImpl(Set values) {
-        Iterator i = values.iterator();
-        while (i.hasNext()) {
-            values.add(i.next());
-        }
-        index = 0;
+    public boolean exists() {
+        return this.file != null && this.file.exists();
     }
 
-    public boolean hasMoreElements() {
-        return index <= (values.size()-1);
+    public File getFile() {
+        return this.file;
     }
 
-    public Object nextElement() {
-        return values.get(index++);
+    public URL getURL() throws MalformedURLException, IOException {
+        return new URL("file:" + this.file.getCanonicalPath());
+    }
+
+    public InputStream getInputStream() throws IOException {
+        InputStream rval = new FileInputStream(this.file);
+        return rval;
     }
 }

@@ -27,6 +27,7 @@
  */
 package com.steeplesoft.jsf.facestester.servlet.impl;
 
+import com.steeplesoft.jsf.facestester.Util;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,23 +37,27 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 /**
- *
+ * TODO invalid checks
  * @author jasonlee
  */
 public class FacesTesterHttpSession implements HttpSession {
     protected Date creationDate = new Date();
+    private long creationTime = System.currentTimeMillis();
+    private long lastAccessedTime = creationTime;
     protected Map<String, Object> attributes = new HashMap<String, Object>();
-    private String id = Long.toString((new Date()).getTime());;
+    private String id = Long.toString((new Date()).getTime()) + Math.random();;
     private ServletContext context;
     private Map<String, Object> values = new HashMap<String, Object>();
-    private boolean valid = true;
+    private int maxInactiveInterval = 1800;
+    private boolean isNew = true;
+    private boolean invalid = false;
 
     public FacesTesterHttpSession(ServletContext context) {
         this.context = context;
     }
 
     public long getCreationTime() {
-        return creationDate.getTime();
+        return this.creationTime;
     }
 
     public String getId() {
@@ -60,65 +65,74 @@ public class FacesTesterHttpSession implements HttpSession {
     }
 
     public long getLastAccessedTime() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.lastAccessedTime;
     }
 
     public ServletContext getServletContext() {
         return this.context;
     }
 
-    public void setMaxInactiveInterval(int arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setMaxInactiveInterval(int interval) {
+        this.maxInactiveInterval = interval;
     }
 
     public int getMaxInactiveInterval() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.maxInactiveInterval;
     }
 
     public HttpSessionContext getSessionContext() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet and deprecated!");
     }
 
-    public Object getAttribute(String key) {
-        return attributes.get(key);
+    public Object getAttribute(String name) {
+        return this.attributes.get(name);
     }
 
-    public Object getValue(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Object getValue(String name) {
+        return this.values.get(name);
     }
 
     public Enumeration getAttributeNames() {
-        return new EnumerationImpl(attributes.keySet());
+        return Util.enumeration(this.attributes.keySet());
     }
 
     public String[] getValueNames() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.values.keySet().toArray(new String[this.values.size()]);
     }
 
-    public void setAttribute(String key, Object value) {
-        attributes.put(key, value);
+    public void setAttribute(String name, Object value) {
+        this.attributes.put(name, value);
     }
 
-    public void putValue(String key, Object value) {
-        values.put(key, value);
+    public void putValue(String name, Object value) {
+        this.values.put(name, value);
     }
 
-    public void removeAttribute(String key) {
-        attributes.remove(key);
+    public void removeAttribute(String name) {
+        this.attributes.remove(name);
     }
 
-    public void removeValue(String key) {
-        values.remove(key);
+    public void removeValue(String name) {
+        this.values.remove(name);
     }
 
     public void invalidate() {
-        valid = false;
-        attributes.clear();
-        values.clear();
+        this.invalid = true;
     }
 
     public boolean isNew() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.isNew;
+    }
+
+    /* ---------- Mock accessors --------- */
+    public void access() {
+        long now = System.currentTimeMillis();
+        if(now>this.lastAccessedTime + this.maxInactiveInterval*1000) {
+            this.invalidate();
+        } else {
+            this.lastAccessedTime = now;
+        }
+        this.isNew = false;
     }
 
 }
