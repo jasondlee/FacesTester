@@ -62,7 +62,7 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
 
     public MojarraFacesContextBuilder(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor) {
         // TODO: Should not have to do this :(
-        System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
+//        System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
         try {
             Class.forName("com.sun.faces.spi.AnnotationProvider");
             //Util.getLogger().info("This appears to be a Mojarra 2 environment.  Enabling AnnotationProvider.");
