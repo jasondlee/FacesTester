@@ -28,6 +28,7 @@
 package com.steeplesoft.jsf.facestester.servlet;
 
 import com.steeplesoft.jsf.facestester.FacesTester;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+
 
 public class WhenCreatingServletContext {
     @Test
@@ -50,6 +52,25 @@ public class WhenCreatingServletContext {
         finally {
             System.setProperties(properties);
         }
+    }
+
+    @Test
+    public void shouldLoadMimeTypesFromProperties() throws IOException {
+
+        TestWebAppDirectoryCreator creator = new TestWebAppDirectoryCreator();
+        File webAppDirectory = creator.createTestWebAppWithDescriptor(getClass().getResourceAsStream("/webapp/WEB-INF/web.xml"));
+
+        Properties properties = System.getProperties();
+        try {
+            System.setProperty("facestester.webAppPath", webAppDirectory.getAbsolutePath());
+            FacesTesterServletContext context = ServletContextFactory.createServletContext(WebDeploymentDescriptor.createFromFile(webAppDirectory));
+            assertThat(context.getMimeType("png"), is("image/png"));
+            assertThat(context.getMimeType("foo"), is("application/x-foo"));
+        }
+        finally {
+            System.setProperties(properties);
+        }
+
     }
 
     @Test

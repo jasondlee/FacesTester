@@ -69,6 +69,10 @@ public class ServletContextFactory {
             wrapper.init(servletContext);
         }
 
+        for (Map.Entry<String,String> mimeMappings : webDescriptor.getMimeTypeMappings().entrySet()) {
+            servletContext.addMimeType(mimeMappings.getKey(), mimeMappings.getValue());
+        }
+
 //        servletContext.addInitParameter("com.sun.faces.injectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
 
         return servletContext;

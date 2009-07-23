@@ -59,12 +59,26 @@ public class WebDeploymentDescriptorParser {
             loadListeners(doc, descriptor);
             loadFilters(doc, descriptor);
             loadFilterMappings(doc, descriptor);
+            loadMimeTypes(doc, descriptor);
 
             return descriptor;
         } catch (Exception ex) {
             throw new FacesTesterException("Unable to parse web deployment descriptor", ex);
         }
 
+    }
+
+    private void loadMimeTypes(Document doc, WebDeploymentDescriptor descriptor) {
+        NodeList nodes = doc.getElementsByTagName("mime-mapping");
+
+        for (int i = 0, len = nodes.getLength(); i < len; i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                String extension = Util.getNodeValue(node, "extension");
+                String mimeType = Util.getNodeValue(node, "mime-type");
+                descriptor.getMimeTypeMappings().put(extension, mimeType);
+            }
+        }
     }
 
     private void loadContextParams(Document doc, WebDeploymentDescriptor descriptor) {

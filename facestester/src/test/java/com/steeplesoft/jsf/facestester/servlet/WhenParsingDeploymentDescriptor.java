@@ -175,6 +175,22 @@ public class WhenParsingDeploymentDescriptor {
         Assert.assertEquals(descriptor.getFilterMappings().get("*.jsf"), "Test Filter");
    }
 
+   @Test
+   public void shouldLoadMimeTypeInformation() {
+       String webXml = new StringBuilder()
+             .append("<web-app>")
+             .append("    <mime-mapping>")
+             .append("        <extension>foo</extension>")
+             .append("        <mime-type>application/x-foo</mime-type>")
+             .append("    </mime-mapping>")
+             .append("</web-app>").toString();
+       createTempFile(webXml);
+       WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+       Assert.assertTrue(descriptor.getMimeTypeMappings().containsKey("foo"));
+       Assert.assertTrue("application/x-foo".equals(descriptor.getMimeTypeMappings().get("foo")));
+
+   }
+
    protected void createTempFile(String contents) {
         try {
             File file = new File (fakeWebAppDir, "web.xml");

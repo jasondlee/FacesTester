@@ -32,6 +32,10 @@ import com.steeplesoft.jsf.facestester.servlet.WebAppResourceLoader;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Collections;
+import java.io.InputStream;
+import java.io.IOException;
 
 import org.springframework.mock.web.MockServletContext;
 
@@ -41,18 +45,58 @@ import org.springframework.mock.web.MockServletContext;
  * @author jasonlee
  */
 public class FacesTesterServletContext extends MockServletContext {
+
+    private static final String MIME_PROPERTIES = "META-INF/facestester-mimetypes.properties";
+
+    private static final Map<String,String> staticMimeTypes;
+    static {
+
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        InputStream in = cl.getResourceAsStream(MIME_PROPERTIES);
+        Properties props = new Properties();
+        try {
+            props.load(in);
+        } catch (IOException ioe) {
+            throw new IllegalStateException(ioe);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                    // ignore
+                }
+            }
+        }
+        //noinspection unchecked
+        staticMimeTypes = Collections.unmodifiableMap(
+                              new HashMap<String,String>((Map)props));
+        
+    }
+
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private Map<String, String> initParameters = new HashMap<String, String>();
+    private Map<String,String> mimeTypes;
 
     public FacesTesterServletContext() {
+        mimeTypes = new HashMap<String,String>(staticMimeTypes);
+
     }
 
     public FacesTesterServletContext(WebAppResourceLoader webAppResourceLoader) {
         super(webAppResourceLoader);
+        mimeTypes = new HashMap<String,String>(staticMimeTypes);
     }
 
     public String getContextPath() {
         return "/";
+    }
+
+    public void addMimeType(String extension, String mimetype) {
+        mimeTypes.put(extension, mimetype);
+    }
+
+    public String getMimeType(String extension) {
+        return mimeTypes.get(extension);
     }
 
 
@@ -85,9 +129,7 @@ public class FacesTesterServletContext extends MockServletContext {
         return 2;
     }
 
-    public String getMimeType(String arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+
 
     public int getMinorVersion() {
         return 5;

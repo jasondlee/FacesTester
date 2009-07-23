@@ -44,6 +44,7 @@ public class WebDeploymentDescriptor {
     private List<EventListener> listeners = new ArrayList<EventListener>();
     private Map<String, FilterWrapper> filters = new HashMap<String, FilterWrapper>();
     private Map<String, String> filterMappings = new HashMap<String, String>();
+    private Map<String,String> mimeTypeMappings;
 
     public WebDeploymentDescriptor() {
     }
@@ -95,5 +96,16 @@ public class WebDeploymentDescriptor {
 
     public void setFilterMappings(Map<String, String> filterMappings) {
         this.filterMappings = filterMappings;
+    }
+
+    public Map<String,String> getMimeTypeMappings() {
+        if (mimeTypeMappings == null) {
+            mimeTypeMappings = new HashMap<String,String>();
+        }
+        return mimeTypeMappings;
+    }
+
+    public void setMimeTypeMappings(Map<String,String> mimeTypeMappings) {
+        this.mimeTypeMappings = mimeTypeMappings;
     }
 }
