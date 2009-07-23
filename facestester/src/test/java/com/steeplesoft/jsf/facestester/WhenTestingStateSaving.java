@@ -30,7 +30,7 @@ package com.steeplesoft.jsf.facestester;
 import com.steeplesoft.jsf.facestester.test.InvalidStateSavingComponent;
 import com.steeplesoft.jsf.facestester.test.TestComponent;
 import javax.faces.component.html.HtmlForm;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -38,10 +38,10 @@ import org.junit.Test;
  * @author jasonlee
  */
 public class WhenTestingStateSaving {
-    FacesTester facesTester;
+    static FacesTester facesTester;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         facesTester = new FacesTester();
     }
 

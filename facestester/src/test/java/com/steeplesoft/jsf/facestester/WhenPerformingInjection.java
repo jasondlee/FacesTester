@@ -30,6 +30,7 @@ package com.steeplesoft.jsf.facestester;
 import java.util.Date;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -37,12 +38,16 @@ import org.junit.Test;
  * @author jasonlee
  */
 public class WhenPerformingInjection {
-    protected FacesTester ft = new FacesTester();
-    protected InjectionTest it = new InjectionTest();
+    protected static FacesTester ft = new FacesTester();
+    protected InjectionTest it;
+
+    @BeforeClass
+    public static void setup() {
+        ft = new FacesTester();
+    }
 
     @Before
     public void setUp() {
-        ft = new FacesTester();
         it = new InjectionTest();
     }
 

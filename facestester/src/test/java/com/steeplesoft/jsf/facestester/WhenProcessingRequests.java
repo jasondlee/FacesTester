@@ -30,28 +30,25 @@ package com.steeplesoft.jsf.facestester;
 import com.steeplesoft.jsf.facestester.test.TestFilter;
 import com.steeplesoft.jsf.facestester.test.TestServletContextListener;
 import com.steeplesoft.jsf.facestester.test.TestServletRequestListener;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public class WhenProcessingRequests {
-    protected FacesTester tester;
-    
-    @Before
-    public void setUp() {
-        tester = new FacesTester();
+    static FacesTester facesTester;
+
+    @BeforeClass
+    public static void setup() {
+        facesTester = new FacesTester();
     }
 
     @Test
     public void shouldThrowExceptionForNonExistentView() {
         try {
-            tester.requestPage("/foo.xhtml");
+            facesTester.requestPage("/foo.xhtml");
             fail("Excepted exception not thrown");
         } catch (FacesTesterException e) {
             assertThat(e.getMessage(), is("The page /foo.xhtml was not found."));
@@ -63,27 +60,27 @@ public class WhenProcessingRequests {
      */
     @Test
     public void shouldBeAbleToAccessQueryParameters() {
-        FacesPage page = tester.requestPage("/queryTest.xhtml?foo=bar");
+        FacesPage page = facesTester.requestPage("/queryTest.xhtml?foo=bar");
         Assert.assertNotNull(page);
         assertThat(page.getParameterValue("foo"), is("bar"));
     }
 
     @Test
     public void shouldHaveContextListenersExecuted() {
-        tester.requestPage("/queryTest.xhtml");
+        facesTester.requestPage("/queryTest.xhtml");
         assertThat(TestServletContextListener.initializedCalled, is (true));
     }
 
     @Test
     public void shouldHaveRequestListenersExecuted() {
-        tester.requestPage("/queryTest.xhtml");
+        facesTester.requestPage("/queryTest.xhtml");
         assertThat(TestServletRequestListener.initializedCalled, is (true));
         assertThat(TestServletRequestListener.destroyedCalled, is (true));
     }
 
     @Test
     public void shouldHaveFiltersCalled() {
-        tester.requestPage("/queryTest.jsf");
+        facesTester.requestPage("/queryTest.jsf");
         assertThat(TestFilter.RUN_COUNT, is(1));
     }
 }
