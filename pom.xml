@@ -53,7 +53,6 @@
         <jstl.version>1.2</jstl.version>
         <junit.version>4.5</junit.version>
         <servlet.version>2.5</servlet.version>
-        <spring.version>2.5.6</spring.version>
 
         <compile.optimize>false</compile.optimize>
         <compile.debug>true</compile.debug>
