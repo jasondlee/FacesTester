@@ -97,7 +97,7 @@ public class FacesTesterAnnotationScanner extends AnnotationProvider {
             } else {
                 if (file.getName().endsWith(".class")) {
                     String classFile = file.getPath().substring("test/classes/".length() + 2);
-                    classFile = classFile.substring(0, classFile.length() - 6).replace("/", ".");
+                    classFile = classFile.substring(0, classFile.length() - 6).replace(File.separator, ".");
 
                     try {
                         Class clazz = Class.forName(classFile);
