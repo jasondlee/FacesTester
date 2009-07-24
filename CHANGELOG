@@ -7,6 +7,8 @@
 * Added support for Servlet filters
 * Added suport for Servlet listeners
 * Various XML parsing bug fixes
+* Moved JSF (Mojarra) 2 code to a new module to resolve run-time issues with update to Mojarra 1.2_13
+* Build/test changes invisible to the end user
 
 0.2
 

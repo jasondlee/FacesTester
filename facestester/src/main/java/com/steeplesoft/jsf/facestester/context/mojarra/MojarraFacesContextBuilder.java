@@ -52,25 +52,12 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionListener;
 
 public class MojarraFacesContextBuilder implements FacesContextBuilder {
-
-//    private static boolean initialized = false;
-//    private final ConfigureListener mojarraListener = new ConfigureListener();
     private FacesContextFactory facesContextFactory;
     private HttpSession session;
     private FacesTesterServletContext servletContext;
     private WebDeploymentDescriptor webDescriptor;
 
     public MojarraFacesContextBuilder(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor) {
-        // TODO: Should not have to do this :(
-//        System.setProperty("com.sun.faces.InjectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
-        try {
-            Class.forName("com.sun.faces.spi.AnnotationProvider");
-            //Util.getLogger().info("This appears to be a Mojarra 2 environment.  Enabling AnnotationProvider.");
-//            System.setProperty("com.sun.faces.spi.annotationprovider", "com.steeplesoft.jsf.facestester.context.mojarra.FacesTesterAnnotationScanner");
-        } catch (ClassNotFoundException ex) {
-            //
-        }
-
         this.servletContext = servletContext;
         this.session = session;
         this.webDescriptor = webDescriptor;
@@ -145,14 +132,6 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
         HttpSessionEvent hse = new HttpSessionEvent(session);
         List<EventListener> listeners = webDescriptor.getListeners();
 
-//        synchronized (mojarraListener) {
-//            if (!initialized) {
-//                mojarraListener.contextInitialized(sce);
-//                mojarraListener.sessionCreated(hse);
-//                initialized = true;
-//            }
-//        }
-
         for (EventListener listener : listeners) {
             if (listener instanceof ServletContextListener) {
                 ((ServletContextListener) listener).contextInitialized(sce);
@@ -175,7 +154,6 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
             servletRequest = new FacesTesterHttpServletRequest(servletContext);
         }
         servletRequest.setSession(session);
-//        mojarraListener.requestInitialized(new ServletRequestEvent(servletContext, servletRequest));
 
         if (uri != null) {
             addQueryParameters(servletRequest, uri);
