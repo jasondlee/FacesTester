@@ -37,7 +37,4 @@ import javax.faces.bean.RequestScoped;
 @ManagedBean(name="myBean")
 @RequestScoped
 public class MyManagedBean {
-    public MyManagedBean() {
-        System.out.println("***** MyManagedBean ctor");
-    }
 }
