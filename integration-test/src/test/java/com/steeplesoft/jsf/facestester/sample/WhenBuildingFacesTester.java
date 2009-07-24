@@ -38,25 +38,26 @@ import javax.faces.context.FacesContext;
 import javax.faces.application.FacesMessage;
 
 import org.junit.Test;
-import org.junit.Before;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 
 /**
  * @author jasonlee
  */
 public class WhenBuildingFacesTester {
 
-    private FacesTester tester;
+    protected static FacesTester tester;
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void beforeClass() {
         tester = new FacesTester();
     }
+
 
     @Test
     public void shouldBeAbleToCreateStandardComponents() {

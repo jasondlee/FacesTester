@@ -30,15 +30,21 @@ package com.steeplesoft.jsf.facestester.sample;
 import com.steeplesoft.jsf.facestester.FacesForm;
 import com.steeplesoft.jsf.facestester.FacesPage;
 import com.steeplesoft.jsf.facestester.FacesTester;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public class WhenSubmittingZipCodeForm {
+    protected static FacesTester tester;
+
+    @BeforeClass
+    public static void beforeClass() {
+        tester = new FacesTester();
+    }
 
     @Test
     public void shouldDisplayCityForZipCode() {
-        FacesTester tester = new FacesTester();
         FacesPage page = tester.requestPage("/zipCodeMapper.xhtml");
 
         // Make sure the managed bean was loaded correctly
@@ -53,7 +59,6 @@ public class WhenSubmittingZipCodeForm {
 
     @Test
     public void shouldDisplayMessageIfZipCodeIsInvalid() {
-        FacesTester tester = new FacesTester();
         FacesPage page = tester.requestPage("/zipCodeMapper.xhtml");
 
         FacesForm form = page.getFormById("form");
