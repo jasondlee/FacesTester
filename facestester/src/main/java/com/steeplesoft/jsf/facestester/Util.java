@@ -28,16 +28,22 @@
 package com.steeplesoft.jsf.facestester;
 
 import com.steeplesoft.jsf.facestester.servlet.ServletContextFactory;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -52,6 +58,7 @@ public class Util {
     private static final String[] locationsToCheck = new String[]{"src/test/webapp", "src/test/resources", "src/test/resources/webapp", "src/main/webapp"};
     private static Boolean isMojarra = null;
     private static Boolean isMyFaces = null;
+    private static final int COPY_BUFFER_SIZE = 4096;
 
     public static Logger getLogger() {
         return Logger.getLogger(FacesTester.class.getName());
@@ -185,5 +192,103 @@ public class Util {
                 return values[i++];
             }
         };
+    }
+
+    /**
+     * Copy operation for streams.
+     * @param in the source stream. This stream will not be closed by this 
+     *      operation.
+     * @param out the target stream. This stream will not be closed by this 
+     *      operation.
+     * @throws IOException if copying from the source to the target throws an
+     *      IOException
+     */
+    public static final void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[COPY_BUFFER_SIZE];
+        while(in.available()>0) {
+            int size = in.read(buffer);
+            out.write(buffer, 0, size);
+        }
+    }
+
+    /**
+     * Copy-operation to copy the data of an InputStream to a target File.
+     * @param in the the source stream. This stream will not be closed by this
+     *      operation!
+     * @param target the file to copy to
+     * @param overwrite if true, will silently try to overwrite an existing
+     *      target file. Otherwise throw an IOException.
+     * @throws FileNotFoundException if the source file can not be found
+     * @throws IOException if copying to the file throws an IOException.
+     */
+    public static final void copy(InputStream in, File target, boolean overwrite) throws FileNotFoundException, IOException {
+        if(target.exists() && !overwrite) {
+            throw new IOException("The target file already exists and overwrite was set to false");
+        }
+        OutputStream out = null;
+        try {
+            out = new BufferedOutputStream(new FileOutputStream(target));
+            copy(in, out);
+        } finally {
+            close(out);
+        }
+    }
+
+    /**
+     * Shortcut for copy(InputStream in, File target, true).
+     */
+    public static final void copy(final InputStream in, final File target) throws FileNotFoundException, IOException {
+        copy(in, target, true);
+    }
+
+    /**
+     * Copy-operation for Files.
+     * @param source the file to copy from
+     * @param target the file to copy to
+     * @param overwrite if true, will silently try to overwrite an existing target file. Otherwise throw an "" exception.
+     * @throws FileNotFoundException if the source file can not be found
+     * @throws IOException if copying the file throwed an IOException.
+     */
+    public static final void copy(final File source, final File target, final boolean overwrite) throws FileNotFoundException, IOException {
+        if(source == null) {
+            throw new NullPointerException("Parameter source may not be null");
+        }
+        if(source.isDirectory()) {
+            throw new UnsupportedOperationException("copy not supported for directories");
+        }
+
+        InputStream in = null;
+        try {
+            in = new BufferedInputStream(new FileInputStream(source));
+            copy(in, target, overwrite);
+        } finally {
+            close(in);
+        }
+    }
+
+    /**
+     * Shortcut for copy(File source, File target, true)
+     */
+    public static final void copy(final File source, final File target) throws FileNotFoundException, IOException {
+        copy(source, target, true);
+    }
+
+    /**
+     * Closes a closeable, ignoring null parameters, catching any exceptions
+     *      and returning that exception. This method is usefull in finally
+     *      clauses, where exceptions are usually ignored.
+     * @param toClose the resource to be closed
+     * @return null if no exception was thrown or the parameter was null.
+     *      The exception thrown otherwise.
+     */
+    public static final Exception close(Closeable toClose) {
+        if(toClose != null) {
+            try {
+                toClose.close();
+            } catch (Exception ex) {
+                return ex;
+            }
+        }
+        return null;
     }
 }
