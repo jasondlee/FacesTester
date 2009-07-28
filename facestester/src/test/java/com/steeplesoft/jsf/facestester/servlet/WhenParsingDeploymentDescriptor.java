@@ -30,6 +30,7 @@ package com.steeplesoft.jsf.facestester.servlet;
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 import com.steeplesoft.jsf.facestester.test.TestFilter;
 import com.steeplesoft.jsf.facestester.test.TestServletContextListener;
+import javax.servlet.Filter;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -155,8 +156,12 @@ public class WhenParsingDeploymentDescriptor {
                 .append("       <filter-name>Test Filter</filter-name>")
                 .append("       <filter-class>com.steeplesoft.jsf.facestester.test.TestFilter</filter-class>")
                 .append("       <init-param>")
-                .append("           <param-name>a.test.param</param-name>")
-                .append("           <param-value>a.test.value</param-value>")
+                .append("           <param-name>")
+                .append("               ").append(TestFilter.TEST_PARAM_KEY)
+                .append("           </param-name>")
+                .append("           <param-value>")
+                .append("               ").append(TestFilter.TEST_PARAM_VALUE)
+                .append("           </param-value>")
                 .append("       </init-param>")
                 .append("   </filter>")
                 .append("   <filter-mapping>")
@@ -171,8 +176,22 @@ public class WhenParsingDeploymentDescriptor {
 
         createTempFile(webXml);
         WebDeploymentDescriptor descriptor = parser.parse(new File("."));
-        Assert.assertTrue(descriptor.getFilters().get("Test Filter").getFilter() instanceof TestFilter);
-        Assert.assertEquals(descriptor.getFilterMappings().get("*.jsf"), "Test Filter");
+        Assert.assertEquals("Test Filter should map to *.jsf", descriptor.getFilterMappings().get("*.jsf"), "Test Filter");
+
+        FilterWrapper filterWrapper = descriptor.getFilters().get("Test Filter");
+        Assert.assertNotNull("Should create FilterWrapper", filterWrapper);
+        Assert.assertEquals("FilterWrapper should contain initParam: " + TestFilter.TEST_PARAM_KEY,
+                TestFilter.TEST_PARAM_VALUE, filterWrapper.getInitParam(TestFilter.TEST_PARAM_KEY));
+        
+        Filter filter = filterWrapper.getFilter();
+        Assert.assertNotNull("Test Filter should be available", filter);
+        Assert.assertEquals("Check type of Filter", filter.getClass(), TestFilter.class);
+
+        filterWrapper.init(null);
+        TestFilter testFilter = (TestFilter) filter;
+        Assert.assertNull("Reading unavailable initParam", testFilter.getInitParam("notset"));
+        Assert.assertEquals("Reading available initParam '"+TestFilter.TEST_PARAM_KEY+"'",
+                TestFilter.TEST_PARAM_VALUE, testFilter.getInitParam(TestFilter.TEST_PARAM_KEY));
    }
 
    @Test

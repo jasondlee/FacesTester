@@ -121,8 +121,6 @@ public class WebDeploymentDescriptorParser {
                 FilterWrapper wrapper = new FilterWrapper(filterName);
                 wrapper.setFilter(Util.createInstance(Filter.class, filterClass));
                 NodeList children = ((Element) node).getElementsByTagName("init-param");
-                Map<String, String> initParameters = new HashMap<String, String>();
-
                 for (int j = 0; j < children.getLength(); j++) {
                     Node child = children.item(j);
                     if (child.getNodeType() == Node.ELEMENT_NODE) {
@@ -131,10 +129,9 @@ public class WebDeploymentDescriptorParser {
                         if (paramName == null) {
                             throw new FacesTesterException("An init-param name for the filter '" + filterName + "' is null.");
                         }
-                        initParameters.put(paramName, paramValue);
+                        wrapper.setInitParam(paramName, paramValue);
                     }
                 }
-
                 descriptor.getFilters().put(filterName, wrapper);
             }
         }

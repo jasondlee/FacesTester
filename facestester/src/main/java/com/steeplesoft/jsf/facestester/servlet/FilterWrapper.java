@@ -67,6 +67,14 @@ public class FilterWrapper {
         this.filter = filter;
     }
 
+    public String getInitParam(String key) {
+        return this.initParams.get(key);
+    }
+    
+    public void setInitParam(String key, String value) {
+        this.initParams.put(key, value);
+    }
+
     public Map<String, String> getInitParams() {
         return initParams;
     }

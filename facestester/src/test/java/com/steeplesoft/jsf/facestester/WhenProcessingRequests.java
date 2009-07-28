@@ -79,7 +79,14 @@ public class WhenProcessingRequests {
     }
 
     @Test
+    public void shouldHaveFiltersInitCalled() {
+        facesTester.requestPage("/queryTest.jsf");
+        assertThat(TestFilter.INIT_PARAMS.get("parm1"), is("value1"));
+    }
+
+    @Test
     public void shouldHaveFiltersCalled() {
+        TestFilter.RUN_COUNT = 0;
         facesTester.requestPage("/queryTest.jsf");
         assertThat(TestFilter.RUN_COUNT, is(1));
     }

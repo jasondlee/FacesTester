@@ -44,13 +44,15 @@ import javax.servlet.ServletResponse;
  */
 public class TestFilter implements Filter {
     public static int RUN_COUNT = 0;
-    private Map<String, String> params = new HashMap<String, String>();
-
+    public static Map<String, String> INIT_PARAMS = new HashMap<String, String>();
+    public static final String TEST_PARAM_KEY = "a.test.param";
+    public static final String TEST_PARAM_VALUE = "a.test.value";
+    
     public void init(FilterConfig filterConfig) throws ServletException {
         Enumeration e = filterConfig.getInitParameterNames();
         while (e.hasMoreElements()) {
             String name = (String)e.nextElement();
-            params.put(name, filterConfig.getInitParameter(name));
+            INIT_PARAMS.put(name, filterConfig.getInitParameter(name));
         }
     }
 
@@ -62,4 +64,9 @@ public class TestFilter implements Filter {
     public void destroy() {
         //
     }
+
+    public String getInitParam(String key) {
+        return INIT_PARAMS.get(key);
+    }
+
 }
