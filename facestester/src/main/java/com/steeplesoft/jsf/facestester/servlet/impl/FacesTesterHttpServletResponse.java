@@ -27,6 +27,7 @@
  */
 package com.steeplesoft.jsf.facestester.servlet.impl;
 
+import com.steeplesoft.jsf.facestester.FacesTesterException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -37,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 public class FacesTesterHttpServletResponse implements HttpServletResponse {
     protected Map<String, Object> headers = new HashMap<String, Object>();
     private ByteArrayOutputStream baos;
+    private ServletOutputStream sos;
     private PrintWriter writer;
     private int status = HttpServletResponse.SC_OK;
     private String message;
@@ -55,9 +59,20 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
     private Locale locale = Locale.ENGLISH;
     private String characterEncoding = "iso-8859-1";
     private int contentLength = -1;
+    private int bufferSize;
+    private boolean commited;
 
 
     public String getContentAsString() throws UnsupportedEncodingException {
+        try {
+            if(this.writer != null) {
+                this.writer.flush();
+            } else if(this.sos != null) {
+                this.sos.flush();
+            }
+        } catch (IOException ex) {
+            throw new FacesTesterException(ex);
+        }
         return this.baos.toString();
     }
 
@@ -152,13 +167,22 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
     }
 
     public ServletOutputStream getOutputStream() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(this.writer != null) {
+            throw new IllegalStateException("getWriter has already been called");
+        }
+        if(this.sos == null) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        return this.sos;
     }
 
     public PrintWriter getWriter() throws IOException {
-        if (writer == null) {
-            baos = new ByteArrayOutputStream();
-            writer = new PrintWriter(baos);
+        if(this.sos != null) {
+            throw new IllegalStateException("getOutputStream has already been called");
+        }
+        if (this.writer == null) {
+            this.baos = new ByteArrayOutputStream();
+            this.writer = new PrintWriter(baos);
         }
         return writer;
     }
@@ -172,31 +196,40 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
     }
 
     public void setContentType(String contentType) {
+        // TODO parse enctype if set
         this.contentType = contentType;
     }
 
-    public void setBufferSize(int arg0) {
-        //
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
     }
 
     public int getBufferSize() {
-        return 1;
+        return this.bufferSize;
     }
 
     public void flushBuffer() throws IOException {
-        //
+        this.commited = true;
     }
 
     public void resetBuffer() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+
     public boolean isCommitted() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // TODO: commited has to be set to true, also in response of the amount
+        // of data written etc.
+        return this.commited;
     }
 
     public void reset() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.checkCommited();
+        this.headers.clear();
+        this.setStatus(SC_OK, null);
+        if(this.baos!=null) {
+            this.baos.reset();
+        }
     }
 
     public void setLocale(Locale locale) {
@@ -226,5 +259,11 @@ public class FacesTesterHttpServletResponse implements HttpServletResponse {
     }
 
 
+    // ---------- private ----------- //
+    private void checkCommited() {
+        if(this.commited) {
+            throw new IllegalStateException("This response has already been commited");
+        }
+    }
 
 }

@@ -79,15 +79,22 @@ public class WhenProcessingRequests {
     }
 
     @Test
-    public void shouldHaveFiltersInitCalled() {
-        facesTester.requestPage("/queryTest.jsf");
-        assertThat(TestFilter.INIT_PARAMS.get("parm1"), is("value1"));
-    }
-
-    @Test
     public void shouldHaveFiltersCalled() {
         TestFilter.RUN_COUNT = 0;
         facesTester.requestPage("/queryTest.jsf");
+        assertThat(TestFilter.INIT_PARAMS.get("parm1"), is("value1"));
         assertThat(TestFilter.RUN_COUNT, is(1));
     }
+
+    @Test
+    public void shouldMakeHTMLAvailable() {
+        FacesPage page = facesTester.requestPage("/queryTest.xhtml");
+        String result = page.getRenderedPage();
+        Assert.assertTrue("Checking occurence of some content",
+                result.contains("<html xmlns")
+                && result.contains("</html>")
+                && result.contains("Dummy page"));
+    }
+
+
 }
