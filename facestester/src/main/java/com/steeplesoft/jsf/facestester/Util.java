@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -74,6 +75,23 @@ public class Util {
             }
         }
         return isMojarra;
+    }
+
+    public static Collection<String> getNodesValues(Node parent, String name) {
+        return getNodesValues(parent, name, true);
+    }
+
+    private static Collection<String> getNodesValues(Node parent, String name, boolean trim) {
+        List<String> retValues = new ArrayList<String>();
+        NodeList elements = ((Element) parent).getElementsByTagName(name);
+        for(int i=0; i<elements.getLength(); i++) {
+            NodeList valueNodeList = ((Element) elements.item(i)).getChildNodes();
+            if(valueNodeList.getLength()>0) {
+                String value = valueNodeList.item(0).getNodeValue();
+                retValues.add(trim && (value!=null) ? value.trim() : value);
+            }
+        }
+        return retValues;
     }
 
     public static String getNodeValue(Node node, String name) {
@@ -291,4 +309,5 @@ public class Util {
         }
         return null;
     }
+
 }

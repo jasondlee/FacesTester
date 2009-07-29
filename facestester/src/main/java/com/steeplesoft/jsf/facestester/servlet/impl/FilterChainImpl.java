@@ -73,4 +73,12 @@ public class FilterChainImpl implements FilterChain {
         }
     }
 
+    /* ---------- test accessors ---------- */
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public FilterChain getNextFilterChain() {
+        return nextFilterChain;
+    }
 }

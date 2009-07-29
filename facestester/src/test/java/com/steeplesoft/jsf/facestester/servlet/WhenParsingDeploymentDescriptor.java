@@ -27,10 +27,15 @@
  */
 package com.steeplesoft.jsf.facestester.servlet;
 
+import com.steeplesoft.jsf.facestester.FacesTester;
 import com.steeplesoft.jsf.facestester.FacesTesterException;
+import com.steeplesoft.jsf.facestester.Util;
+import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.test.TestFilter;
 import com.steeplesoft.jsf.facestester.test.TestServletContextListener;
+import java.io.InputStream;
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
@@ -39,7 +44,9 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.List;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -176,8 +183,7 @@ public class WhenParsingDeploymentDescriptor {
 
         createTempFile(webXml);
         WebDeploymentDescriptor descriptor = parser.parse(new File("."));
-        Assert.assertEquals("Test Filter should map to *.jsf", descriptor.getFilterMappings().get("*.jsf"), "Test Filter");
-
+        
         FilterWrapper filterWrapper = descriptor.getFilters().get("Test Filter");
         Assert.assertNotNull("Should create FilterWrapper", filterWrapper);
         Assert.assertEquals("FilterWrapper should contain initParam: " + TestFilter.TEST_PARAM_KEY,
@@ -192,11 +198,68 @@ public class WhenParsingDeploymentDescriptor {
         Assert.assertNull("Reading unavailable initParam", testFilter.getInitParam("notset"));
         Assert.assertEquals("Reading available initParam '"+TestFilter.TEST_PARAM_KEY+"'",
                 TestFilter.TEST_PARAM_VALUE, testFilter.getInitParam(TestFilter.TEST_PARAM_KEY));
-   }
+    }
 
-   @Test
-   public void shouldLoadMimeTypeInformation() {
-       String webXml = new StringBuilder()
+    @Test
+    public void shouldLoadMultipleFilters() {
+        String webXML = "testingTwoFiltersWithSameMapping-web.xml";
+        // Test Filter3: /faces/*
+        // Test Filter1: *.jsf
+        // Test Filter2: *.xxx, Faces Servlet
+        // Test Filter3: /faces/*, /feets/*
+        Assert.assertEquals("Checking order for '/test.jsf'",
+                "Test Filter1, Test Filter2",
+                getOrderedNames(this.createFilterChain(webXML, "/test.jsf")));
+        Assert.assertEquals("Checking order for '/faces/test.jsf'",
+                "Test Filter3, Test Filter1, Test Filter2",
+                getOrderedNames(this.createFilterChain(webXML, "/faces/test.jsf")));
+        Assert.assertEquals("Checking order for '/feets/some.xxx'",
+                "Test Filter2, Test Filter3",
+                getOrderedNames(this.createFilterChain(webXML, "/feets/some.xxx")));
+        Assert.assertEquals("Checking order for '/any'",
+                "Test Filter2",
+                getOrderedNames(this.createFilterChain(webXML, "/any")));
+        Assert.assertEquals("Checking order for '/faces/any'",
+                "Test Filter3, Test Filter2",
+                getOrderedNames(this.createFilterChain(webXML, "/faces/any")));
+
+    }
+
+    private String getOrderedNames(List<Filter> filters) {
+        StringBuilder sb = new StringBuilder();
+        for(Filter filter : filters) {
+            if(sb.length()>0) {
+                sb.append(", ");
+            }
+            if(filter instanceof TestFilter) {
+                sb.append(((TestFilter)filter).getName());
+            } else {
+                sb.append("<UNKNOWN FILTER>");
+            }
+        }
+        return sb.toString();
+    }
+
+    private List<Filter> createFilterChain(String resourcePath, String uri) {
+        createTempFileFromCP(resourcePath);
+        final WebDeploymentDescriptor wdDescriptor = parser.parse(new File("."));
+        ServletContextFactory.createServletContext(wdDescriptor); // initialize the ServletContext
+        FacesTesterForFilterTests tester = new FacesTesterForFilterTests(wdDescriptor);
+        FilterChainImpl fChain = tester.createAppropriateFilterChain(uri);
+        tester.cleanup();
+        List<Filter> rval = new ArrayList<Filter>(3);
+        do {
+            Filter f = fChain.getFilter();
+            if(f != null) {
+                rval.add(f);
+            }
+        } while(null != (fChain = (FilterChainImpl) fChain.getNextFilterChain()));
+        return rval;
+    }
+
+    @Test
+    public void shouldLoadMimeTypeInformation() {
+        String webXml = new StringBuilder()
              .append("<web-app>")
              .append("    <mime-mapping>")
              .append("        <extension>foo</extension>")
@@ -208,9 +271,9 @@ public class WhenParsingDeploymentDescriptor {
        Assert.assertTrue(descriptor.getMimeTypeMappings().containsKey("foo"));
        Assert.assertTrue("application/x-foo".equals(descriptor.getMimeTypeMappings().get("foo")));
 
-   }
+    }
 
-   protected void createTempFile(String contents) {
+    protected void createTempFile(String contents) {
         try {
             File file = new File (fakeWebAppDir, "web.xml");
             file.createNewFile();
@@ -221,5 +284,46 @@ public class WhenParsingDeploymentDescriptor {
         } catch (IOException ex) {
             throw new FacesTesterException("Unable to create temporary file", ex);
         }
-   }
+    }
+
+    private final String resourcePackagePath = "/" +
+            this.getClass().getPackage().getName().replace(".", "/") + "/resources/";
+
+    /**
+     * creates the temp web.xml copying the specified resource from the
+     * subpackage 'resources'
+     * @param resourceName the resource to copy to a temporary web.xml
+     */
+    protected void createTempFileFromCP(String resourceName) {
+        InputStream resourceStream = null;
+        try {
+            String path = this.resourcePackagePath + resourceName;
+            resourceStream = this.getClass().getResourceAsStream(path);
+            File file = new File(fakeWebAppDir, "web.xml");
+            file.createNewFile();
+            Util.copy(resourceStream, file);
+            file.deleteOnExit();
+        } catch (IOException ex) {
+            throw new FacesTesterException("Unable to create temporary file", ex);
+        } finally {
+            Util.close(resourceStream);
+        }
+    }
+
+    private static class FacesTesterForFilterTests extends FacesTester {
+
+        public FacesTesterForFilterTests(WebDeploymentDescriptor wdDescriptor) {
+            descriptor = wdDescriptor;
+        }
+
+        public FilterChainImpl createAppropriateFilterChain(String uri) {
+            return (FilterChainImpl) super.createAppropriateFilterChain(uri, null);
+        }
+
+        public void cleanup() {
+            descriptor = null;
+        }
+    }
+
+
 }

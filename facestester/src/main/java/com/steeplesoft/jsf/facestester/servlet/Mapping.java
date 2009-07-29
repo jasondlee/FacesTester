@@ -25,55 +25,27 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.steeplesoft.jsf.facestester.test;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+package com.steeplesoft.jsf.facestester.servlet;
 
 /**
- *
- * @author jasonlee
+ * simple 'tuple' class for Servlet and Filter mappings.
+ * @author io
  */
-public class TestFilter implements Filter {
-    public static int RUN_COUNT = 0;
-    public static Map<String, String> INIT_PARAMS = new HashMap<String, String>();
-    public static final String TEST_PARAM_KEY = "a.test.param";
-    public static final String TEST_PARAM_VALUE = "a.test.value";
+public class Mapping {
+    private String pattern;
     private String name;
-    
-    public void init(FilterConfig filterConfig) throws ServletException {
-        Enumeration e = filterConfig.getInitParameterNames();
-        this.name = filterConfig.getFilterName();
-        while (e.hasMoreElements()) {
-            String name = (String)e.nextElement();
-            INIT_PARAMS.put(name, filterConfig.getInitParameter(name));
-        }
+
+    public Mapping(String pattern, String name) {
+        this.pattern = pattern;
+        this.name = name;
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        RUN_COUNT++;
-        chain.doFilter(request, response);
-    }
-
-    public void destroy() {
-        //
-    }
-
-    public String getInitParam(String key) {
-        return INIT_PARAMS.get(key);
+    public String getURLPattern() {
+        return pattern;
     }
 
     public String getName() {
         return name;
     }
-
-    
 }

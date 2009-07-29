@@ -43,8 +43,9 @@ public class WebDeploymentDescriptor {
     private Map<String, String> contextParameters = new HashMap<String, String>();
     private List<EventListener> listeners = new ArrayList<EventListener>();
     private Map<String, FilterWrapper> filters = new HashMap<String, FilterWrapper>();
-    private Map<String, String> filterMappings = new HashMap<String, String>();
+    private List<Mapping> filterMappings = new ArrayList<Mapping>();
     private Map<String,String> mimeTypeMappings;
+    private List<Mapping> servletMappings;
 
     public WebDeploymentDescriptor() {
     }
@@ -90,11 +91,11 @@ public class WebDeploymentDescriptor {
         this.filters = filters;
     }
 
-    public Map<String, String> getFilterMappings() {
+    public List<Mapping> getFilterMappings() {
         return filterMappings;
     }
 
-    public void setFilterMappings(Map<String, String> filterMappings) {
+    public void setFilterMappings(List<Mapping> filterMappings) {
         this.filterMappings = filterMappings;
     }
 
@@ -107,5 +108,13 @@ public class WebDeploymentDescriptor {
 
     public void setMimeTypeMappings(Map<String,String> mimeTypeMappings) {
         this.mimeTypeMappings = mimeTypeMappings;
+    }
+
+    public void addFilterMapping(String urlPattern, String filterName) {
+        this.filterMappings.add(new Mapping(urlPattern, filterName));
+    }
+
+    public List<Mapping> getServletMappings() {
+        return this.servletMappings;
     }
 }

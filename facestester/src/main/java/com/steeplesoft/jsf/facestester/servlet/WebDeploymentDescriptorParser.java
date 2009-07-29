@@ -33,6 +33,7 @@ import com.steeplesoft.jsf.facestester.Util;
 import java.io.File;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
@@ -145,15 +146,29 @@ public class WebDeploymentDescriptorParser {
 
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 String filterName = Util.getNodeValue(node, "filter-name");
-                String urlPattern = Util.getNodeValue(node, "url-pattern");
-
-                if (descriptor.getFilters().get(filterName) == null) {
-                    throw new FacesTesterException ("The filter-mapping '" +
-                            urlPattern + "' for filter '" + filterName +
+                FilterWrapper wrapper = descriptor.getFilters().get(filterName);
+                if (wrapper == null) {
+                    throw new FacesTesterException ("The filter-mapping for filter '"
+                            + filterName +
                             "' is invalid because the filter could not be found.");
                 }
-
-                descriptor.getFilterMappings().put(urlPattern, filterName);
+                Collection<String> urlPatterns = Util.getNodesValues(node, "url-pattern");
+                for(String urlPattern : urlPatterns) {
+                    descriptor.addFilterMapping(urlPattern, filterName);
+                }
+                Collection<String> servletNames = Util.getNodesValues(node, "servlet-name");
+                if(servletNames.size()>0) {
+                    descriptor.addFilterMapping("/*", filterName);
+                }
+                /*
+                for(String servletName : servletNames) {
+                    for(Mapping servletMapping : descriptor.getServletMappings()) {
+                        if(servletMapping.getName().equals(servletName)) {
+                            descriptor.addFilterMapping(filterName, servletMapping.getURLPattern());
+                        }
+                    }
+                }
+                 */
             }
         }
     }

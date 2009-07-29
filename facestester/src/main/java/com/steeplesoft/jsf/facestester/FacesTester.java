@@ -30,6 +30,7 @@ package com.steeplesoft.jsf.facestester;
 import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
 import com.steeplesoft.jsf.facestester.context.mojarra.MojarraFacesContextBuilder;
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
+import com.steeplesoft.jsf.facestester.servlet.Mapping;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
@@ -54,6 +55,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventListener;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -497,16 +500,23 @@ public class FacesTester {
      * @param uri
      * @return
      */
-    private FilterChain createAppropriateFilterChain(String uri, Filter finalFilter) {
+    protected FilterChain createAppropriateFilterChain(String uri, Filter finalFilter) {
+        List<String> added = new ArrayList<String>();
         FilterChain rval = new FilterChainImpl(finalFilter, null);
-        for (Map.Entry<String, String> entry : descriptor.getFilterMappings().entrySet()) {
-            final String mapping = entry.getKey();
-            String regEx = mapping.replaceAll("\\.", "\\\\.").replaceAll("\\*", "\\.\\*");
-            if (Pattern.matches(regEx, uri)) {
-                rval = new FilterChainImpl(
-                        descriptor.getFilters().get(entry.getValue()).getFilter(),
-                        rval);
+        for (Mapping mapping : descriptor.getFilterMappings()) {
+            final String filterName = mapping.getName();
+            if (!added.contains(filterName)) {
+                final String pattern = mapping.getURLPattern();
+                String regEx = pattern.replaceAll("\\.", "\\\\.").replaceAll("\\*", "\\.\\*");
+                if (Pattern.matches(regEx, uri)) {
+                    added.add(filterName);
+                }
             }
+        }
+        for (int i = added.size() - 1; i >= 0; i--) {
+            rval = new FilterChainImpl(
+                    descriptor.getFilters().get(added.get(i)).getFilter(),
+                    rval);
         }
         return rval;
     }
