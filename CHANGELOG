@@ -1,5 +1,6 @@
 0.3
 * Removal of Spring dependency (Thanks, Imre)
+* Removal of commons-io dependency (Thanks, again, Imre)
 * Moved to the BSD license
 * Injection bug fixes
 * Added support for Mojarra 2
