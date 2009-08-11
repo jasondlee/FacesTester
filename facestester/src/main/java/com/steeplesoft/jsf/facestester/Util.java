@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -210,6 +209,18 @@ public class Util {
                 return values[i++];
             }
         };
+    }
+
+    public static <T> Collection<T> collection(Enumeration<T> input) {
+        List<T> rval = new ArrayList<T>();
+        addToCollection(input, rval);
+        return rval;
+    }
+
+    public static <T> void addToCollection(Enumeration<T> input, Collection<T> into ) {
+        while(input.hasMoreElements()) {
+            into.add(input.nextElement());
+        }
     }
 
     /**
