@@ -214,6 +214,21 @@ public class Util {
         };
     }
 
+    // These don't appear to be used, but qoob added them for some reason.  I'll
+    // trust him for now. :)
+    public static <T> Collection<T> collection(Enumeration<T> input) {
+        List<T> rval = new ArrayList<T>();
+        addToCollection(input, rval);
+        return rval;
+    }
+
+    public static <T> void addToCollection(Enumeration<T> input, Collection<T> into ) {
+        while(input.hasMoreElements()) {
+            into.add(input.nextElement());
+        }
+    }
+
+
     /**
      * Copy operation for streams.
      * @param in the source stream. This stream will not be closed by this 
