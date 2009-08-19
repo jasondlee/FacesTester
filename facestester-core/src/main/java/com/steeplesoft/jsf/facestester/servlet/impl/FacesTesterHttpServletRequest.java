@@ -48,6 +48,10 @@ import javax.servlet.http.HttpSession;
 import com.steeplesoft.jsf.facestester.Util;
 import com.steeplesoft.jsf.facestester.servlet.CookieManager;
 import com.steeplesoft.jsf.facestester.util.MultiValueMap;
+import java.io.InputStream;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 /**
  *
@@ -78,11 +82,30 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     private int serverPort = 80;
     private int localPort = 80;
 
-	private final CookieManager cookieManager;
+    private String remoteUser = null;
+    private String scheme = "http";
+    private String protocol = "HTTP/1.1";
+    private ServletInputStream servletInputStream;
+    private InputStream inputStream;
+    private String authType;
+    private Principal userPrincipal;
+    private String[] userRoles;
+    private String requestedSessionId;
+    private boolean requestedSessionIdIsValid;
+    private boolean requestedSessionIdIsFromCookie;
+    private boolean requestedSessionIdIsFromURL;
+    private String remoteAddr = "127.0.0.1";
+    private String remoteHost = "localhost";
+    private boolean secure;
+    private int remotePort = 0;
+    private String localName = "localhost";
+    private String localAddr = "127.0.0.1";
+
+    private final CookieManager cookieManager;
 
     public FacesTesterHttpServletRequest(ServletContext context, String method, String url, CookieManager cookieManager) {
         this.context = context;
-		this.cookieManager = cookieManager;
+        this.cookieManager = cookieManager;
         this.contextPath = context.getContextPath();
         this.method = method;
         this.requestURI = url;
@@ -94,7 +117,7 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public String getAuthType() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.authType;
     }
 
     public Cookie[] getCookies() {
@@ -102,7 +125,10 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public long getDateHeader(String name) {
-        throw newUnsupportedOperationException("Not supported yet.");
+        String value = this.getHeader(name);
+        // TODO not doing date translation yet
+        // So for now it has to be set with a long value.
+        return Long.parseLong(value);
     }
 
     public String getHeader(String name) {
@@ -131,8 +157,7 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public String getPathTranslated() {
-        throw newUnsupportedOperationException("Not supported yet.");
-//      return this.pathInfo == null ? null : this.getRealPath(this.pathInfo);
+       return this.pathInfo == null ? null : this.getRealPath(this.pathInfo);
     }
 
     public String getContextPath() {
@@ -144,19 +169,26 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRemoteUser() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.remoteUser;
     }
 
     public boolean isUserInRole(String role) {
-        throw newUnsupportedOperationException("Not supported yet.");
+        if(this.userRoles != null && role != null) {
+            for(String userRole : this.userRoles) {
+                if(role.equals(userRole)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public Principal getUserPrincipal() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.userPrincipal;
     }
 
     public String getRequestedSessionId() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.requestedSessionId;
     }
 
     public String getRequestURI() {
@@ -164,7 +196,11 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public StringBuffer getRequestURL() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        StringBuffer rval = new StringBuffer();
+        rval.append(this.getProtocol()).append("://");
+        rval.append(this.getServerName()).append(":").append(this.getServerPort());
+        rval.append("/").append(this.getRequestURI());
+        return rval;
     }
 
     public String getServletPath() {
@@ -183,19 +219,19 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public boolean isRequestedSessionIdValid() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.requestedSessionIdIsValid;
     }
 
     public boolean isRequestedSessionIdFromCookie() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.requestedSessionIdIsFromCookie;
     }
 
     public boolean isRequestedSessionIdFromURL() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.requestedSessionIdIsFromURL;
     }
 
     public boolean isRequestedSessionIdFromUrl() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.isRequestedSessionIdFromURL();
     }
 
     public Object getAttribute(String name) {
@@ -219,11 +255,22 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContentType() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.contentType;
     }
 
     public ServletInputStream getInputStream() throws IOException {
-        throw newUnsupportedOperationException("Not supported yet.");
+        if(this.servletInputStream == null) {
+            final InputStream in = this.inputStream;
+            this.servletInputStream = new ServletInputStream() {
+
+                @Override
+                public int read() throws IOException {
+                    return in.read();
+                }
+
+            };
+        }
+        return this.servletInputStream;
     }
 
     public String getParameter(String name) {
@@ -244,21 +291,19 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public String getProtocol() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.protocol;
     }
 
     public String getScheme() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.scheme;
     }
 
     public String getServerName() {
-        throw newUnsupportedOperationException("Not supported yet.");
-//      return this.serverName;
+        return this.serverName;
     }
 
     public int getServerPort() {
-        throw newUnsupportedOperationException("Not supported yet.");
-//      return this.serverPort;
+        return this.serverPort;
     }
 
     public BufferedReader getReader() throws IOException {
@@ -266,11 +311,11 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRemoteAddr() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.remoteAddr;
     }
 
     public String getRemoteHost() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.remoteHost;
     }
 
     public void setAttribute(String name, Object o) {
@@ -290,11 +335,19 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public boolean isSecure() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.secure;
     }
 
     public RequestDispatcher getRequestDispatcher(String path) {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return new RequestDispatcher() {
+            public void forward(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void include(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
     }
 
     public String getRealPath(String path) {
@@ -305,20 +358,19 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
     }
 
     public int getRemotePort() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.remotePort;
     }
 
     public String getLocalName() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.localName;
     }
 
     public String getLocalAddr() {
-        throw newUnsupportedOperationException("Not supported yet.");
+        return this.localAddr;
     }
 
     public int getLocalPort() {
-        throw newUnsupportedOperationException("Not supported yet.");
-//      return this.localPort;
+        return this.localPort;
     }
 
     // ---------- Mock accessors ---------- //
@@ -419,7 +471,97 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
         this.method = method;
     }
 
- 
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setContext(ServletContext context) {
+        this.context = context;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    public void setLocalPort(int localPort) {
+        this.localPort = localPort;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public void setRemoteUser(String remoteUser) {
+        this.remoteUser = remoteUser;
+    }
+
+    public void setScheme(String scheme) {
+        this.scheme = scheme;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public void setAuthType(String authType) {
+        this.authType = authType;
+    }
+
+    public void setLocalAddr(String localAddr) {
+        this.localAddr = localAddr;
+    }
+
+    public void setLocalName(String localName) {
+        this.localName = localName;
+    }
+
+    public void setRemoteAddr(String remoteAddr) {
+        this.remoteAddr = remoteAddr;
+    }
+
+    public void setRemoteHost(String remoteHost) {
+        this.remoteHost = remoteHost;
+    }
+
+    public void setRemotePort(int remotePort) {
+        this.remotePort = remotePort;
+    }
+
+    public void setRequestedSessionId(String requestedSessionId) {
+        this.requestedSessionId = requestedSessionId;
+    }
+
+    public void setRequestedSessionIdFromCookie(boolean requestedSessionIdIsFromCookie) {
+        this.requestedSessionIdIsFromCookie = requestedSessionIdIsFromCookie;
+    }
+
+    public void setRequestedSessionIdFromURL(boolean requestedSessionIdIsFromURL) {
+        this.requestedSessionIdIsFromURL = requestedSessionIdIsFromURL;
+    }
+
+    public void setRequestedSessionIdValid(boolean requestedSessionIdIsValid) {
+        this.requestedSessionIdIsValid = requestedSessionIdIsValid;
+    }
+
+    public void setSecure(boolean secure) {
+        this.secure = secure;
+    }
+
+    public void setUserPrincipal(Principal userPrincipal) {
+        this.userPrincipal = userPrincipal;
+    }
+
+    public void setUserRoles(String[] userRoles) {
+        this.userRoles = userRoles;
+    }
 
     private static RuntimeException newUnsupportedOperationException(String msg) {
         String caller = Thread.currentThread().getStackTrace()[2].getMethodName();
@@ -428,262 +570,4 @@ public class FacesTesterHttpServletRequest implements HttpServletRequest {
         ex.printStackTrace(System.out);
         return ex;
     }
-    /*
-    public String getAuthType() {
-    return "";
-    }
-
-    public Cookie[] getCookies() {
-    return cookies;
-    }
-
-    public void setCookies(Cookie[] cookies) {
-    this.cookies = cookies;
-    }
-
-    public long getDateHeader(String arg0) {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getHeader(String key) {
-    return headers.get(key);
-    }
-
-    public Enumeration getHeaders(String key) {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Enumeration getHeaderNames() {
-    return new EnumerationImpl(headers.keySet());
-    }
-
-    public int getIntHeader(String arg0) {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getMethod() {
-    return this.method;
-    }
-
-    public void setMethod(String method) {
-    this.method = method;
-    }
-
-    public String getPathInfo() {
-    return pathInfo;
-    }
-
-    public String getPathTranslated() {
-    return "";
-    }
-
-    public String getContextPath() {
-    return "/";
-    }
-
-    public String getQueryString() {
-    return queryString;
-    }
-
-    public String getRemoteUser() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean isUserInRole(String arg0) {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Principal getUserPrincipal() {
-    return null;
-    }
-
-    public String getRequestedSessionId() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getRequestURI() {
-    int index = url.indexOf("?");
-    if (index == -1) {
-    return url;
-    } else {
-    return url.substring(0, index);
-    }
-    }
-
-    public StringBuffer getRequestURL() {
-    return new StringBuffer(url);
-    }
-
-    public String getServletPath() {
-    return this.servletPath;
-    }
-
-    public HttpSession getSession(boolean create) {
-    if ((session == null) && create) {
-    session = new FacesTesterHttpSession(context);
-    }
-
-    return session;
-    }
-
-    public HttpSession getSession() {
-    return session;
-    }
-
-    public boolean isRequestedSessionIdValid() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean isRequestedSessionIdFromCookie() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean isRequestedSessionIdFromURL() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean isRequestedSessionIdFromUrl() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Object getAttribute(String name) {
-    return attributes.get(name);
-    }
-
-    public Enumeration getAttributeNames() {
-    return new EnumerationImpl(attributes.keySet());
-    }
-
-    public String getCharacterEncoding() {
-    return this.encoding;
-    }
-
-    public void setCharacterEncoding(String encoding) throws UnsupportedEncodingException {
-    this.encoding = encoding;
-    }
-
-    public int getContentLength() {
-    return -1;
-    }
-
-    public String getContentType() {
-    return contentType;
-    }
-
-    public void setContentType(String contentType) {
-    this.contentType = contentType;
-    }
-
-    public ServletInputStream getInputStream() throws IOException {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getParameter(String key) {
-    return parameters.get(key);
-    }
-
-    public Enumeration getParameterNames() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String[] getParameterValues(String arg0) {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Map getParameterMap() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getProtocol() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getScheme() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getServerName() {
-    return "localhost";
-    }
-
-    public int getServerPort() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public BufferedReader getReader() throws IOException {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getRemoteAddr() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getRemoteHost() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setAttribute(String key, Object value) {
-    this.attributes.put(key, value);
-    }
-
-    public void removeAttribute(String key) {
-    this.attributes.remove(key);
-    }
-
-    public Locale getLocale() {
-    return Locale.getDefault();
-    }
-
-    public Enumeration getLocales() {
-    return new EnumerationImpl(Locale.getDefault());
-    }
-
-    public boolean isSecure() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public RequestDispatcher getRequestDispatcher(String path) {
-    return new FacesTesterRequestDispatcher(path);
-    }
-
-    public String getRealPath(String arg0) {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public int getRemotePort() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getLocalName() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getLocalAddr() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public int getLocalPort() {
-    throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void addParameter(String key, String value) {
-    parameters.put(key, value);
-    }
-
-    public void setPathInfo(String info) {
-    this.pathInfo = info;
-    }
-
-    public void setQueryString(String queryString) {
-    this.queryString = queryString;
-    }
-
-    public void setServletPath(String uri) {
-    this.servletPath = uri;
-    }
-
-    public void setSession(HttpSession session) {
-    this.session = session;
-    }
-     */
 }
