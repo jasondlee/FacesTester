@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article version="5.0" xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:svg="http://www.w3.org/2000/svg"
+         xmlns:m="http://www.w3.org/1998/Math/MathML"
+         xmlns:html="http://www.w3.org/1999/xhtml"
+         xmlns:db="http://docbook.org/ns/docbook">
+  <info>
+    <title>FacesTester Build</title>
+
+    <author>
+      <personname><firstname>Guy</firstname><surname>Veraghtert</surname></personname>
+    </author>
+
+    <pubdate>09/08/2009</pubdate>
+  </info>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>The FacesTester JSF unit testing framework aims at supporting all
+    JSF implementations complying with specification version 1.2 or greater.
+    This requires a modular build which makes it easy to add new JSF
+    implementations:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The core of FacesTester should only rely on the JSF API as
+        defined in the specification. At runtime, a concrete implementation
+        will be discovered via Service Provider Interface (SPI).</para>
+      </listitem>
+
+      <listitem>
+        <para>FacesTester comes with an extensive set of tests. When adding
+        support for a new implementation, we don't want to copy those tests,
+        they should be run automatically for all implementations.</para>
+      </listitem>
+
+      <listitem>
+        <para>It should of course be possible to write tests for a specific
+        integration.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>Let's zoom in on how this is achieved in the FacesTester build
+    system.</para>
+  </section>
+
+  <section>
+    <title>Build system</title>
+
+    <section>
+      <title>facestester</title>
+
+      <para>This module is the core of FacesTester. Code can only depend on
+      the JSF API. And even this dependency is put in maven scope provided:
+      each JSF implementation comes with its own API artifact.</para>
+
+      <para>Tests in this module shouldn't rely on an available JSF runtime.
+      They should work with a mocked or stubbed JSF environment.</para>
+
+      <para>Integration with a concrete JSF implementation is achieved via
+      SPI<variablelist>
+          <varlistentry>
+            <term>com.steeplesoft.jsf.facestester.context.FacesContextBuilderFactory</term>
+
+            <listitem>
+              <para>This class is a factory for a FacesContextBuilder, which
+              is responsible to bootstrap a specific JSF implementation: it
+              sets up the necessary listeners, filters, expression factories,
+              etc.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterPrintWriterFactory</term>
+
+            <listitem>
+              <para>This class is a factory for a FacesTesterPrintWriter. This
+              PrintWriter will be used by the JSF runtime to write response.
+              The class is responsible for intercepting the
+              javax.faces.ViewState identifier, and the hidden input parameter
+              that indicates which form was submitted.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>com.steeplesoft.jsf.facestester.FacesLifecycleFactory</term>
+
+            <listitem>
+              <para>This class is a factory for a FacesLifecycle. A default
+              implementation is available in the facestester module: it uses
+              FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY),
+              however, for tests we need to be able to provide a stubbed
+              factory</para>
+            </listitem>
+          </varlistentry>
+        </variablelist></para>
+    </section>
+
+    <section xml:id="jsf1.2-integration-test">
+      <title>jsf1.2-integration-test</title>
+
+      <para>This module contains tests that need a JSF 1.2 runtime when run.
+      Tests shouldn't be compile-dependent on a specific implementation. Even
+      more, when building this module, tests will not be executed, as, by
+      default, this module isn't dependent on any concrete implementation at
+      all. The consequence of this is that you will not be able to run the
+      tests from within your IDE, as the generated IDE artifacts will not have
+      a JSF implementation in its classpath. However, by activating a maven
+      profile, a specific implementation can be selected. The profile is
+      activated by specifying the property 'jsfimpl', e.g. mvn eclipse:clean
+      eclipse:eclipse -Djsfimpl=mojarra1.2. At time of writing the following
+      implementations are supported: mojarra1.2, mojarra2 and
+      myfaces1.2.</para>
+
+      <para>All tests in this module will be run automatically for each
+      supported JSF 1.2 implementation, how this is done is explained in one
+      of the next sections.</para>
+    </section>
+
+    <section xml:id="jsf2-integration-test">
+      <title>jsf2-integration-test</title>
+
+      <para>This module is similar to <link endterm="jsf1.2-integration-test"
+      linkend="jsf1.2-integration-test">the previous module</link>. This
+      module contains tests that need a JSF 1.2 runtime when run. Again, when
+      building this module, tests will not be executed. Again, when generating
+      IDE artifacts, no JSF runtime will be added to the classpath. The only
+      supported profile for now is mojarra2.</para>
+    </section>
+
+    <section xml:id="facestester-integration-jsf1.2">
+      <title>facestester-integration-jsf1.2</title>
+
+      <para>All modules providing integration with a specific JSF 1.2 runtime
+      should define this module as its parent. This pom-module configures the
+      build-helper-maven-plugin to add extra test sources and resources to the
+      module inheriting from it. The tests (and resources) it will add are
+      those of the module <link
+      linkend="jsf1.2-integration-test">jsf1.2-integration-test</link>. So
+      when building the modules inheriting from this module those tests will
+      be executed also. It's important to note that the modules inheriting
+      from this module are on the same 'directory level' as the <link
+      linkend="jsf1.2-integration-test">jsf1.2-integration-test</link>:
+      relative paths are used.</para>
+    </section>
+
+    <section xml:id="facestester-integration-jsf2">
+      <title>facestester-integration-jsf2</title>
+
+      <para>Similar to <link
+      linkend="facestester-integration-jsf1.2">facestester-integration-jsf1.2</link>.
+      All modules providing integration with a specific JSF 2 runtime should
+      define this module as its parent. Tests that will be added are those of
+      <link linkend="jsf2-integration-test">jsf2-integration-test</link>.
+      However, as this module is itself extending from <link
+      linkend="facestester-integration-jsf1.2">facestester-integration-jsf1.2</link>,
+      the tests of <link
+      linkend="jsf1.2-integration-test">jsf1.2-integration-test</link> are
+      also added.</para>
+    </section>
+
+    <section xml:id="facestester-mojarra">
+      <title>facestester-mojarra</title>
+
+      <para>A multi-module pom-module that contains the modules for adding
+      mojarra support to FacesTester.</para>
+    </section>
+
+    <section xml:id="facestester-mojarra-common">
+      <title>facestester-mojarra-common</title>
+
+      <para>A module that contains code common to the Mojarra 1.2 and Mojarra
+      2.0 integration.</para>
+    </section>
+
+    <section xml:id="facestester-mojarra-jsf1.2">
+      <title>facestester-mojarra-jsf1.2</title>
+
+      <para>Users that wants to test a JSF 1.2 application with Mojarra as
+      it's underlying JSF implementation should define this module (and this
+      FacesTester module only) as its test dependency.</para>
+
+      <para>Tests in this module can rely on the fact that the Mojarra 1.2
+      implementation is available in the classpath. The tests should only test
+      the Mojarra 1.2 integration.</para>
+    </section>
+
+    <section xml:id="facestester-mojarra-jsf2">
+      <title>facestester-mojarra-jsf2</title>
+
+      <para>Users that wants to test a JSF 2 application with Mojarra as it's
+      underlying JSF implementation should define this module (and this
+      FacesTester module only) as its test dependency.</para>
+
+      <para>Tests in this module can rely on the fact that the Mojarra 2
+      implementation is available in the classpath. The tests should only test
+      the Mojarra 2 integration.</para>
+    </section>
+
+    <section xml:id="facestester-myfaces-jsf1.2">
+      <title>facestester-myfaces-jsf1.2</title>
+
+      <para>Users that wants to test a JSF 1.2 application with MyFaces as
+      it's underlying JSF implementation should define this module (and this
+      FacesTester module only) as its test dependency.</para>
+
+      <para>Tests in this module can rely on the fact that the MyFaces 1.2
+      implementation is available in the classpath. The tests should only test
+      the MyFaces 1.2 integration.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Adding a new implementation</title>
+
+    <para>[TODO: in short: depending on the JSF specification the
+    implementation implements, let the pom extend from
+    facestester-integration-jsf1.2 or facestester-integration-jsf2]</para>
+  </section>
+
+  <section>
+    <title>Using FacesTester</title>
+
+    <para>[TODO: in short: if a user wants to test a MyFaces 1.2 application,
+    he should add a test scoped dependency on facestester-myfaces-jsf1.2,
+    similar for other implementations]</para>
+  </section>
+</article>

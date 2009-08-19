@@ -13,3 +13,6 @@ TEST*
 \.chg\..*$
 \.rej$
 \.conflict\~$
+.classpath
+.settings
+.project

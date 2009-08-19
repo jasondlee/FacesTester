@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.steeplesoft.jsf.facestester.test</groupId>
+		<artifactId>connectors-jsf1.2-test</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>connectors-jsf2.0-test</artifactId>
+	<name>FacesTester JSF 2.0 Implementation Support</name>
+	<packaging>pom</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-test-source-jsf2.0</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>../facestester-tests/integration-jsf2.0-test/src/test/java</source>
+								<source>../facestester-tests/integration-jsf2.0-test/src/main/java</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-resource-jsf2.0</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>../facestester-tests/integration-jsf2.0-test/src/main/resources/sample-webapp-jsf2</directory>
+									<targetPath>sample-webapp-jsf2</targetPath>
+								</resource>
+								<resource>
+									<directory>../facestester-tests/integration-jsf2.0-test/src/test/webapps</directory>
+								</resource>
+								<resource>
+									<directory>../facestester-tests/integration-jsf2.0-test/src/test/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-resource-jsf2.0</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>add-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>../facestester-tests/integration-jsf2.0-test/src/main/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		
+	</dependencies>
+
+</project>
