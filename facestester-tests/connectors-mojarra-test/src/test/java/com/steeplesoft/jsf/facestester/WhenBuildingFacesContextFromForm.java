@@ -107,9 +107,4 @@ public class WhenBuildingFacesContextFromForm {
         return builder.createFacesContext(form, new FakeFacesLifecycle());
     }
     
-    @After
-    public void releaseFactories() {
-    	FactoryFinder.releaseFactories();
-    }
-    
 }

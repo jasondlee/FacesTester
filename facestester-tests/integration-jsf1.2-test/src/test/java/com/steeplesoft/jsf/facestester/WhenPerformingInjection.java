@@ -83,10 +83,6 @@ public class WhenPerformingInjection {
         Assert.fail("Invalid property names should fail.");
     }
     
-    @AfterClass
-    public static void releaseFactories() {
-//        FactoryFinder.releaseFactories();
-    }
 }
 
 

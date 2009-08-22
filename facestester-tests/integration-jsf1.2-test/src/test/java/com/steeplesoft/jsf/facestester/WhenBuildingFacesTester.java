@@ -116,9 +116,4 @@ public class WhenBuildingFacesTester {
         Assert.assertTrue(pcb.preDestroyedCalled);
     }
  
-    @AfterClass
-    public static void releaseFactories() {
-//        FactoryFinder.releaseFactories();
-    }
-    
 }

@@ -73,9 +73,4 @@ public class WhenBuildingFacesContext {
         return facesContextBuilder.createFacesContext("/test.xhtml", "GET", new FakeFacesLifecycle());
     }
     
-    @After
-    public void releaseFactories() {
-    	FactoryFinder.releaseFactories();
-    }
-    
 }
