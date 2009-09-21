@@ -28,6 +28,7 @@
 package com.steeplesoft.jsf.facestester.context.mojarra;
 
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class FacesTesterAnnotationScanner extends AnnotationProvider {
     }
 
     @Override
-    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses() {
+    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URL> urls) {
     	
     	Map<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses = new HashMap<Class<? extends Annotation>, Set<Class<?>>>();
     	
@@ -61,7 +62,7 @@ public class FacesTesterAnnotationScanner extends AnnotationProvider {
     		annotatedClasses.putAll(annotatedClassesProvider.getAnnotatedClasses());
     	}
     	
-        Map<Class<? extends Annotation>, Set<Class<?>>> parentsClasses = this.parentProvider.getAnnotatedClasses();
+        Map<Class<? extends Annotation>, Set<Class<?>>> parentsClasses = this.parentProvider.getAnnotatedClasses(urls);
         if (parentsClasses != null) {
             annotatedClasses.putAll(parentsClasses);
         }
