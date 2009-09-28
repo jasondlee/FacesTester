@@ -44,28 +44,32 @@ import com.sun.faces.spi.AnnotationProvider;
  * @author jasonlee
  */
 public class FacesTesterAnnotationScanner extends AnnotationProvider {
+    protected AnnotationProvider parentProvider;
 
     @Override
     public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URL> set) {
     	Map<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses = new HashMap<Class<? extends Annotation>, Set<Class<?>>>();
 
+    public FacesTesterAnnotationScanner(ServletContext sc, AnnotationProvider parent) {
+        super(sc);
+        this.parentProvider = parent;
+    }
+
+    @Override
+    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URL> urls) {
+    	
+    	Map<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses = new HashMap<Class<? extends Annotation>, Set<Class<?>>>();
+    	
     	Collection<AnnotatedClassesProvider> allProviders = ServiceProvider.getAllProviders(AnnotatedClassesProvider.class);
     	for(AnnotatedClassesProvider annotatedClassesProvider : allProviders) {
     		annotatedClasses.putAll(annotatedClassesProvider.getAnnotatedClasses());
     	}
-
-        Map<Class<? extends Annotation>, Set<Class<?>>> parentsClasses = this.parentProvider.getAnnotatedClasses(set);
+    	
+        Map<Class<? extends Annotation>, Set<Class<?>>> parentsClasses = this.parentProvider.getAnnotatedClasses(urls);
         if (parentsClasses != null) {
             annotatedClasses.putAll(parentsClasses);
         }
 
         return annotatedClasses;
-    }
-
-    protected AnnotationProvider parentProvider;
-
-    public FacesTesterAnnotationScanner(ServletContext sc, AnnotationProvider parent) {
-        super(sc);
-        this.parentProvider = parent;
     }
 }

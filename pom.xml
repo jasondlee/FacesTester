@@ -9,12 +9,6 @@
 	<modules>
 		<module>facestester-core</module>
 		<module>facestester-tests</module>
-        <!--
-		<module>./facestester-tests/connectors-jsf1.2-test</module>
-		<module>./facestester-tests/connectors-jsf2.0-test</module>
-		<module>./facestester-tests/integration-jsf1.2-test</module>
-		<module>./facestester-tests/integration-jsf2.0-test</module>
-        -->
 		<module>facestester-connector-mojarra-jsf1.2</module>
 		<module>facestester-connector-mojarra-jsf2.0</module>
 		<module>facestester-connector-myfaces-jsf1.2</module>
