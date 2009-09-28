@@ -46,10 +46,6 @@ import com.sun.faces.spi.AnnotationProvider;
 public class FacesTesterAnnotationScanner extends AnnotationProvider {
     protected AnnotationProvider parentProvider;
 
-    @Override
-    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URL> set) {
-    	Map<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses = new HashMap<Class<? extends Annotation>, Set<Class<?>>>();
-
     public FacesTesterAnnotationScanner(ServletContext sc, AnnotationProvider parent) {
         super(sc);
         this.parentProvider = parent;

@@ -10,7 +10,6 @@ import com.steeplesoft.jsf.facestester.Util;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletConfig;
 import java.util.HashMap;
 import java.util.Map;
-import javax.media.j3d.Node;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
