@@ -8,10 +8,13 @@
 	<version>0.4-SNAPSHOT</version>
 	<modules>
 		<module>facestester-core</module>
+		<module>facestester-tests</module>
+        <!--
 		<module>./facestester-tests/connectors-jsf1.2-test</module>
 		<module>./facestester-tests/connectors-jsf2.0-test</module>
 		<module>./facestester-tests/integration-jsf1.2-test</module>
 		<module>./facestester-tests/integration-jsf2.0-test</module>
+        -->
 		<module>facestester-connector-mojarra-jsf1.2</module>
 		<module>facestester-connector-mojarra-jsf2.0</module>
 		<module>facestester-connector-myfaces-jsf1.2</module>
@@ -167,7 +170,7 @@
 		<el.version>1.0</el.version>
 		<facelets.version>1.1.12</facelets.version>
 		<jsf.mojarra.version>1.2_13</jsf.mojarra.version>
-		<jsf2.mojarra.version>2.0.0-b16</jsf2.mojarra.version>
+		<jsf2.mojarra.version>2.0.0-b20</jsf2.mojarra.version>
 		<jsp.version>2.1</jsp.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.5</junit.version>

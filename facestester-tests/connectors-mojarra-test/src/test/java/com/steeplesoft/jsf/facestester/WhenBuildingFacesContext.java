@@ -34,7 +34,6 @@ import static org.junit.Assert.assertThat;
 import javax.faces.FactoryFinder;
 import javax.faces.context.FacesContext;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 

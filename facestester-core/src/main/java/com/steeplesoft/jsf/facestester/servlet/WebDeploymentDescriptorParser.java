@@ -32,7 +32,10 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.EventListener;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.Filter;
+import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -43,6 +46,8 @@ import org.w3c.dom.NodeList;
 
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 import com.steeplesoft.jsf.facestester.Util;
+import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletConfig;
+import javax.servlet.Servlet;
 
 public class WebDeploymentDescriptorParser {
 
@@ -59,6 +64,7 @@ public class WebDeploymentDescriptorParser {
             loadListeners(doc, descriptor);
             loadFilters(doc, descriptor);
             loadFilterMappings(doc, descriptor);
+            loadServlets(doc, descriptor);
             loadMimeTypes(doc, descriptor);
 
             return descriptor;
@@ -147,9 +153,7 @@ public class WebDeploymentDescriptorParser {
                 String filterName = Util.getNodeValue(node, "filter-name");
                 FilterWrapper wrapper = descriptor.getFilters().get(filterName);
                 if (wrapper == null) {
-                    throw new FacesTesterException ("The filter-mapping for filter '"
-                            + filterName +
-                            "' is invalid because the filter could not be found.");
+                    throw new FacesTesterException ("The filter-mapping for filter '" + filterName + "' is invalid because the filter could not be found.");
                 }
                 Collection<String> urlPatterns = Util.getNodesValues(node, "url-pattern");
                 for(String urlPattern : urlPatterns) {
@@ -159,15 +163,36 @@ public class WebDeploymentDescriptorParser {
                 if(servletNames.size()>0) {
                     descriptor.addFilterMapping("/*", filterName);
                 }
-                /*
-                for(String servletName : servletNames) {
-                    for(Mapping servletMapping : descriptor.getServletMappings()) {
-                        if(servletMapping.getName().equals(servletName)) {
-                            descriptor.addFilterMapping(filterName, servletMapping.getURLPattern());
+            }
+        }
+    }
+
+    private void loadServlets(Document doc, WebDeploymentDescriptor descriptor) {
+        NodeList nodes = doc.getElementsByTagName("servlet");
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                String servletName = Util.getNodeValue(node, "servlet-name");
+                String servletClass = Util.getNodeValue(node, "servlet-class");
+                Servlet instance = Util.createInstance(Servlet.class, servletClass);
+
+                ServletWrapper wrapper = new ServletWrapper(servletName, instance);
+                NodeList children = ((Element) node).getElementsByTagName("init-param");
+
+                for (int j = 0; j < children.getLength(); j++) {
+                    Node child = children.item(j);
+                    if (child.getNodeType() == Node.ELEMENT_NODE) {
+                        String paramName = Util.getNodeValue(child, "param-name");
+                        String paramValue = Util.getNodeValue(child, "param-value");
+                        if (paramName == null) {
+                            throw new FacesTesterException("An init-param name for the servlet '" + servletName + "' is null.");
                         }
+                        wrapper.setInitParam(paramName, paramValue);
                     }
                 }
-                 */
+                descriptor.getServlets().put(servletName, wrapper);
             }
         }
     }

@@ -27,7 +27,6 @@
  */
 package com.steeplesoft.jsf.facestester;
 
-import static com.steeplesoft.jsf.facestester.servlet.ServletContextFactory.createServletContext;
 import static java.lang.String.format;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
@@ -38,7 +37,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
@@ -54,33 +52,25 @@ import javax.faces.context.FacesContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
 import com.steeplesoft.jsf.facestester.context.FacesContextBuilder;
-import com.steeplesoft.jsf.facestester.context.FacesContextBuilderFactory;
 import com.steeplesoft.jsf.facestester.metadata.FacesConfig;
 import com.steeplesoft.jsf.facestester.servlet.CookieManager;
 import com.steeplesoft.jsf.facestester.servlet.Mapping;
 import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterCookieManager;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpServletResponse;
-import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterHttpSession;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
-import com.steeplesoft.jsf.facestester.util.ServiceProvider;
 
 /**
  * @author jasonlee
@@ -92,11 +82,7 @@ public class FacesTester {
     //Note that concurrent FacesTester are not possible with this implementation
     //Consider implementing a FacesTester.release()
 
-    private static ThreadLocal<WebDeploymentDescriptor> descriptorInstance = new ThreadLocal<WebDeploymentDescriptor>();
-    private static ThreadLocal<FacesContextBuilder> facesContextBuilderInstance = new ThreadLocal<FacesContextBuilder>();
-    private static ThreadLocal<FacesTesterServletContext> servletContextInstance = new ThreadLocal<FacesTesterServletContext>();
-    private HttpSession session;
-    private FacesLifecycle lifecycle;
+    private static ThreadLocal<FacesTesterEnv> facesTesterEnv = new ThreadLocal<FacesTesterEnv>();
 
     public FacesTester() {
         this(WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath()));
@@ -108,37 +94,14 @@ public class FacesTester {
 
     private FacesTester(WebDeploymentDescriptor webDeploymentDescriptor, CookieManager cookieManager) {
         release();
-        FacesTester.descriptorInstance.set(webDeploymentDescriptor);
 
-
-        FacesTesterServletContext servletContext = createServletContext(webDeploymentDescriptor);
-        FacesTester.servletContextInstance.set(servletContext);
-        session = new FacesTesterHttpSession(servletContext);
-
-        FacesContextBuilderFactory facesContextBuilderFactory = ServiceProvider.getUniqueProvider(FacesContextBuilderFactory.class);
-        facesContextBuilderInstance.set(facesContextBuilderFactory.createFacesContextBuilder(servletContext, this.session, webDeploymentDescriptor, cookieManager));
-        startupServletContext(servletContext, session, webDeploymentDescriptor);
-
-        FacesLifecycleFactory facesLifecycleFactory = null;
-        try {
-            facesLifecycleFactory = ServiceProvider.getUniqueProvider(FacesLifecycleFactory.class);
-        } catch (FacesTesterException e) { //consider making a more specific exception
-            Logger.getLogger(FacesTester.class.getName()).warning("No SPI found for " + FacesLifecycleFactory.class.getName() + ". Trying the default");
-            facesLifecycleFactory = new FacesTesterLifecycleFactory();
-        }
-        lifecycle = facesLifecycleFactory.createLifecycle();
+        facesTesterEnv.set(new FacesTesterEnv(webDeploymentDescriptor, cookieManager));
     }
 
     public static void release() {
-        if (getServletContext() != null) {
-            shutdownServletContext(getServletContext(), getWebDeploymentDescriptor());
+        if (getFacesTesterEnv() != null) {
+            getFacesTesterEnv().release();
         }
-        if (getFacesContextBuilder() != null) {
-            getFacesContextBuilder().release();
-        }
-        FacesTester.facesContextBuilderInstance.set(null);
-        FacesTester.servletContextInstance.set(null);
-        FacesTester.descriptorInstance.set(null);
     }
 
     public FacesComponent createComponent(String componentType) {
@@ -146,23 +109,15 @@ public class FacesTester {
     }
 
     public FacesContext getFacesContext() {
-        FacesContext context = getFacesContextBuilder().getCurrentFacesContext();
+        FacesContext context = getFacesTesterEnv().getFacesContextBuilder().getCurrentFacesContext();
         if (context == null) {
-            context = getFacesContextBuilder().createFacesContext("GET", lifecycle);
+            context = getFacesTesterEnv().getFacesContextBuilder().createFacesContext("GET", getFacesTesterEnv().getLifecycle());
         }
         return context;
     }
 
-    private static FacesContextBuilder getFacesContextBuilder() {
-        return FacesTester.facesContextBuilderInstance.get();
-    }
-
-    private static FacesTesterServletContext getServletContext() {
-        return FacesTester.servletContextInstance.get();
-    }
-
-    private static WebDeploymentDescriptor getWebDeploymentDescriptor() {
-        return FacesTester.descriptorInstance.get();
+    private static FacesTesterEnv getFacesTesterEnv() {
+        return facesTesterEnv.get();
     }
 
     public Object getManagedBean(String name) {
@@ -175,7 +130,7 @@ public class FacesTester {
 
     public FacesPage requestPage(String uri) {
 
-        final FacesContext context = getFacesContextBuilder().createFacesContext(uri, "GET", lifecycle);
+        final FacesContext context = getFacesTesterEnv().getFacesContextBuilder().createFacesContext(uri, "GET", getFacesTesterEnv().getLifecycle());
 
         Filter callFacesFilter = new Filter() {
 
@@ -183,8 +138,8 @@ public class FacesTester {
             }
 
             public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-                lifecycle.execute(context);
-                lifecycle.render(context);
+                getFacesTesterEnv().getLifecycle().execute(context);
+                getFacesTesterEnv().getLifecycle().render(context);
                 checkForErrors(context);
             }
 
@@ -192,8 +147,8 @@ public class FacesTester {
             }
         };
         FilterChain filterChain = createAppropriateFilterChain(uri, callFacesFilter);
-        ServletRequestEvent sre = new ServletRequestEvent(getServletContext(), (ServletRequest) context.getExternalContext().getRequest());
-        for (EventListener listener : getWebDeploymentDescriptor().getListeners()) {
+        ServletRequestEvent sre = new ServletRequestEvent(getFacesTesterEnv().getServletContext(), (ServletRequest) context.getExternalContext().getRequest());
+        for (EventListener listener : getFacesTesterEnv().getWebDeploymentDescriptor().getListeners()) {
             if (listener instanceof ServletRequestListener) {
                 ((ServletRequestListener) listener).requestInitialized(sre);
             }
@@ -207,13 +162,13 @@ public class FacesTester {
             throw new FacesTesterException("An error occurred while executing the filters", ex);
         }
 
-        for (EventListener listener : getWebDeploymentDescriptor().getListeners()) {
+        for (EventListener listener : getFacesTesterEnv().getWebDeploymentDescriptor().getListeners()) {
             if (listener instanceof ServletRequestListener) {
                 ((ServletRequestListener) listener).requestDestroyed(sre);
             }
         }
 
-        return new FacesPage(context, getFacesContextBuilder(), lifecycle, uri);
+        return new FacesPage(context, getFacesTesterEnv().getFacesContextBuilder(), getFacesTesterEnv().getLifecycle(), uri);
     }
 
     public void validateFacesConfig(String path) throws IOException, SAXException, ParserConfigurationException {
@@ -425,64 +380,6 @@ public class FacesTester {
         }
     }
 
-    private void startupServletContext(ServletContext servletContext, HttpSession session, WebDeploymentDescriptor descriptor) {
-        ServletContextEvent sce = new ServletContextEvent(servletContext);
-        HttpSessionEvent hse = new HttpSessionEvent(session);
-
-        List<EventListener> listeners = descriptor.getListeners();
-
-        callInitializedOnListeners(ServletContextListener.class, listeners, sce);
-        callInitializedOnListeners(HttpSessionListener.class, listeners, hse);
-    }
-
-    public static void shutdownServletContext(ServletContext servletContext, WebDeploymentDescriptor descriptor) {
-        FacesContext facesContext = getFacesContextBuilder().getCurrentFacesContext();
-        ServletContextEvent sce = new ServletContextEvent(servletContext);
-        List<EventListener> listeners = new ArrayList<EventListener>();
-        Collections.addAll(listeners, descriptor.getListeners().toArray(new EventListener[0]));
-        Collections.reverse(listeners);
-        if (facesContext != null) {
-            HttpSessionEvent hse = new HttpSessionEvent((HttpSession) facesContext.getExternalContext().getSession(false));
-            ServletRequestEvent sre = new ServletRequestEvent(servletContext, (ServletRequest) facesContext.getExternalContext().getRequest());
-            callDestroyedOnListeners(ServletRequestListener.class, listeners, sre);
-            callDestroyedOnListeners(HttpSessionListener.class, listeners, hse);
-        }
-        callDestroyedOnListeners(ServletContextListener.class, listeners, sce);
-
-    }
-
-    private <T> void callInitializedOnListeners(Class<T> type, List<EventListener> list, Object param) {
-        for (EventListener listener : list) {
-            // First determine if the listener is one we care about right now
-            if (type.isInstance(listener)) {
-                // It is, so we test to see what kind it is, then call the desired method, using
-                // the appropriate cast
-                if (type.isAssignableFrom(ServletRequestListener.class)) {
-                    ((ServletRequestListener) listener).requestInitialized((ServletRequestEvent) param);
-                } else if (type.isAssignableFrom(HttpSessionListener.class)) {
-                    ((HttpSessionListener) listener).sessionCreated((HttpSessionEvent) param);
-                } else if (type.isAssignableFrom(ServletContextListener.class)) {
-                    ((ServletContextListener) listener).contextInitialized((ServletContextEvent) param);
-                }
-            }
-        }
-    }
-
-    private static <T> void callDestroyedOnListeners(Class<T> type, List<EventListener> list, Object param) {
-        for (EventListener listener : list) {
-            // See callInitializedOnListeners for an explanation of this logic
-            if (type.isInstance(listener)) {
-                if (type.isAssignableFrom(ServletRequestListener.class)) {
-                    ((ServletRequestListener) listener).requestDestroyed((ServletRequestEvent) param);
-                } else if (type.isAssignableFrom(HttpSessionListener.class)) {
-                    ((HttpSessionListener) listener).sessionDestroyed((HttpSessionEvent) param);
-                } else if (type.isAssignableFrom(ServletContextListener.class)) {
-                    ((ServletContextListener) listener).contextDestroyed((ServletContextEvent) param);
-                }
-            }
-        }
-    }
-
     /*
      * Finding a way to make this more intelligent would be awesome :)
      */
@@ -518,7 +415,7 @@ public class FacesTester {
     protected FilterChain createAppropriateFilterChain(String uri, Filter finalFilter) {
         List<String> added = new ArrayList<String>();
         FilterChain rval = new FilterChainImpl(finalFilter, null);
-        for (Mapping mapping : getWebDeploymentDescriptor().getFilterMappings()) {
+        for (Mapping mapping : getFacesTesterEnv().getWebDeploymentDescriptor().getFilterMappings()) {
             final String filterName = mapping.getName();
             if (!added.contains(filterName)) {
                 final String pattern = mapping.getURLPattern();
@@ -530,7 +427,7 @@ public class FacesTester {
         }
         for (int i = added.size() - 1; i >= 0; i--) {
             rval = new FilterChainImpl(
-                    getWebDeploymentDescriptor().getFilters().get(added.get(i)).getFilter(),
+                    getFacesTesterEnv().getWebDeploymentDescriptor().getFilters().get(added.get(i)).getFilter(),
                     rval);
         }
         return rval;

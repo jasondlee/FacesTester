@@ -78,8 +78,4 @@ public class FilterWrapper {
     public Map<String, String> getInitParams() {
         return initParams;
     }
-
-    public void setInitParams(Map<String, String> initParams) {
-        this.initParams = initParams;
-    }
 }

@@ -32,7 +32,6 @@ import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 import java.io.File;
 import java.util.Map;
 
-
 public class ServletContextFactory {
     private File webAppDirectory;
     private WebDeploymentDescriptor webDescriptor;
@@ -46,12 +45,6 @@ public class ServletContextFactory {
         this.webAppDirectory = webDescriptor.getWebAppPath();
     }
 
-//    private static ServletContext createServletContext() {
-//        ServletContextFactory factory = new ServletContextFactory(Util.lookupWebAppPath());
-//
-//        return factory.createContextForWebAppAt();
-//    }
-
     public static FacesTesterServletContext createServletContext(WebDeploymentDescriptor webDesciptor) {
         ServletContextFactory factory = new ServletContextFactory(webDesciptor); //Util.lookupWebAppPath());
 
@@ -60,8 +53,6 @@ public class ServletContextFactory {
 
     public FacesTesterServletContext createContextForWebAppAt() {
         FacesTesterServletContext servletContext = new FacesTesterServletContext(webAppDirectory);
-
-        //FacesTesterServletContext servletContext = new FacesTesterServletContext(new WebAppResourceLoader(webAppDirectory));
 
         for (Map.Entry<String, String> each : webDescriptor.getContextParameters().entrySet()) {
             servletContext.setInitParameter(each.getKey(), each.getValue());
@@ -74,8 +65,6 @@ public class ServletContextFactory {
         for (Map.Entry<String,String> mimeMappings : webDescriptor.getMimeTypeMappings().entrySet()) {
             servletContext.addMimeType(mimeMappings.getKey(), mimeMappings.getValue());
         }
-
-//        servletContext.addInitParameter("com.sun.faces.injectionProvider", "com.steeplesoft.jsf.facestester.injection.FacesTesterInjectionProvider");
 
         return servletContext;
     }

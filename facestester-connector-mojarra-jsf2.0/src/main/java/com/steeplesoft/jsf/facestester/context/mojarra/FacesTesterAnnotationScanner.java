@@ -28,6 +28,7 @@
 package com.steeplesoft.jsf.facestester.context.mojarra;
 
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,24 +45,16 @@ import com.sun.faces.spi.AnnotationProvider;
  */
 public class FacesTesterAnnotationScanner extends AnnotationProvider {
 
-    protected AnnotationProvider parentProvider;
-
-    public FacesTesterAnnotationScanner(ServletContext sc, AnnotationProvider parent) {
-        super(sc);
-        this.parentProvider = parent;
-    }
-
     @Override
-    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses() {
-    	
+    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URL> set) {
     	Map<Class<? extends Annotation>, Set<Class<?>>> annotatedClasses = new HashMap<Class<? extends Annotation>, Set<Class<?>>>();
-    	
+
     	Collection<AnnotatedClassesProvider> allProviders = ServiceProvider.getAllProviders(AnnotatedClassesProvider.class);
     	for(AnnotatedClassesProvider annotatedClassesProvider : allProviders) {
     		annotatedClasses.putAll(annotatedClassesProvider.getAnnotatedClasses());
     	}
-    	
-        Map<Class<? extends Annotation>, Set<Class<?>>> parentsClasses = this.parentProvider.getAnnotatedClasses();
+
+        Map<Class<? extends Annotation>, Set<Class<?>>> parentsClasses = this.parentProvider.getAnnotatedClasses(set);
         if (parentsClasses != null) {
             annotatedClasses.putAll(parentsClasses);
         }
@@ -69,5 +62,10 @@ public class FacesTesterAnnotationScanner extends AnnotationProvider {
         return annotatedClasses;
     }
 
+    protected AnnotationProvider parentProvider;
 
+    public FacesTesterAnnotationScanner(ServletContext sc, AnnotationProvider parent) {
+        super(sc);
+        this.parentProvider = parent;
+    }
 }

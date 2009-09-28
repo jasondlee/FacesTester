@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.steeplesoft.jsf.facestester</groupId>
+		<artifactId>facestester-parent</artifactId>
+		<version>0.4-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.steeplesoft.jsf.facestester.test</groupId>
+	<artifactId>facestester-tests</artifactId>
+	<name>FacesTester Tests</name>
+	<packaging>pom</packaging>
+    <modules>
+        <module>connectors-jsf1.2-test</module>
+        <module>connectors-jsf2.0-test</module>
+        <module>integration-jsf1.2-test</module>
+        <module>integration-jsf2.0-test</module>
+    </modules>
+</project>

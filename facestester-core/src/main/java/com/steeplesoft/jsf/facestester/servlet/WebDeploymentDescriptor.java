@@ -33,17 +33,22 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.Servlet;
 
 
 public class WebDeploymentDescriptor {
     protected File webAppPath;
-    private Map<String, String> contextParameters = new HashMap<String, String>();
-    private List<EventListener> listeners = new ArrayList<EventListener>();
-    private Map<String, FilterWrapper> filters = new HashMap<String, FilterWrapper>();
-    private List<Mapping> filterMappings = new ArrayList<Mapping>();
-    private Map<String,String> mimeTypeMappings;
-    private List<Mapping> servletMappings;
+    
+    protected Map<String, String> contextParameters = new HashMap<String, String>();
+    protected List<EventListener> listeners = new ArrayList<EventListener>();
+    protected Map<String, FilterWrapper> filters = new HashMap<String, FilterWrapper>();
+    protected Map<String, ServletWrapper> servlets = new HashMap<String, ServletWrapper>();
 
+    protected List<Mapping> filterMappings = new ArrayList<Mapping>();
+    protected List<Mapping> servletMappings = new ArrayList<Mapping>();
+
+    protected Map<String,String> mimeTypeMappings;
+    
     public WebDeploymentDescriptor() {
     }
 
@@ -113,5 +118,13 @@ public class WebDeploymentDescriptor {
 
     public List<Mapping> getServletMappings() {
         return this.servletMappings;
+    }
+
+    public ServletWrapper getServlet(String servletName) {
+        return servlets.get(servletName);
+    }
+
+    public Map<String, ServletWrapper> getServlets() {
+        return servlets;
     }
 }

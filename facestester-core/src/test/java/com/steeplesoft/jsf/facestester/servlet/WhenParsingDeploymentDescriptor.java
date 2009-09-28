@@ -51,7 +51,9 @@ import com.steeplesoft.jsf.facestester.FacesTesterException;
 import com.steeplesoft.jsf.facestester.Util;
 import com.steeplesoft.jsf.facestester.servlet.impl.FilterChainImpl;
 import com.steeplesoft.jsf.facestester.test.artifacts.TestFilter;
+import com.steeplesoft.jsf.facestester.test.artifacts.TestServlet;
 import com.steeplesoft.jsf.facestester.test.artifacts.TestServletContextListener;
+import javax.servlet.Servlet;
 
 public class WhenParsingDeploymentDescriptor {
     private WebDeploymentDescriptorParser parser = new WebDeploymentDescriptorParser();
@@ -204,6 +206,45 @@ public class WhenParsingDeploymentDescriptor {
         Assert.assertNull("Reading unavailable initParam", testFilter.getInitParam("notset"));
         Assert.assertEquals("Reading available initParam '"+TestFilter.TEST_PARAM_KEY+"'",
                 TestFilter.TEST_PARAM_VALUE, testFilter.getInitParam(TestFilter.TEST_PARAM_KEY));
+    }
+
+    @Test
+    public void shouldLoadServletInformation() {
+        String webXml = new StringBuilder()
+                .append("<web-app>")
+                .append("   <servlet>")
+                .append("       <servlet-name>Test Servlet</servlet-name>")
+                .append("       <servlet-class>").append(TestServlet.class.getName())
+                .append("       </servlet-class>")
+                .append("       <init-param>")
+                .append("           <param-name>").append(TestServlet.TEST_PARAM_KEY).append("</param-name>")
+                .append("           <param-value>").append(TestServlet.TEST_PARAM_VALUE).append("</param-value>")
+                .append("       </init-param>")
+                .append("   </servlet>")
+                .append("   <servlet-mapping>")
+                .append("       <servlet-name>Test Servlet</servlet-name>")
+                .append("       <url-pattern>*.jsf</url-pattern>")
+                .append("   </servlet-mapping>")
+                .append("   <servlet-mapping>")
+                .append("       <servlet-name>Test Servlet</servlet-name>")
+                // Test with no url-pattern
+                .append("   </servlet-mapping>")
+                .append("</web-app>").toString();
+
+        createTempFile(webXml);
+        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+
+        ServletWrapper wrapper = descriptor.getServlets().get("Test Servlet");
+        Assert.assertNotNull("Should create ServletWrapper", wrapper);
+        Assert.assertEquals("ServletWrapper should contain initParam: " + TestServlet.TEST_PARAM_KEY, TestServlet.TEST_PARAM_VALUE, wrapper.getInitParam(TestServlet.TEST_PARAM_KEY));
+
+        Servlet servlet = wrapper.getServlet();
+        Assert.assertNotNull("Test Servlet should be available", servlet);
+        Assert.assertEquals("Check type of Servlet", servlet.getClass(), TestServlet.class);
+
+        wrapper.init(null);
+        TestServlet testServlet = (TestServlet) servlet;
+        Assert.assertEquals("Reading initParam '" + TestServlet.TEST_PARAM_KEY + "'", TestServlet.TEST_PARAM_VALUE, testServlet.getDummyParam());
     }
 
     @Test

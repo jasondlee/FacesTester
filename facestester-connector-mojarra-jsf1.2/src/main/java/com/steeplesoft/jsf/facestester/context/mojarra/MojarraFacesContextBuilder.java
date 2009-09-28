@@ -52,21 +52,22 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionListener;
 
 public class MojarraFacesContextBuilder implements FacesContextBuilder {
+
     private FacesContextFactory facesContextFactory;
     private HttpSession session;
     private FacesTesterServletContext servletContext;
     private WebDeploymentDescriptor webDescriptor;
-	private CookieManager cookieManager;
-	private FacesContext current;
+    private CookieManager cookieManager;
+    private FacesContext current;
 
     public MojarraFacesContextBuilder(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor, CookieManager cookieManager) {
         this.servletContext = servletContext;
         this.session = session;
         this.webDescriptor = webDescriptor;
-		this.cookieManager = cookieManager;
+        this.cookieManager = cookieManager;
 
         try {
-                webDescriptor.getListeners().add(0, new ConfigureListener());
+            webDescriptor.getListeners().add(0, new ConfigureListener());
         } catch (Exception ex) {
             throw new FacesTesterException("Mojarra's ConfigureListener was found, but could not be instantiated: " + ex.getLocalizedMessage(), ex);
         }
@@ -98,9 +99,9 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
     }
 
     protected FacesContext buildFacesContext(FacesTesterHttpServletRequest request, FacesLifecycle lifecycle) throws FacesException {
-    	if(this.current != null) {
-    		this.current.release();
-    	}
+        if (this.current != null) {
+            this.current.release();
+        }
         FacesContext context = facesContextFactory.getFacesContext(servletContext, request,
                 new FacesTesterHttpServletResponse(this.cookieManager), lifecycle.getUnderlyingLifecycle());
         this.current = context;
@@ -153,7 +154,7 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
     private FacesTesterHttpServletRequest mockServletRequest(String uri, String method) {
         FacesTesterHttpServletRequest servletRequest;
         if (uri != null) {
-            servletRequest = new FacesTesterHttpServletRequest(servletContext, method,uri, cookieManager);
+            servletRequest = new FacesTesterHttpServletRequest(servletContext, method, uri, cookieManager);
             servletRequest.setServletPath(uri);
         } else {
             servletRequest = new FacesTesterHttpServletRequest(servletContext, cookieManager);
@@ -166,21 +167,20 @@ public class MojarraFacesContextBuilder implements FacesContextBuilder {
 
         return servletRequest;
     }
-    
-	public void release() {
-		if(this.current != null) {
-			this.current.release();
-		}
-	    facesContextFactory = null;
-	    session = null;
-	    servletContext = null;
-	    webDescriptor = null;
-		cookieManager = null;
-		current = null;
-	}
-	
-	public FacesContext getCurrentFacesContext() {
-		return this.current;
-	}
-    
+
+    public void release() {
+        if (this.current != null) {
+            this.current.release();
+        }
+        facesContextFactory = null;
+        session = null;
+        servletContext = null;
+        webDescriptor = null;
+        cookieManager = null;
+        current = null;
+    }
+
+    public FacesContext getCurrentFacesContext() {
+        return this.current;
+    }
 }
