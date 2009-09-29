@@ -1,105 +1,106 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.steeplesoft.jsf.facestester</groupId>
-		<artifactId>facestester-parent</artifactId>
-		<version>0.4-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>com.steeplesoft.jsf.facestester</groupId>
+        <artifactId>facestester-parent</artifactId>
+        <version>0.4-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>facestester-core</artifactId>
-	<name>FacesTester Core</name>
-	<packaging>jar</packaging>
+    <artifactId>facestester-core</artifactId>
+    <name>FacesTester Core</name>
+    <packaging>jar</packaging>
 	
-	<pluginRepositories>
-		<pluginRepository>
-			<id>repository.jboss.org</id>
-			<name>JBoss Repository</name>
-			<url>http://repository.jboss.org/maven2</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<repositories>
-		<repository>
-			<id>repository.jboss.org</id>
-			<name>JBoss Repository</name>
-			<url>http://repository.jboss.org/maven2</url>
-		</repository>
-	</repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repository.jboss.org</id>
+            <name>JBoss Repository</name>
+            <url>http://repository.jboss.org/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>repository.jboss.org</id>
+            <name>JBoss Repository</name>
+            <url>http://repository.jboss.org/maven2</url>
+        </repository>
+    </repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.el</groupId>
-			<artifactId>el-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.faces</groupId>
-			<artifactId>jsf-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries />
-							<addDefaultSpecificationEntries />
-						</manifest>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-						<configuration>
-							<includes>
-								<include>**/facestester/test/**</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
-				<inherited>true</inherited>
-			</plugin>
-			<plugin>
-				<groupId>org.jboss.maven.plugins</groupId>
-				<artifactId>maven-jdocbook-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<sourceDirectory>${pom.basedir}/src/documentation</sourceDirectory>
-					<sourceDocumentName>facestester-build.xml</sourceDocumentName>
-					<imageResource>
-						<directory>${pom.basedir}/src/documentation/en-US/</directory>
-						<includes>
-							<include>images/*.png</include>
-						</includes>
-					</imageResource>
-					<formats>
-						<format>
-							<formatName>pdf</formatName>
-							<finalName>facestester-buildsystem-${project.version}.pdf</finalName>
-						</format>
-						<format>
-							<formatName>html</formatName>
-							<finalName>index.html</finalName>
-						</format>
-						<format>
-							<formatName>html_single</formatName>
-							<finalName>index.html</finalName>
-						</format>
-					</formats>
-					<options>
-						<xincludeSupported>true</xincludeSupported>
-						<xmlTransformerType>saxon</xmlTransformerType>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries />
+                            <addDefaultSpecificationEntries />
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/facestester/test/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.jboss.maven.plugins</groupId>
+                <artifactId>maven-jdocbook-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <sourceDirectory>${pom.basedir}/src/documentation</sourceDirectory>
+                    <sourceDocumentName>facestester-build.xml</sourceDocumentName>
+                    <imageResource>
+                        <directory>${pom.basedir}/src/documentation/en-US/</directory>
+                        <includes>
+                            <include>images/*.png</include>
+                        </includes>
+                    </imageResource>
+                    <formats>
+                        <format>
+                            <formatName>pdf</formatName>
+                            <finalName>facestester-buildsystem-${project.version}.pdf</finalName>
+                        </format>
+                        <format>
+                            <formatName>html</formatName>
+                            <finalName>index.html</finalName>
+                        </format>
+                        <format>
+                            <formatName>html_single</formatName>
+                            <finalName>index.html</finalName>
+                        </format>
+                    </formats>
+                    <options>
+                        <xincludeSupported>true</xincludeSupported>
+                        <xmlTransformerType>saxon</xmlTransformerType>
 						<!--
 							needed for uri-resolvers; can be ommitted if using 'current' uri
 							scheme
@@ -108,26 +109,26 @@
 							could also locate the docbook dependency and inspect its
 							version...
 						-->
-						<docbookVersion>1.72.0</docbookVersion>
-						<localeSeparator>-</localeSeparator>
-					</options>
-				</configuration>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.jboss.maven.plugins</groupId>
-					<artifactId>maven-jdocbook-plugin</artifactId>
-					<version>2.1.1</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+                        <docbookVersion>1.72.0</docbookVersion>
+                        <localeSeparator>-</localeSeparator>
+                    </options>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jboss.maven.plugins</groupId>
+                    <artifactId>maven-jdocbook-plugin</artifactId>
+                    <version>2.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
