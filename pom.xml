@@ -12,6 +12,7 @@
         <module>facestester-connector-mojarra-jsf1.2</module>
         <module>facestester-connector-mojarra-jsf2.0</module>
         <module>facestester-connector-myfaces-jsf1.2</module>
+        <module>facestester-connector-weld</module>
     </modules>
     <name>FacesTester Parent</name>
     <description>
@@ -26,7 +27,7 @@
         <developer>
             <id>jdlee</id>
             <name>Jason Lee</name>
-            <url>http://kenai.com/people/970-Jason-Lee</url>
+            <url>http://github.com/jasondlee</url>
             <roles>
                 <role>Administrator</role>
                 <role>Software Developer</role>
@@ -35,7 +36,7 @@
         <developer>
             <id>rcoffin</id>
             <name>Rod Coffin</name>
-            <url>http://kenai.com/people/4576-rcoffin</url>
+            <url></url>
             <roles>
                 <role>Software Developer</role>
             </roles>
@@ -43,7 +44,7 @@
         <developer>
             <id>rlubke</id>
             <name>Ryan Lubke</name>
-            <url>http://kenai.com/people/6325-rlubke</url>
+            <url></url>
             <roles>
                 <role>Software Developer</role>
             </roles>
@@ -51,30 +52,21 @@
         <developer>
             <id>ioss</id>
             <name>Imre Osswald</name>
-            <url>http://kenai.com/people/11184-Imre-Osswald</url>
+            <url></url>
             <roles>
                 <role>Software Developer</role>
+                <role>Tester</role>
             </roles>
         </developer>
         <developer>
             <id>guyv</id>
             <name>Guy Veraghtert</name>
-            <url>http://kenai.com/people/15385-Guy-Veraghtert</url>
+            <url></url>
             <roles>
                 <role>Software Developer</role>
             </roles>
         </developer>
     </developers>
-
-    <contributors>
-        <contributor>
-            <name>Imre Osswald</name>
-            <url>http://kenai.com/people/11184-Imre-Osswald</url>
-            <roles>
-                <role>Tester</role>
-            </roles>
-        </contributor>
-    </contributors>
 
     <licenses>
         <license>
@@ -86,39 +78,8 @@
 
     <issueManagement>
         <system>JIRA</system>
-        <url>http://kenai.com/jira/browse/FACESTESTER</url>
+        <url>http://github.com/jasondlee/FacesTester/issues</url>
     </issueManagement>
-
-    <mailingLists>
-        <mailingList>
-            <name>Commits</name>
-            <post>commits@facestester.kenai.com</post>
-            <subscribe>http://kenai.com/projects/facestester/lists</subscribe>
-            <unsubscribe>http://kenai.com/projects/facestester/lists</unsubscribe>
-            <archive>http://kenai.com/projects/facestester/lists/commits/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>Dev</name>
-            <post>dev@facestester.kenai.com</post>
-            <subscribe>http://kenai.com/projects/facestester/lists</subscribe>
-            <unsubscribe>http://kenai.com/projects/facestester/lists</unsubscribe>
-            <archive>http://kenai.com/projects/facestester/lists/dev/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>Issues</name>
-            <post>issues@facestester.kenai.com</post>
-            <subscribe>http://kenai.com/projects/facestester/lists</subscribe>
-            <unsubscribe>http://kenai.com/projects/facestester/lists</unsubscribe>
-            <archive>http://kenai.com/projects/facestester/lists/issues/archive</archive>
-        </mailingList>
-        <mailingList>
-            <name>Users</name>
-            <post>users@facestester.kenai.com</post>
-            <subscribe>http://kenai.com/projects/facestester/lists</subscribe>
-            <unsubscribe>http://kenai.com/projects/facestester/lists</unsubscribe>
-            <archive>http://kenai.com/projects/facestester/lists/issues/users</archive>
-        </mailingList>
-    </mailingLists>
 
     <repositories>
         <repository>
@@ -150,9 +111,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:hg:https://kenai.com/hg/facestester~mercurial</connection>
-        <developerConnection>scm:hg:https://kenai.com/hg/facestester~mercurial</developerConnection>
-        <url>http://kenai.com/projects/facestester/sources/mercurial/show</url>
+        <connection>git@github.com:jasondlee/FacesTester.git</connection>
+        <developerConnection>git@github.com:jasondlee/FacesTester.git</developerConnection>
+        <url>http://github.com/jasondlee/FacesTester</url>
     </scm>
 
     <ciManagement>
@@ -164,6 +125,7 @@
         <el.version>1.0</el.version>
         <facelets.version>1.1.12</facelets.version>
         <jsf.mojarra.version>1.2_13</jsf.mojarra.version>
+        <jsf.myfaces.version>1.2.7</jsf.myfaces.version>
         <jsf2.mojarra.version>2.0.2</jsf2.mojarra.version>
         <jsp.version>2.1</jsp.version>
         <jstl.version>1.2</jstl.version>
@@ -188,12 +150,12 @@
             <dependency>
                 <groupId>org.apache.myfaces.core</groupId>
                 <artifactId>myfaces-api</artifactId>
-                <version>1.2.7</version>
+                <version>${jsf.myfaces.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.myfaces.core</groupId>
                 <artifactId>myfaces-impl</artifactId>
-                <version>1.2.7</version>
+                <version>${jsf.myfaces.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.faces</groupId>
