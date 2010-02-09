@@ -12,7 +12,9 @@
         <module>facestester-connector-mojarra-jsf1.2</module>
         <module>facestester-connector-mojarra-jsf2.0</module>
         <module>facestester-connector-myfaces-jsf1.2</module>
+        <!--
         <module>facestester-connector-weld</module>
+        -->
     </modules>
     <name>FacesTester Parent</name>
     <description>
