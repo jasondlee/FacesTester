@@ -37,7 +37,15 @@ public class TestWebAppDirectoryCreator {
 
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
     public File createTestWebAppWithDescriptor(InputStream descriptor) throws IOException {
-        File webAppDirectory = new File(System.getProperty("java.io.tmpdir"), "facestester-webapp");
+        String tempDir = System.getProperty("java.io.tmpdir");
+        if (tempDir == null) {
+            tempDir = System.getProperty("user.home");
+            if (tempDir == null) {
+                tempDir = "/tmp";
+            }
+        }
+
+        File webAppDirectory = new File(tempDir, "facestester-webapp");
         if (webAppDirectory.exists()) {
             webAppDirectory.delete();
         }

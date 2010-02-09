@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Jason Lee <jason@steeplesoft.com>
+ * Copyright (c) 2010, Jason Lee <jason@steeplesoft.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -328,6 +328,10 @@ public class FacesTester {
         }
     }
 
+
+    // *****************************************************************************************************************
+    // Internal methods    
+    // *****************************************************************************************************************
     protected Method getSetter(Object target, String property, Class<?> paramType) {
         Method setter = null;
         try {
