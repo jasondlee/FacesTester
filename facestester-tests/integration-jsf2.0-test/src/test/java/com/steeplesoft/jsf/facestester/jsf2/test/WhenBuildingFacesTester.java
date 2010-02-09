@@ -54,7 +54,7 @@ public class WhenBuildingFacesTester {
 
     @Before
     public void setUp() {
-        tester = new FacesTester(WebDeploymentDescriptor.createFromFile(new File("sample-webapp-jsf2")));
+        tester = new FacesTester(new WebDeploymentDescriptor(new File("sample-webapp-jsf2")));
     }
 
     //@Test

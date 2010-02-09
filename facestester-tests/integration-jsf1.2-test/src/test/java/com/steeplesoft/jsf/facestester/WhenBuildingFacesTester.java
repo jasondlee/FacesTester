@@ -62,7 +62,7 @@ public class WhenBuildingFacesTester {
 
     @BeforeClass
     public static void configureFacesTester() {
-		WebDeploymentDescriptor webDeploymentDescriptor = WebDeploymentDescriptor.createFromFile(new File("sample-webapp-jsf1.2"));
+		WebDeploymentDescriptor webDeploymentDescriptor = new WebDeploymentDescriptor(new File("sample-webapp-jsf1.2"));
         tester = new FacesTester(webDeploymentDescriptor);
     }
 
@@ -112,7 +112,7 @@ public class WhenBuildingFacesTester {
     @Test
     public void shouldExecutePreDestroy() {
         PrePostBean pcb = (PrePostBean)tester.getManagedBean("prePost");
-        tester = new FacesTester(WebDeploymentDescriptor.createFromFile(new File("sample-webapp-jsf1.2")));
+        tester = new FacesTester(new WebDeploymentDescriptor(new File("sample-webapp-jsf1.2")));
         Assert.assertTrue(pcb.preDestroyedCalled);
     }
  

@@ -51,7 +51,7 @@ public class WhenPerformingInjection {
 
     @BeforeClass
     public static void setup() {
-        ft = new FacesTester(WebDeploymentDescriptor.createFromFile(new File("testwebapp")));
+        ft = new FacesTester(new WebDeploymentDescriptor(new File("testwebapp")));
     }
 
     @Before

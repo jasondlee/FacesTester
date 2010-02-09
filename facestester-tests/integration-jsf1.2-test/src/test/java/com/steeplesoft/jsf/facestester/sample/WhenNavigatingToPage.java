@@ -44,7 +44,7 @@ public class WhenNavigatingToPage {
 
     @BeforeClass
     public static void setUp() throws Exception {
-		WebDeploymentDescriptor webDeploymentDescriptor = WebDeploymentDescriptor.createFromFile(new File("sample-webapp-jsf1.2"));
+		WebDeploymentDescriptor webDeploymentDescriptor = new WebDeploymentDescriptor(new File("sample-webapp-jsf1.2"));
         tester = new FacesTester(webDeploymentDescriptor);
     }
 

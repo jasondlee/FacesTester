@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EventListener;
 import java.util.List;
 
@@ -44,6 +45,10 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.steeplesoft.jsf.facestester.FacesTester;
@@ -54,9 +59,10 @@ import com.steeplesoft.jsf.facestester.test.artifacts.TestFilter;
 import com.steeplesoft.jsf.facestester.test.artifacts.TestServlet;
 import com.steeplesoft.jsf.facestester.test.artifacts.TestServletContextListener;
 import javax.servlet.Servlet;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class WhenParsingDeploymentDescriptor {
-    private WebDeploymentDescriptorParser parser = new WebDeploymentDescriptorParser();
     private static File fakeWebAppDir;
 
     @BeforeClass
@@ -82,7 +88,7 @@ public class WhenParsingDeploymentDescriptor {
                 .append("</web-app>").toString();
 
         createTempFile(webXml);
-        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
 
         assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is(".xhtml"));
     }
@@ -98,7 +104,7 @@ public class WhenParsingDeploymentDescriptor {
                 .append("</web-app>").toString();
 
         createTempFile(webXml);
-        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
 
         assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is(".jsp"));
     }
@@ -116,7 +122,7 @@ public class WhenParsingDeploymentDescriptor {
                 .append("</web-app>").toString();
 
         createTempFile(webXml);
-        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
         assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is(".spaces"));
     }
 
@@ -131,7 +137,7 @@ public class WhenParsingDeploymentDescriptor {
                 .append("</web-app>").toString();
 
         createTempFile(webXml);
-        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
         assertThat(descriptor.getContextParameters().get("javax.faces.DEFAULT_SUFFIX"), is((String)null));
     }
 
@@ -147,7 +153,7 @@ public class WhenParsingDeploymentDescriptor {
                 .append("</web-app>").toString();
 
         createTempFile(webXml);
-        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
         // In a Mojarra environment, this will always have at least one listener, so we
         // need to test the TestServletContextListener was found, created, and added to
         // the list.
@@ -190,7 +196,7 @@ public class WhenParsingDeploymentDescriptor {
                 .append("</web-app>").toString();
 
         createTempFile(webXml);
-        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
         
         FilterWrapper filterWrapper = descriptor.getFilters().get("Test Filter");
         Assert.assertNotNull("Should create FilterWrapper", filterWrapper);
@@ -232,7 +238,7 @@ public class WhenParsingDeploymentDescriptor {
                 .append("</web-app>").toString();
 
         createTempFile(webXml);
-        WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+        WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
 
         ServletWrapper wrapper = descriptor.getServlets().get("Test Servlet");
         Assert.assertNotNull("Should create ServletWrapper", wrapper);
@@ -289,7 +295,7 @@ public class WhenParsingDeploymentDescriptor {
 
     private List<Filter> createFilterChain(String resourcePath, String uri) {
         createTempFileFromCP(resourcePath);
-        final WebDeploymentDescriptor wdDescriptor = parser.parse(new File("."));
+        final WebDeploymentDescriptor wdDescriptor = new WebDeploymentDescriptor(new File("."));
         ServletContextFactory.createServletContext(wdDescriptor); // initialize the ServletContext
         FacesTesterForFilterTests tester = new FacesTesterForFilterTests(wdDescriptor);
         FilterChainImpl fChain = tester.createAppropriateFilterChain(uri);
@@ -314,7 +320,7 @@ public class WhenParsingDeploymentDescriptor {
              .append("    </mime-mapping>")
              .append("</web-app>").toString();
        createTempFile(webXml);
-       WebDeploymentDescriptor descriptor = parser.parse(new File("."));
+       WebDeploymentDescriptor descriptor = new WebDeploymentDescriptor(new File("."));
        Assert.assertTrue(descriptor.getMimeTypeMappings().containsKey("foo"));
        Assert.assertTrue("application/x-foo".equals(descriptor.getMimeTypeMappings().get("foo")));
 

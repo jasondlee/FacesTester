@@ -49,7 +49,7 @@ public class WhenCreatingServletContext {
         Properties properties = System.getProperties();
         try {
             System.setProperty("facestester.webAppPath", webAppDirectory.getAbsolutePath());
-            assertThat(ServletContextFactory.createServletContext(WebDeploymentDescriptor.createFromFile(webAppDirectory)).getInitParameter("javax.faces.DEFAULT_SUFFIX"), is(".xhtml"));
+            assertThat(ServletContextFactory.createServletContext(new WebDeploymentDescriptor(webAppDirectory)).getInitParameter("javax.faces.DEFAULT_SUFFIX"), is(".xhtml"));
         }
         finally {
             System.setProperties(properties);
@@ -65,7 +65,7 @@ public class WhenCreatingServletContext {
         Properties properties = System.getProperties();
         try {
             System.setProperty("facestester.webAppPath", webAppDirectory.getAbsolutePath());
-            FacesTesterServletContext context = ServletContextFactory.createServletContext(WebDeploymentDescriptor.createFromFile(webAppDirectory));
+            FacesTesterServletContext context = ServletContextFactory.createServletContext(new WebDeploymentDescriptor(webAppDirectory));
             assertThat(context.getMimeType("/images/image.png"), is("image/png"));
             assertThat(context.getMimeType("/resources/misc/some.foo"), is("application/x-foo"));
             assertNull(context.getMimeType(null));
@@ -86,7 +86,7 @@ public class WhenCreatingServletContext {
         Properties properties = System.getProperties();
         try {
             System.setProperty("facestester.webAppPath", webAppDirectory.getAbsolutePath());
-            FacesTesterServletContext context = ServletContextFactory.createServletContext(WebDeploymentDescriptor.createFromFile(webAppDirectory));
+            FacesTesterServletContext context = ServletContextFactory.createServletContext(new WebDeploymentDescriptor(webAppDirectory));
             assertThat(context.getContextPath(), is(""));
         }
         finally {

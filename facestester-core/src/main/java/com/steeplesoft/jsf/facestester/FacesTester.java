@@ -85,7 +85,7 @@ public class FacesTester {
     private static ThreadLocal<FacesTesterEnv> facesTesterEnv = new ThreadLocal<FacesTesterEnv>();
 
     public FacesTester() {
-        this(WebDeploymentDescriptor.createFromFile(Util.lookupWebAppPath()));
+        this(new WebDeploymentDescriptor(Util.lookupWebAppPath()));
     }
 
     public FacesTester(WebDeploymentDescriptor webDeploymentDescriptor) {

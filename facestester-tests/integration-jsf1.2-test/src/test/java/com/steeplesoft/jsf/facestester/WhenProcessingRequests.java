@@ -49,7 +49,7 @@ public class WhenProcessingRequests {
 
     @BeforeClass
     public static void setup() {
-        facesTester = new FacesTester(WebDeploymentDescriptor.createFromFile(new File("testwebapp")));
+        facesTester = new FacesTester(new WebDeploymentDescriptor(new File("testwebapp")));
     }
 
     @Test
