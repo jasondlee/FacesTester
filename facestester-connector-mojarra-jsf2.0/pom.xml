@@ -43,7 +43,7 @@
 			<artifactId>persistence-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>el-impl</groupId>
+			<groupId>org.glassfish.web</groupId>
 			<artifactId>el-impl</artifactId>
 			<scope>runtime</scope>
 		</dependency>

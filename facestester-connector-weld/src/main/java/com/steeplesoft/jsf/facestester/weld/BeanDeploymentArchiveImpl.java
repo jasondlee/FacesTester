@@ -14,9 +14,13 @@ import java.util.List;
 public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private String id;
     private SimpleServiceRegistry serviceRegistry = null;
+    private List<Class<?>> beanClasses;
+    private List<URL> beansXml;
 
-    public BeanDeploymentArchiveImpl(String id, List<Class<?>> wbClasses) {
+    public BeanDeploymentArchiveImpl(String id, List<Class<?>> beanClasses, List<URL> beansXml) {
         this.id = id;
+        this.beanClasses = beanClasses;
+        this.beansXml = beansXml;
     }
     public String getId() {
         return id;
@@ -27,11 +31,11 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     }
 
     public Collection<Class<?>> getBeanClasses() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return beanClasses;
     }
 
     public Collection<URL> getBeansXml() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return beansXml;
     }
 
     public Collection<EjbDescriptor<?>> getEjbs() {

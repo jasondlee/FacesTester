@@ -59,13 +59,6 @@ public class WebDeploymentDescriptor {
     public WebDeploymentDescriptor() {
     }
 
-/*
-    protected WebDeploymentDescriptor(File webAppPath) {
-        this();
-        this.webAppPath = webAppPath;
-    }
-*/
-
     public  WebDeploymentDescriptor (File webAppPath) {
         this();
         this.webAppPath = webAppPath;
