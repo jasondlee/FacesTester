@@ -163,11 +163,12 @@ public class FacesTester {
         }
 
         // Do we want to do this here?
-//        for (EventListener listener : getFacesTesterEnv().getWebDeploymentDescriptor().getListeners()) {
-//            if (listener instanceof ServletRequestListener) {
-//                ((ServletRequestListener) listener).requestDestroyed(sre);
-//            }
-//        }
+        for (EventListener listener : getFacesTesterEnv().getWebDeploymentDescriptor().getListeners()) {
+            if ((listener instanceof ServletRequestListener)
+                    && (!listener.getClass().getName().equals("com.sun.faces.config.ConfigureListener"))){
+                ((ServletRequestListener) listener).requestDestroyed(sre);
+            }
+        }
 
         return new FacesPage(context, getFacesTesterEnv().getFacesContextBuilder(), getFacesTesterEnv().getLifecycle(), uri);
     }
