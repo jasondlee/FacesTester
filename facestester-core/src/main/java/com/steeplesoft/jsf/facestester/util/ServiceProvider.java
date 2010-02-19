@@ -35,31 +35,30 @@ import javax.imageio.spi.ServiceRegistry;
 import com.steeplesoft.jsf.facestester.FacesTesterException;
 
 public class ServiceProvider {
-	
-	public static <T> T getUniqueProvider(Class<T> iface) {
-		Iterator<T> lookupProviders = ServiceRegistry.lookupProviders(iface);
-		T result = null;
-		if(lookupProviders.hasNext()) {
-			result = lookupProviders.next();
-		} else {
-			throw new FacesTesterException("No SPI provider found for:" + iface.getName());
-		}
-		if(lookupProviders.hasNext()) {
-			throw new FacesTesterException("Multiple SPI providers found for:" + iface.getName());
-		}
-		return result;
-	}
-	
-	public static <T> Collection<T> getAllProviders(Class<T> iface) {
-		Iterator<T> lookupProviders = ServiceRegistry.lookupProviders(iface);
-		
-		Collection<T> result = new ArrayList<T>();
-		while(lookupProviders.hasNext()) {
-			result.add(lookupProviders.next());
-		}
-		
-		return result;
-		
-	}
 
+    public static <T> T getUniqueProvider(Class<T> iface) {
+        Iterator<T> lookupProviders = ServiceRegistry.lookupProviders(iface);
+        T result = null;
+        if (lookupProviders.hasNext()) {
+            result = lookupProviders.next();
+        } else {
+            throw new FacesTesterException("No SPI provider found for:" + iface.getName());
+        }
+        if (lookupProviders.hasNext()) {
+            throw new FacesTesterException("Multiple SPI providers found for:" + iface.getName());
+        }
+        return result;
+    }
+
+    public static <T> Collection<T> getAllProviders(Class<T> iface) {
+        Iterator<T> lookupProviders = ServiceRegistry.lookupProviders(iface);
+
+        Collection<T> result = new ArrayList<T>();
+        while (lookupProviders.hasNext()) {
+            result.add(lookupProviders.next());
+        }
+
+        return result;
+
+    }
 }

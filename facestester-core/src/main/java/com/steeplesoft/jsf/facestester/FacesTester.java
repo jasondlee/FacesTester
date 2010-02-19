@@ -162,11 +162,12 @@ public class FacesTester {
             throw new FacesTesterException("An error occurred while executing the filters", ex);
         }
 
-        for (EventListener listener : getFacesTesterEnv().getWebDeploymentDescriptor().getListeners()) {
-            if (listener instanceof ServletRequestListener) {
-                ((ServletRequestListener) listener).requestDestroyed(sre);
-            }
-        }
+        // Do we want to do this here?
+//        for (EventListener listener : getFacesTesterEnv().getWebDeploymentDescriptor().getListeners()) {
+//            if (listener instanceof ServletRequestListener) {
+//                ((ServletRequestListener) listener).requestDestroyed(sre);
+//            }
+//        }
 
         return new FacesPage(context, getFacesTesterEnv().getFacesContextBuilder(), getFacesTesterEnv().getLifecycle(), uri);
     }
@@ -369,7 +370,7 @@ public class FacesTester {
         return true;
     }
 
-    private void checkForErrors(FacesContext context) {
+    protected void checkForErrors(FacesContext context) {
         FacesTesterHttpServletResponse response = (FacesTesterHttpServletResponse) context.getExternalContext().getResponse();
 
         if (SC_OK == response.getStatus()) {
@@ -387,7 +388,7 @@ public class FacesTester {
     /*
      * Finding a way to make this more intelligent would be awesome :)
      */
-    private Object generateDefaultValue(Class<?> type) throws InstantiationException, IllegalAccessException {
+    protected Object generateDefaultValue(Class<?> type) throws InstantiationException, IllegalAccessException {
         String name = type.getName();
         if (name.startsWith("java.lang")) {
             name = name.substring(10).toLowerCase();

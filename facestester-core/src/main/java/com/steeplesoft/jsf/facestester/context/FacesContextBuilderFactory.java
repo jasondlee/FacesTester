@@ -34,5 +34,6 @@ import com.steeplesoft.jsf.facestester.servlet.WebDeploymentDescriptor;
 import com.steeplesoft.jsf.facestester.servlet.impl.FacesTesterServletContext;
 
 public interface FacesContextBuilderFactory {
-    FacesContextBuilder createFacesContextBuilder(FacesTesterServletContext servletContext, HttpSession session, WebDeploymentDescriptor webDescriptor, CookieManager cookieManager);
+    FacesContextBuilder createFacesContextBuilder(FacesTesterServletContext servletContext,
+            HttpSession session, WebDeploymentDescriptor webDescriptor, CookieManager cookieManager);
 }
