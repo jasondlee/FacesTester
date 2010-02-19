@@ -20,10 +20,10 @@
     <orderEntry type="library" exported="" name="Maven: commons-digester:commons-digester:1.8" level="project" />
     <orderEntry type="module" module-name="facestester-core" exported="" />
     <orderEntry type="library" exported="" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
-    <orderEntry type="library" exported="" name="Maven: javax.el:el-api:1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: javax.el:el-api:2.2" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.persistence:persistence-api:1.0" level="project" />
     <orderEntry type="module" module-name="facestester-core" scope="TEST" />
-    <orderEntry type="library" exported="" scope="RUNTIME" name="Maven: el-impl:el-impl:1.0" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="Maven: org.glassfish.web:el-impl:2.2" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.annotation:jsr250-api:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.sun.facelets:jsf-facelets:1.1.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.5" level="project" />
